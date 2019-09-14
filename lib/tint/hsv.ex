@@ -1,4 +1,8 @@
 defmodule Tint.HSV do
+  @moduledoc """
+  A color in the HSV (hue, saturation, value) colorspace.
+  """
+
   defstruct [:hue, :saturation, :value]
 
   @type t :: %__MODULE__{

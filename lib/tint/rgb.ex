@@ -1,4 +1,8 @@
 defmodule Tint.RGB do
+  @moduledoc """
+  A color in the RGB (red, green, blue) colorspace.
+  """
+
   alias Tint.RGB.HexCode
 
   defstruct [:red, :green, :blue]
