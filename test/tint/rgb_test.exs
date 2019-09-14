@@ -1,6 +1,7 @@
 defmodule Tint.RGBTest do
   use ExUnit.Case
 
+  alias Tint.HSV
   alias Tint.RGB
 
   describe "new/1" do
@@ -159,6 +160,49 @@ defmodule Tint.RGBTest do
       assert RGB.to_hex(RGB.new(255, 204, 0)) == "#FFCC00"
       assert RGB.to_hex(RGB.new(138, 8, 67)) == "#8A0843"
       assert RGB.to_hex(RGB.new(181, 200, 240)) == "#B5C8F0"
+    end
+  end
+
+  describe "RGB.Convertible.to_rgb/1" do
+    test "convert to RGB" do
+      colors = [
+        RGB.new(0, 0, 0),
+        RGB.new(255, 255, 255),
+        RGB.new(255, 204, 0),
+        RGB.new(138, 8, 67),
+        RGB.new(181, 200, 240)
+      ]
+
+      Enum.each(colors, fn color ->
+        assert RGB.Convertible.to_rgb(color) == color
+      end)
+    end
+  end
+
+  describe "HSV.Convertible.to_hsv/1" do
+    test "convert to HSV" do
+      assert HSV.Convertible.to_hsv(RGB.new(0, 0, 0)) ==
+               HSV.new(0, 0.0, 0.0)
+
+      assert HSV.Convertible.to_hsv(RGB.new(255, 255, 255)) ==
+               HSV.new(0, 0.0, 1.0)
+
+      assert HSV.Convertible.to_hsv(RGB.new(255, 204, 0)) ==
+               HSV.new(48.0, 1.0, 1.0)
+
+      assert HSV.Convertible.to_hsv(RGB.new(138, 8, 67)) ==
+               HSV.new(
+                 332.7692307692308,
+                 0.9420289855072463,
+                 0.5411764705882353
+               )
+
+      assert HSV.Convertible.to_hsv(RGB.new(181, 200, 240)) ==
+               HSV.new(
+                 220.67796610169492,
+                 0.2458333333333333,
+                 0.9411764705882353
+               )
     end
   end
 end

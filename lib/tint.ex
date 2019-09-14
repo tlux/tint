@@ -3,50 +3,27 @@ defmodule Tint do
   a library to convert colors between different colorspaces.
   """
 
-  alias Tint.Convertible
-  alias Tint.UnconvertibleError
+  alias Tint.HSV
+  alias Tint.RGB
 
   @typedoc """
   A type representing a color.
   """
-  @type color :: Convertible.t()
-
-  @typedoc """
-  A type referencing a colorspace module.
-  """
-  @type colorspace :: Tint.HSV | Tint.RGB
-
-  @typedoc """
-  A union type containing all possible error types that this library has.
-  """
-  @type error :: UnconvertibleError.t()
+  @type color :: HSV.t() | RGB.t()
 
   @doc """
-  Converts a color to another colorspace.
+  Converts the given color to RGB colorspace.
   """
-  @spec convert(Tint.color(), Tint.colorspace()) ::
-          {:ok, Tint.color()} | {:error, Tint.error()}
-  def convert(from, to)
-
-  def convert(%colorspace{} = color, colorspace) do
-    {:ok, color}
-  end
-
-  def convert(from, to) do
-    case Convertible.convert(from, to) do
-      {:ok, color} -> {:ok, color}
-      :error -> {:error, %UnconvertibleError{from: from, to: to}}
-    end
+  @spec to_rgb(color) :: {:ok, RGB.t()} | :error
+  def to_rgb(color) do
+    RGB.Convertible.to_rgb(color)
   end
 
   @doc """
-  Converts a color to another colorspace. Raises when the conversion fails.
+  Converts the given color to HSV colorspace.
   """
-  @spec convert!(Tint.color(), Tint.colorspace()) :: Tint.color() | no_return
-  def convert!(from, to) do
-    case convert(from, to) do
-      {:ok, color} -> color
-      {:error, error} -> raise error
-    end
+  @spec to_hsv(color) :: {:ok, HSV.t()} | :error
+  def to_hsv(color) do
+    HSV.Convertible.to_hsv(color)
   end
 end
