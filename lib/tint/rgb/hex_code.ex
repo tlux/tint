@@ -3,18 +3,20 @@ defmodule Tint.RGB.HexCode do
 
   alias Tint.RGB
 
+  @prefix "#"
+
   @spec parse(String.t()) :: {:ok, RGB.t()} | :error
   def parse(code)
 
   def parse(
-        <<"#", red::binary-size(2), green::binary-size(2),
+        <<@prefix, red::binary-size(2), green::binary-size(2),
           blue::binary-size(2)>>
       ) do
     do_parse(red, green, blue)
   end
 
   def parse(
-        <<"#", red::binary-size(1), green::binary-size(1),
+        <<@prefix, red::binary-size(1), green::binary-size(1),
           blue::binary-size(1)>>
       ) do
     red = String.duplicate(red, 2)
@@ -45,7 +47,7 @@ defmodule Tint.RGB.HexCode do
     red = serialize_value(color.red)
     green = serialize_value(color.green)
     blue = serialize_value(color.blue)
-    Enum.join(["#", red, green, blue])
+    Enum.join([@prefix, red, green, blue])
   end
 
   defp serialize_value(value) do
