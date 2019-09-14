@@ -3,24 +3,37 @@ defmodule Tint.RGB do
 
   defstruct [:red, :green, :blue]
 
+  @type value :: 0..255
+
   @type t :: %__MODULE__{
-          red: non_neg_integer,
-          green: non_neg_integer,
-          blue: non_neg_integer
+          red: value,
+          green: value,
+          blue: value
         }
 
+  defguardp is_rgb_value(value) when is_integer(value) and value in 0..255
+
   @doc """
-  Builds a new RGB color.
+  Builds a new RGB color from a tuple.
   """
-  @spec new(non_neg_integer, non_neg_integer, non_neg_integer) :: t
-  def new(red, green, blue) do
+  @spec new({value, value, value}) :: t
+  def new({red, green, blue}) do
+    new(red, green, blue)
+  end
+
+  @doc """
+  Builds a new RGB color from red, green and green color values.
+  """
+  @spec new(value, value, value) :: t
+  def new(red, green, blue)
+      when is_rgb_value(red) and is_rgb_value(green) and is_rgb_value(blue) do
     %__MODULE__{red: red, green: green, blue: blue}
   end
 
   @doc """
   Builds a new RGB color from the given hex code.
   """
-  @spec from_hex(String.t()) :: {:ok, t} | {:error, Tint.error()}
+  @spec from_hex(String.t()) :: {:ok, t} | :error
   def from_hex(code) do
     HexCode.parse(code)
   end
@@ -33,7 +46,7 @@ defmodule Tint.RGB do
   def from_hex!(code) do
     case from_hex(code) do
       {:ok, color} -> color
-      {:error, error} -> raise error
+      :error -> raise ArgumentError, "Invalid hex code: #{code}"
     end
   end
 
