@@ -27,7 +27,10 @@ end
 ## Usage
 
 ```elixir
-Tint.convert(Tint.RGB.from_hex!("#FFCC00"), Tint.HSV)
+red = Tint.RGB.new(255, 0, 0)
+yellow = Tint.RGB.from_hex!("#FFCC00")
+hsv = Tint.to_hsv(yellow)
+Tint.RGB.to_hex(yellow)
 ```
 
 ## Docs
