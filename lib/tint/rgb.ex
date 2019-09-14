@@ -95,7 +95,7 @@ defmodule Tint.RGB do
       end
     end
 
-    defp do_calc_hue(ratio_delta, _, _) when ratio_delta == 0, do: 0
+    defp do_calc_hue(ratio_delta, _, _) when ratio_delta == 0, do: 0.0
 
     defp do_calc_hue(ratio_delta, max_ratio, [
            red_ratio,
