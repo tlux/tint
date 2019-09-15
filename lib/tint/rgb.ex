@@ -6,10 +6,12 @@ defmodule Tint.RGB do
   import Tint.Utils
 
   alias Tint.RGB.HexCode
+  alias Tint.Utils.Interval
 
   defstruct [:red, :green, :blue]
 
-  @value_range 0..255
+  @value_interval Interval.new(0, 255)
+  @ratio_interval Interval.new(0, 1)
 
   @type t :: %__MODULE__{
           red: non_neg_integer,
@@ -18,31 +20,51 @@ defmodule Tint.RGB do
         }
 
   @doc """
-  Builds a new RGB color from red, green and green color values.
+  Builds a new RGB color from red, green and blue color values.
   """
   @spec new(Decimal.t() | number, Decimal.t() | number, Decimal.t() | number) ::
           t
   def new(red, green, blue) do
-    red = cast_integer(red)
-    green = cast_integer(green)
-    blue = cast_integer(blue)
-
-    with :ok <- check_value_in_range(red, @value_range),
-         :ok <- check_value_in_range(green, @value_range),
-         :ok <- check_value_in_range(blue, @value_range) do
+    with {:ok, red} <- check_and_cast_value(:integer, red, @value_interval),
+         {:ok, green} <- check_and_cast_value(:integer, green, @value_interval),
+         {:ok, blue} <- check_and_cast_value(:integer, blue, @value_interval) do
       %__MODULE__{red: red, green: green, blue: blue}
     else
       {:error, error} -> raise error
     end
   end
 
-  defp cast_integer(%Decimal{} = value) do
-    value |> Decimal.round() |> Decimal.to_integer()
+  @doc """
+  Builds a new RGB color from red, green and blue color ratios.
+  """
+  @spec from_ratios(
+          Decimal.t() | number,
+          Decimal.t() | number,
+          Decimal.t() | number
+        ) :: t
+  def from_ratios(red_ratio, green_ratio, blue_ratio) do
+    with {:ok, red_ratio} <-
+           check_and_cast_value(:decimal, red_ratio, @ratio_interval),
+         {:ok, green_ratio} <-
+           check_and_cast_value(:decimal, green_ratio, @ratio_interval),
+         {:ok, blue_ratio} <-
+           check_and_cast_value(:decimal, blue_ratio, @ratio_interval) do
+      %__MODULE__{
+        red: ratio_to_value(red_ratio),
+        green: ratio_to_value(green_ratio),
+        blue: ratio_to_value(blue_ratio)
+      }
+    else
+      {:error, error} -> raise error
+    end
   end
 
-  defp cast_integer(value) when is_integer(value), do: value
-
-  defp cast_integer(value) when is_float(value), do: trunc(value)
+  defp ratio_to_value(ratio) do
+    ratio
+    |> Decimal.mult(255)
+    |> Decimal.round()
+    |> Decimal.to_integer()
+  end
 
   @doc """
   Builds a new RGB color from the given hex code.
@@ -84,6 +106,7 @@ defmodule Tint.RGB do
       green_ratio = Decimal.div(rgb.green, 255)
       blue_ratio = Decimal.div(rgb.blue, 255)
       rgb_ratios = [red_ratio, green_ratio, blue_ratio]
+
       min_ratio = Enum.reduce(rgb_ratios, &Decimal.min(&1, &2))
       max_ratio = Enum.reduce(rgb_ratios, &Decimal.max(&1, &2))
       ratio_delta = Decimal.sub(max_ratio, min_ratio)
@@ -115,29 +138,24 @@ defmodule Tint.RGB do
           Decimal.new(0)
 
         Decimal.eq?(red_ratio, max_ratio) ->
-          Decimal.mult(
-            60,
-            Decimal.div(Decimal.sub(green_ratio, blue_ratio), ratio_delta)
-          )
+          calc_hue_component(green_ratio, blue_ratio, ratio_delta, 0)
 
         Decimal.eq?(green_ratio, max_ratio) ->
-          Decimal.mult(
-            60,
-            Decimal.add(
-              Decimal.div(Decimal.sub(blue_ratio, red_ratio), ratio_delta),
-              2
-            )
-          )
+          calc_hue_component(blue_ratio, red_ratio, ratio_delta, 2)
 
         Decimal.eq?(blue_ratio, max_ratio) ->
-          Decimal.mult(
-            60,
-            Decimal.add(
-              Decimal.div(Decimal.sub(red_ratio, green_ratio), ratio_delta),
-              4
-            )
-          )
+          calc_hue_component(red_ratio, green_ratio, ratio_delta, 4)
       end
+    end
+
+    defp calc_hue_component(first_ratio, second_ratio, ratio_delta, offset) do
+      Decimal.mult(
+        60,
+        Decimal.add(
+          Decimal.div(Decimal.sub(first_ratio, second_ratio), ratio_delta),
+          offset
+        )
+      )
     end
 
     defp calc_saturation(ratio_delta, max_ratio) do
@@ -149,41 +167,5 @@ defmodule Tint.RGB do
     end
 
     defp calc_value(max_ratio), do: Decimal.div(max_ratio, 1)
-
-    # defp do_calc_hue(ratio_delta, _, _) when ratio_delta == 0 do
-    #   Decimal.new(0)
-    # end
-
-    # defp do_calc_hue(ratio_delta, max_ratio, [
-    #        red_ratio,
-    #        green_ratio,
-    #        blue_ratio
-    #      ])
-    #      when red_ratio == max_ratio do
-    #   60 * ((green_ratio - blue_ratio) / ratio_delta)
-    # end
-
-    # defp do_calc_hue(ratio_delta, max_ratio, [
-    #        red_ratio,
-    #        green_ratio,
-    #        blue_ratio
-    #      ])
-    #      when green_ratio == max_ratio do
-    #   60 * ((blue_ratio - red_ratio) / ratio_delta + 2)
-    # end
-
-    # defp do_calc_hue(ratio_delta, max_ratio, [
-    #        red_ratio,
-    #        green_ratio,
-    #        blue_ratio
-    #      ])
-    #      when blue_ratio == max_ratio do
-    #   60 * ((red_ratio - green_ratio) / ratio_delta + 4)
-    # end
-
-    # defp calc_saturation(ratio_delta, _max_ratio) when ratio_delta == 0, do: 0.0
-    # defp calc_saturation(ratio_delta, max_ratio), do: ratio_delta / max_ratio
-
-    # defp calc_value(max_ratio), do: max_ratio / 1
   end
 end

@@ -5,10 +5,12 @@ defmodule Tint.HSV do
 
   import Tint.Utils
 
+  alias Tint.Utils.Interval
+
   defstruct [:hue, :saturation, :value]
 
-  @hue_value_range 0..360
-  @percentage_range 0..1
+  @deg_interval Interval.new(0, 360, exclude_max: true)
+  @ratio_interval Interval.new(0, 1)
 
   @type t :: %__MODULE__{
           hue: Decimal.t(),
@@ -22,21 +24,39 @@ defmodule Tint.HSV do
   @spec new(Decimal.t() | number, Decimal.t() | number, Decimal.t() | number) ::
           t
   def new(hue, saturation, value) do
-    hue = cast_decimal(hue)
-    saturation = cast_decimal(saturation)
-    value = cast_decimal(value)
-
-    with :ok <- check_value_in_range(hue, @hue_value_range),
-         :ok <- check_value_in_range(saturation, @percentage_range),
-         :ok <- check_value_in_range(value, @percentage_range) do
-      %__MODULE__{hue: hue, saturation: saturation, value: value}
+    with {:ok, hue} <- check_and_cast_value(:decimal, hue, @deg_interval),
+         {:ok, saturation} <-
+           check_and_cast_value(:decimal, saturation, @ratio_interval),
+         {:ok, value} <- check_and_cast_value(:decimal, value, @ratio_interval) do
+      %__MODULE__{
+        hue: Decimal.round(hue, 1, :floor),
+        saturation: Decimal.round(saturation, 3, :floor),
+        value: Decimal.round(value, 3, :floor)
+      }
     else
       {:error, error} -> raise error
     end
   end
 
-  defp cast_decimal(value) do
-    value |> Decimal.cast() |> Decimal.reduce()
+  @doc """
+  Converts a tuple containing hue, saturation and value into a `Tint.HSV`
+  struct.
+  """
+  @spec from_tuple(
+          {Decimal.t() | number, Decimal.t() | number, Decimal.t() | number}
+        ) :: t
+  def from_tuple({hue, saturation, value}) do
+    new(hue, saturation, value)
+  end
+
+  @doc """
+  Converts HSV color into a tuple containing the hue, saturation and value
+  parts.
+  """
+  @spec to_tuple(t) :: {float, float, float}
+  def to_tuple(%__MODULE__{} = color) do
+    {Decimal.to_float(color.hue), Decimal.to_float(color.saturation),
+     Decimal.to_float(color.value)}
   end
 
   defimpl Tint.HSV.Convertible do
@@ -45,6 +65,7 @@ defmodule Tint.HSV do
 
   defimpl Tint.RGB.Convertible do
     alias Tint.RGB
+    alias Tint.Utils.Interval
 
     def to_rgb(hsv) do
       c = Decimal.mult(hsv.saturation, hsv.value)
@@ -66,29 +87,19 @@ defmodule Tint.HSV do
 
     defp calc_ratios(hue, c, x) do
       cond do
-        in_range?(hue, 0, 60) ->
-          {c, x, 0}
-
-        in_range?(hue, 60, 120) ->
-          {x, c, 0}
-
-        in_range?(hue, 120, 180) ->
-          {0, c, x}
-
-        in_range?(hue, 180, 240) ->
-          {0, x, c}
-
-        in_range?(hue, 240, 300) ->
-          {x, 0, c}
-
-        in_range?(hue, 300, 360) ->
-          {c, 0, x}
+        in_interval?(hue, 0, 60) -> {c, x, 0}
+        in_interval?(hue, 60, 120) -> {x, c, 0}
+        in_interval?(hue, 120, 180) -> {0, c, x}
+        in_interval?(hue, 180, 240) -> {0, x, c}
+        in_interval?(hue, 240, 300) -> {x, 0, c}
+        in_interval?(hue, 300, 360) -> {c, 0, x}
       end
     end
 
-    defp in_range?(value, min, max) do
-      (Decimal.gt?(value, min) || Decimal.eq?(value, min)) &&
-        Decimal.lt?(value, max)
+    defp in_interval?(value, min, max) do
+      min
+      |> Interval.new(max, exclude_max: true)
+      |> Interval.member?(value)
     end
 
     defp calc_x_part(hue) do
@@ -96,8 +107,6 @@ defmodule Tint.HSV do
         1,
         Decimal.abs(Decimal.sub(Decimal.rem(Decimal.div(hue, 60), 2), 1))
       )
-
-      # 1 - abs(float_mod(hue / 60, 2) - 1)
     end
   end
 end

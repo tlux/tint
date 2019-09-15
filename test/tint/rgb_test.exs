@@ -8,19 +8,25 @@ defmodule Tint.RGBTest do
   describe "new/3" do
     test "success" do
       for num <- 0..255 do
-        assert RGB.new(num, 0, 0) == %RGB{
+        assert RGB.new(num, 0, 0) == %RGB{red: num, green: 0, blue: 0}
+
+        assert RGB.new(to_string(num), 0, 0) == %RGB{
                  red: num,
                  green: 0,
                  blue: 0
                }
 
-        assert RGB.new(0, num, 0) == %RGB{
+        assert RGB.new(0, num, 0) == %RGB{red: 0, green: num, blue: 0}
+
+        assert RGB.new(0, to_string(num), 0) == %RGB{
                  red: 0,
                  green: num,
                  blue: 0
                }
 
-        assert RGB.new(0, 0, num) == %RGB{
+        assert RGB.new(0, 0, num) == %RGB{red: 0, green: 0, blue: num}
+
+        assert RGB.new(0, 0, to_string(num)) == %RGB{
                  red: 0,
                  green: 0,
                  blue: num
@@ -55,20 +61,6 @@ defmodule Tint.RGBTest do
 
       assert_raise OutOfRangeError, fn ->
         RGB.new(0, 0, -1)
-      end
-    end
-
-    test "raise when value is no integer" do
-      assert_raise FunctionClauseError, fn ->
-        RGB.new("0", 0, 0)
-      end
-
-      assert_raise FunctionClauseError, fn ->
-        RGB.new(0, "0", 0)
-      end
-
-      assert_raise FunctionClauseError, fn ->
-        RGB.new(0, 0, "0")
       end
     end
   end
@@ -169,16 +161,16 @@ defmodule Tint.RGBTest do
 
       assert HSV.Convertible.to_hsv(RGB.new(138, 8, 67)) ==
                HSV.new(
-                 332.7692307692308,
-                 0.9420289855072463,
-                 0.5411764705882353
+                 Decimal.new("332.7"),
+                 Decimal.new("0.942"),
+                 Decimal.new("0.541")
                )
 
       assert HSV.Convertible.to_hsv(RGB.new(181, 200, 240)) ==
                HSV.new(
-                 220.67796610169492,
-                 0.2458333333333333,
-                 0.9411764705882353
+                 Decimal.new("220.6"),
+                 Decimal.new("0.245"),
+                 Decimal.new("0.941")
                )
     end
   end
