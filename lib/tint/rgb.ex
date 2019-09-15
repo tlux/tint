@@ -41,6 +41,7 @@ defmodule Tint.RGB do
   end
 
   defp cast_integer(value) when is_integer(value), do: value
+
   defp cast_integer(value) when is_float(value), do: trunc(value)
 
   @doc """
@@ -79,13 +80,13 @@ defmodule Tint.RGB do
     alias Tint.HSV
 
     def to_hsv(rgb) do
-      red_ratio = rgb.red / 255
-      green_ratio = rgb.green / 255
-      blue_ratio = rgb.blue / 255
+      red_ratio = Decimal.div(rgb.red, 255)
+      green_ratio = Decimal.div(rgb.green, 255)
+      blue_ratio = Decimal.div(rgb.blue, 255)
       rgb_ratios = [red_ratio, green_ratio, blue_ratio]
-      max_ratio = Enum.max(rgb_ratios)
-      min_ratio = Enum.min(rgb_ratios)
-      ratio_delta = max_ratio - min_ratio
+      min_ratio = Enum.reduce(rgb_ratios, &Decimal.min(&1, &2))
+      max_ratio = Enum.reduce(rgb_ratios, &Decimal.max(&1, &2))
+      ratio_delta = Decimal.sub(max_ratio, min_ratio)
 
       hue = calc_hue(ratio_delta, max_ratio, rgb_ratios)
       saturation = calc_saturation(ratio_delta, max_ratio)
@@ -97,45 +98,92 @@ defmodule Tint.RGB do
     defp calc_hue(ratio_delta, max_ratio, rgb_ratios) do
       hue = do_calc_hue(ratio_delta, max_ratio, rgb_ratios)
 
-      if hue < 0 do
-        hue + 360
+      if Decimal.lt?(hue, 0) do
+        Decimal.add(hue, 360)
       else
         hue
       end
     end
 
-    defp do_calc_hue(ratio_delta, _, _) when ratio_delta == 0, do: 0.0
-
     defp do_calc_hue(ratio_delta, max_ratio, [
            red_ratio,
            green_ratio,
            blue_ratio
-         ])
-         when red_ratio == max_ratio do
-      60 * ((green_ratio - blue_ratio) / ratio_delta)
+         ]) do
+      cond do
+        Decimal.eq?(ratio_delta, 0) ->
+          Decimal.new(0)
+
+        Decimal.eq?(red_ratio, max_ratio) ->
+          Decimal.mult(
+            60,
+            Decimal.div(Decimal.sub(green_ratio, blue_ratio), ratio_delta)
+          )
+
+        Decimal.eq?(green_ratio, max_ratio) ->
+          Decimal.mult(
+            60,
+            Decimal.add(
+              Decimal.div(Decimal.sub(blue_ratio, red_ratio), ratio_delta),
+              2
+            )
+          )
+
+        Decimal.eq?(blue_ratio, max_ratio) ->
+          Decimal.mult(
+            60,
+            Decimal.add(
+              Decimal.div(Decimal.sub(red_ratio, green_ratio), ratio_delta),
+              4
+            )
+          )
+      end
     end
 
-    defp do_calc_hue(ratio_delta, max_ratio, [
-           red_ratio,
-           green_ratio,
-           blue_ratio
-         ])
-         when green_ratio == max_ratio do
-      60 * ((blue_ratio - red_ratio) / ratio_delta + 2)
+    defp calc_saturation(ratio_delta, max_ratio) do
+      if Decimal.eq?(ratio_delta, 0) do
+        Decimal.new(0)
+      else
+        Decimal.div(ratio_delta, max_ratio)
+      end
     end
 
-    defp do_calc_hue(ratio_delta, max_ratio, [
-           red_ratio,
-           green_ratio,
-           blue_ratio
-         ])
-         when blue_ratio == max_ratio do
-      60 * ((red_ratio - green_ratio) / ratio_delta + 4)
-    end
+    defp calc_value(max_ratio), do: Decimal.div(max_ratio, 1)
 
-    defp calc_saturation(ratio_delta, _max_ratio) when ratio_delta == 0, do: 0.0
-    defp calc_saturation(ratio_delta, max_ratio), do: ratio_delta / max_ratio
+    # defp do_calc_hue(ratio_delta, _, _) when ratio_delta == 0 do
+    #   Decimal.new(0)
+    # end
 
-    defp calc_value(max_ratio), do: max_ratio / 1
+    # defp do_calc_hue(ratio_delta, max_ratio, [
+    #        red_ratio,
+    #        green_ratio,
+    #        blue_ratio
+    #      ])
+    #      when red_ratio == max_ratio do
+    #   60 * ((green_ratio - blue_ratio) / ratio_delta)
+    # end
+
+    # defp do_calc_hue(ratio_delta, max_ratio, [
+    #        red_ratio,
+    #        green_ratio,
+    #        blue_ratio
+    #      ])
+    #      when green_ratio == max_ratio do
+    #   60 * ((blue_ratio - red_ratio) / ratio_delta + 2)
+    # end
+
+    # defp do_calc_hue(ratio_delta, max_ratio, [
+    #        red_ratio,
+    #        green_ratio,
+    #        blue_ratio
+    #      ])
+    #      when blue_ratio == max_ratio do
+    #   60 * ((red_ratio - green_ratio) / ratio_delta + 4)
+    # end
+
+    # defp calc_saturation(ratio_delta, _max_ratio) when ratio_delta == 0, do: 0.0
+    # defp calc_saturation(ratio_delta, max_ratio), do: ratio_delta / max_ratio
+
+    # defp calc_value(max_ratio), do: max_ratio / 1
   end
 end
