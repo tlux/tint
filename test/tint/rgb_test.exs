@@ -2,31 +2,8 @@ defmodule Tint.RGBTest do
   use ExUnit.Case
 
   alias Tint.HSV
+  alias Tint.OutOfRangeError
   alias Tint.RGB
-
-  describe "new/1" do
-    test "success" do
-      assert RGB.new({23, 45, 67}) == %RGB{
-               red: 23,
-               green: 45,
-               blue: 67
-             }
-    end
-
-    test "error" do
-      assert_raise FunctionClauseError, fn ->
-        RGB.new(-1, 45, 67)
-      end
-
-      assert_raise FunctionClauseError, fn ->
-        RGB.new(23, 45, 678)
-      end
-
-      assert_raise FunctionClauseError, fn ->
-        RGB.new("23", 45, 67)
-      end
-    end
-  end
 
   describe "new/3" do
     test "success" do
@@ -52,31 +29,31 @@ defmodule Tint.RGBTest do
     end
 
     test "raise when red part out of range" do
-      assert_raise FunctionClauseError, fn ->
+      assert_raise OutOfRangeError, fn ->
         RGB.new(256, 0, 0)
       end
 
-      assert_raise FunctionClauseError, fn ->
+      assert_raise OutOfRangeError, fn ->
         RGB.new(-1, 0, 0)
       end
     end
 
     test "raise when green part out of range" do
-      assert_raise FunctionClauseError, fn ->
+      assert_raise OutOfRangeError, fn ->
         RGB.new(0, 256, 0)
       end
 
-      assert_raise FunctionClauseError, fn ->
+      assert_raise OutOfRangeError, fn ->
         RGB.new(0, -1, 0)
       end
     end
 
     test "raise when blue part out of range" do
-      assert_raise FunctionClauseError, fn ->
+      assert_raise OutOfRangeError, fn ->
         RGB.new(0, 0, 256)
       end
 
-      assert_raise FunctionClauseError, fn ->
+      assert_raise OutOfRangeError, fn ->
         RGB.new(0, 0, -1)
       end
     end

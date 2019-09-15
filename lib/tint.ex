@@ -14,7 +14,7 @@ defmodule Tint do
   @doc """
   Converts the given color to RGB colorspace.
   """
-  @spec to_rgb(color) :: {:ok, RGB.t()} | :error
+  @spec to_rgb(color) :: RGB.t()
   def to_rgb(color) do
     RGB.Convertible.to_rgb(color)
   end
@@ -22,7 +22,7 @@ defmodule Tint do
   @doc """
   Converts the given color to HSV colorspace.
   """
-  @spec to_hsv(color) :: {:ok, HSV.t()} | :error
+  @spec to_hsv(color) :: HSV.t()
   def to_hsv(color) do
     HSV.Convertible.to_hsv(color)
   end

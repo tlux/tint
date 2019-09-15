@@ -23,7 +23,7 @@ defmodule Tint.MixProject do
 
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: []
     ]
   end
 
@@ -31,6 +31,7 @@ defmodule Tint.MixProject do
     [
       {:credo, "~> 1.0.5", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0.0-rc.6", only: [:dev, :test], runtime: false},
+      {:decimal, "~> 1.0"},
       {:excoveralls, "~> 0.10", only: :test},
       {:ex_doc, "~> 0.20.2", only: :dev, runtime: false},
       {:inch_ex, only: :docs}

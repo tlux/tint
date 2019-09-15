@@ -3,36 +3,45 @@ defmodule Tint.RGB do
   A color in the RGB (red, green, blue) colorspace.
   """
 
+  import Tint.Utils
+
   alias Tint.RGB.HexCode
 
   defstruct [:red, :green, :blue]
 
-  @type value :: non_neg_integer
+  @value_range 0..255
 
   @type t :: %__MODULE__{
-          red: value,
-          green: value,
-          blue: value
+          red: non_neg_integer,
+          green: non_neg_integer,
+          blue: non_neg_integer
         }
-
-  defguardp is_rgb_value(value) when is_integer(value) and value in 0..255
-
-  @doc """
-  Builds a new RGB color from a tuple.
-  """
-  @spec new({number, number, number}) :: t
-  def new({red, green, blue}) do
-    new(red, green, blue)
-  end
 
   @doc """
   Builds a new RGB color from red, green and green color values.
   """
-  @spec new(number, number, number) :: t
-  def new(red, green, blue)
-      when is_rgb_value(red) and is_rgb_value(green) and is_rgb_value(blue) do
-    %__MODULE__{red: red, green: green, blue: blue}
+  @spec new(Decimal.t() | number, Decimal.t() | number, Decimal.t() | number) ::
+          t
+  def new(red, green, blue) do
+    red = cast_integer(red)
+    green = cast_integer(green)
+    blue = cast_integer(blue)
+
+    with :ok <- check_value_in_range(red, @value_range),
+         :ok <- check_value_in_range(green, @value_range),
+         :ok <- check_value_in_range(blue, @value_range) do
+      %__MODULE__{red: red, green: green, blue: blue}
+    else
+      {:error, error} -> raise error
+    end
   end
+
+  defp cast_integer(%Decimal{} = value) do
+    value |> Decimal.round() |> Decimal.to_integer()
+  end
+
+  defp cast_integer(value) when is_integer(value), do: value
+  defp cast_integer(value) when is_float(value), do: trunc(value)
 
   @doc """
   Builds a new RGB color from the given hex code.
