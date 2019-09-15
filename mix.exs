@@ -17,7 +17,27 @@ defmodule Tint.MixProject do
         "coveralls.html": :test,
         "coveralls.travis": :test
       ],
-      dialyzer: [plt_add_apps: [:ex_unit, :mix]]
+      dialyzer: [plt_add_apps: [:ex_unit, :mix]],
+      description: description(),
+      package: package(),
+
+      # Docs
+      name: "Tint",
+      source_url: "https://github.com/tlux/tint",
+      docs: [
+        main: "readme",
+        extras: ["README.md"],
+        groups_for_modules: [
+          Colorspaces: [
+            Tint.HSV,
+            Tint.RGB
+          ],
+          "Conversion Protocols": [
+            Tint.HSV.Convertible,
+            Tint.RGB.Convertible
+          ]
+        ]
+      ]
     ]
   end
 
@@ -25,6 +45,10 @@ defmodule Tint.MixProject do
     [
       extra_applications: []
     ]
+  end
+
+  defp description do
+    "Elixir library to convert colors between different colorspaces."
   end
 
   defp deps do
@@ -40,4 +64,13 @@ defmodule Tint.MixProject do
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
+
+  defp package do
+    [
+      licenses: ["MIT"],
+      links: %{
+        "GitHub" => "https://github.com/tlux/tint"
+      }
+    ]
+  end
 end
