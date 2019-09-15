@@ -35,6 +35,25 @@ defmodule Tint.RGB do
   end
 
   @doc """
+  Converts a tuple containing hue, saturation and value into a `Tint.RGB`
+  struct.
+  """
+  @spec from_tuple(
+          {Decimal.t() | number, Decimal.t() | number, Decimal.t() | number}
+        ) :: t
+  def from_tuple({red, green, blue}) do
+    new(red, green, blue)
+  end
+
+  @doc """
+  Converts RGB color into a tuple containing the red, green and blue parts.
+  """
+  @spec to_tuple(t) :: {non_neg_integer, non_neg_integer, non_neg_integer}
+  def to_tuple(%__MODULE__{} = color) do
+    {color.red, color.green, color.blue}
+  end
+
+  @doc """
   Builds a new RGB color from red, green and blue color ratios.
   """
   @spec from_ratios(

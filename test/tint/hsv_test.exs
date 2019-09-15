@@ -6,7 +6,7 @@ defmodule Tint.HSVTest do
   alias Tint.RGB
 
   describe "new/1" do
-    test "success" do
+    test "build HSV color" do
       assert HSV.new(332.763, 0.94356, 0.4) == %HSV{
                hue: Decimal.new("332.7"),
                saturation: Decimal.new("0.943"),
@@ -64,7 +64,7 @@ defmodule Tint.HSVTest do
       assert HSV.from_tuple({332.763, 0.943, 0.4}) == HSV.new(332.7, 0.943, 0.4)
     end
 
-    test "raise when wrong arg given" do
+    test "raise when invalid arg given" do
       assert_raise FunctionClauseError, fn ->
         HSV.from_tuple({332.763, 0.943})
       end

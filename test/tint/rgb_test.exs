@@ -6,7 +6,7 @@ defmodule Tint.RGBTest do
   alias Tint.RGB
 
   describe "new/3" do
-    test "success" do
+    test "build RGB color" do
       for num <- 0..255 do
         assert RGB.new(num, 0, 0) == %RGB{red: num, green: 0, blue: 0}
 
@@ -61,6 +61,66 @@ defmodule Tint.RGBTest do
 
       assert_raise OutOfRangeError, fn ->
         RGB.new(0, 0, -1)
+      end
+    end
+  end
+
+  describe "from_tuple/1" do
+    test "convert tuple to RGB struct" do
+      assert RGB.from_tuple({123, 45, 67}) == RGB.new(123, 45, 67)
+    end
+
+    test "raise when invalid arg given" do
+      assert_raise FunctionClauseError, fn ->
+        RGB.from_tuple({332.763, 0.943})
+      end
+
+      assert_raise FunctionClauseError, fn ->
+        RGB.from_tuple(nil)
+      end
+    end
+  end
+
+  describe "to_tuple" do
+    test "get tuple" do
+      assert RGB.to_tuple(RGB.new(123, 45, 67)) == {123, 45, 67}
+    end
+  end
+
+  describe "from_ratios/3" do
+    test "build RGB color" do
+      assert RGB.from_ratios(0, 0, 0) == RGB.new(0, 0, 0)
+      assert RGB.from_ratios(1, 1, 1) == RGB.new(255, 255, 255)
+      assert RGB.from_ratios(0.5, 0.3, 0.2) == RGB.new(128, 77, 51)
+    end
+
+    test "raise when red part out of range" do
+      assert_raise OutOfRangeError, fn ->
+        RGB.from_ratios(-1, 0, 0)
+      end
+
+      assert_raise OutOfRangeError, fn ->
+        RGB.from_ratios(1.1, 0, 0)
+      end
+    end
+
+    test "raise when green part out of range" do
+      assert_raise OutOfRangeError, fn ->
+        RGB.from_ratios(0, -1, 0)
+      end
+
+      assert_raise OutOfRangeError, fn ->
+        RGB.from_ratios(0, 1.1, 0)
+      end
+    end
+
+    test "raise when blue part out of range" do
+      assert_raise OutOfRangeError, fn ->
+        RGB.from_ratios(0, 0, -1)
+      end
+
+      assert_raise OutOfRangeError, fn ->
+        RGB.from_ratios(0, 0, 1.1)
       end
     end
   end
