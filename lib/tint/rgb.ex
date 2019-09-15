@@ -121,9 +121,9 @@ defmodule Tint.RGB do
     alias Tint.HSV
 
     def to_hsv(rgb) do
-      red_ratio = Decimal.div(rgb.red, 255)
-      green_ratio = Decimal.div(rgb.green, 255)
-      blue_ratio = Decimal.div(rgb.blue, 255)
+      red_ratio = calc_ratio(rgb.red)
+      green_ratio = calc_ratio(rgb.green)
+      blue_ratio = calc_ratio(rgb.blue)
       rgb_ratios = [red_ratio, green_ratio, blue_ratio]
 
       min_ratio = Enum.reduce(rgb_ratios, &Decimal.min(&1, &2))
@@ -132,9 +132,12 @@ defmodule Tint.RGB do
 
       hue = calc_hue(ratio_delta, max_ratio, rgb_ratios)
       saturation = calc_saturation(ratio_delta, max_ratio)
-      value = calc_value(max_ratio)
 
-      HSV.new(hue, saturation, value)
+      HSV.new(hue, saturation, max_ratio)
+    end
+
+    defp calc_ratio(value) do
+      Decimal.div(value, 255)
     end
 
     defp calc_hue(ratio_delta, max_ratio, rgb_ratios) do
@@ -184,7 +187,5 @@ defmodule Tint.RGB do
         Decimal.div(ratio_delta, max_ratio)
       end
     end
-
-    defp calc_value(max_ratio), do: Decimal.div(max_ratio, 1)
   end
 end

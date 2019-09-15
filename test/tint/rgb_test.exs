@@ -210,28 +210,28 @@ defmodule Tint.RGBTest do
 
   describe "HSV.Convertible.to_hsv/1" do
     test "convert to HSV" do
-      assert HSV.Convertible.to_hsv(RGB.new(0, 0, 0)) ==
-               HSV.new(0, 0.0, 0.0)
+      conversions = [
+        {RGB.new(0, 0, 0), HSV.new(0, 0, 0)},
+        {RGB.new(255, 255, 255), HSV.new(0, 0, 1)},
+        {RGB.new(255, 0, 0), HSV.new(0, 1, 1)},
+        {RGB.new(0, 255, 0), HSV.new(120, 1, 1)},
+        {RGB.new(0, 0, 255), HSV.new(240, 1, 1)},
+        {RGB.new(255, 255, 0), HSV.new(60, 1, 1)},
+        {RGB.new(0, 255, 255), HSV.new(180, 1, 1)},
+        {RGB.new(255, 0, 255), HSV.new(300, 1, 1)},
+        {RGB.new(191, 191, 191), HSV.new(0, 0, 0.749)},
+        {RGB.new(128, 128, 128), HSV.new(0, 0, 0.501)},
+        {RGB.new(128, 0, 0), HSV.new(0, 1, 0.501)},
+        {RGB.new(128, 128, 0), HSV.new(60, 1, 0.501)},
+        {RGB.new(0, 128, 0), HSV.new(120, 1, 0.501)},
+        {RGB.new(128, 0, 128), HSV.new(300, 1, 0.501)},
+        {RGB.new(0, 128, 128), HSV.new(180, 1, 0.501)},
+        {RGB.new(0, 0, 128), HSV.new(240, 1, 0.501)}
+      ]
 
-      assert HSV.Convertible.to_hsv(RGB.new(255, 255, 255)) ==
-               HSV.new(0, 0.0, 1.0)
-
-      assert HSV.Convertible.to_hsv(RGB.new(255, 204, 0)) ==
-               HSV.new(48.0, 1.0, 1.0)
-
-      assert HSV.Convertible.to_hsv(RGB.new(138, 8, 67)) ==
-               HSV.new(
-                 Decimal.new("332.7"),
-                 Decimal.new("0.942"),
-                 Decimal.new("0.541")
-               )
-
-      assert HSV.Convertible.to_hsv(RGB.new(181, 200, 240)) ==
-               HSV.new(
-                 Decimal.new("220.6"),
-                 Decimal.new("0.245"),
-                 Decimal.new("0.941")
-               )
+      Enum.each(conversions, fn {rgb, hsv} ->
+        assert HSV.Convertible.to_hsv(rgb) == hsv
+      end)
     end
   end
 end
