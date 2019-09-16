@@ -58,7 +58,7 @@ defmodule Tint.MixProject do
       {:decimal, "~> 1.0"},
       {:excoveralls, "~> 0.10", only: :test},
       {:ex_doc, "~> 0.20.2", only: :dev, runtime: false},
-      {:inch_ex, only: :docs}
+      {:inch_ex, "~> 2.0", only: :docs}
     ]
   end
 
