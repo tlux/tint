@@ -7,6 +7,8 @@ defmodule Tint.SigilTest do
   alias Tint.OutOfRangeError
   alias Tint.RGB
 
+  doctest Tint.Sigil
+
   describe "hex code" do
     test "success" do
       assert ~K[#FFCC00] == RGB.from_hex!("#FFCC00")

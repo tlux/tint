@@ -81,6 +81,15 @@ defmodule Tint.HSVTest do
     end
   end
 
+  describe "Inspect.inspect/2" do
+    test "inspect" do
+      assert inspect(HSV.new(332.763, 0.943, 0.4)) ==
+               "#Tint.HSV<332.7°,94.3%,40%>"
+
+      assert inspect(HSV.new(332, 0.9, 0.4235)) == "#Tint.HSV<332°,90%,42.3%>"
+    end
+  end
+
   describe "HSV.Convertible.to_hsv/1" do
     test "convert to HSV" do
       colors = [

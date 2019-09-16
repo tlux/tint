@@ -21,7 +21,20 @@ defmodule Tint.RGB do
         }
 
   @doc """
-  Builds a new RGB color from red, green and blue color values.
+  Builds a new RGB color from red, green and blue color values. Please always
+  use this function to build a new RGB struct from red, green and blue color
+  components.
+
+  ## Examples
+
+      iex> Tint.RGB.new(0, 0, 0)
+      #Tint.RGB<0,0,0>
+
+      iex> Tint.RGB.new(255, 127, 30)
+      #Tint.RGB<255,127,30>
+
+      iex> Tint.RGB.new(256, -1, 0)
+      ** (Tint.OutOfRangeError) Value 256 is out of range [0,255]
   """
   @spec new(Decimal.t() | number, Decimal.t() | number, Decimal.t() | number) ::
           t
@@ -36,26 +49,73 @@ defmodule Tint.RGB do
   end
 
   @doc """
-  Converts a tuple containing hue, saturation and value into a `Tint.RGB`
-  struct.
+  Calculates the distance of two colors using the
+  [Euclidean distance](https://en.wikipedia.org/wiki/Euclidean_distance)
+  algorithm.
+
+  ## Options
+
+  * `:weights` - A tuple defining the weights for the red, green and blue color
+    components. Defaults to `{1, 1, 1}`.
   """
-  @spec from_tuple(
-          {Decimal.t() | number, Decimal.t() | number, Decimal.t() | number}
-        ) :: t
-  def from_tuple({red, green, blue}) do
-    new(red, green, blue)
+  @doc since: "0.2.0"
+  @spec euclidean_distance(t, Convertible.t()) :: float
+  def euclidean_distance(%__MODULE__{} = color, other_color, opts \\ []) do
+    other_color = Convertible.to_rgb(other_color)
+
+    {red_weight, green_weight, blue_weight} =
+      Keyword.get(opts, :weights, {1, 1, 1})
+
+    :math.sqrt(
+      red_weight * :math.pow(color.red - other_color.red, 2) +
+        green_weight * :math.pow(color.green - other_color.green, 2) +
+        blue_weight * :math.pow(color.blue - other_color.blue, 2)
+    )
   end
 
   @doc """
-  Converts RGB color into a tuple containing the red, green and blue parts.
+  Builds a new RGB color from the given hex code.
+
+  ## Examples
+
+      iex> Tint.RGB.from_hex("#FF7F1E")
+      {:ok, %Tint.RGB{red: 255, green: 127, blue: 30}}
+
+      iex> Tint.RGB.from_hex("invalid")
+      :error
   """
-  @spec to_tuple(t) :: {non_neg_integer, non_neg_integer, non_neg_integer}
-  def to_tuple(%__MODULE__{} = color) do
-    {color.red, color.green, color.blue}
+  @spec from_hex(String.t()) :: {:ok, t} | :error
+  def from_hex(code) do
+    HexCode.parse(code)
+  end
+
+  @doc """
+  Builds a new RGB color from the given hex code. Raises when the given hex code
+  is invalid.
+
+  ## Examples
+
+      iex> Tint.RGB.from_hex!("#FF7F1E")
+      #Tint.RGB<255,127,30>
+
+      iex> Tint.RGB.from_hex!("invalid")
+      ** (ArgumentError) Invalid hex code: invalid
+  """
+  @spec from_hex!(String.t()) :: t | no_return
+  def from_hex!(code) do
+    case from_hex(code) do
+      {:ok, color} -> color
+      :error -> raise ArgumentError, "Invalid hex code: #{code}"
+    end
   end
 
   @doc """
   Builds a new RGB color from red, green and blue color ratios.
+
+  ## Example
+
+      iex> Tint.RGB.from_ratios(1, 0.5, 0)
+      #Tint.RGB<255,128,0>
   """
   @spec from_ratios(
           Decimal.t() | number,
@@ -87,48 +147,19 @@ defmodule Tint.RGB do
   end
 
   @doc """
-  Builds a new RGB color from the given hex code.
+  Converts a tuple containing hue, saturation and value into a `Tint.RGB`
+  struct.
+
+  ## Example
+
+      iex> Tint.RGB.from_tuple({255, 127, 30})
+      #Tint.RGB<255,127,30>
   """
-  @spec from_hex(String.t()) :: {:ok, t} | :error
-  def from_hex(code) do
-    HexCode.parse(code)
-  end
-
-  @doc """
-  Builds a new RGB color from the given hex code. Raises when the given hex code
-  is invalid.
-  """
-  @spec from_hex!(String.t()) :: t | no_return
-  def from_hex!(code) do
-    case from_hex(code) do
-      {:ok, color} -> color
-      :error -> raise ArgumentError, "Invalid hex code: #{code}"
-    end
-  end
-
-  @doc """
-  Calculates the distance of two colors using the
-  [Euclidean distance](https://en.wikipedia.org/wiki/Euclidean_distance)
-  algorithm.
-
-  ## Options
-
-  * `:weights` - A tuple defining the weights for the red, green and blue color
-    components. Defaults to `{1, 1, 1}`.
-  """
-  @doc since: "0.2.0"
-  @spec euclidean_distance(t, Convertible.t()) :: float
-  def euclidean_distance(%__MODULE__{} = color, other_color, opts \\ []) do
-    other_color = Convertible.to_rgb(other_color)
-
-    {red_weight, green_weight, blue_weight} =
-      Keyword.get(opts, :weights, {1, 1, 1})
-
-    :math.sqrt(
-      red_weight * :math.pow(color.red - other_color.red, 2) +
-        green_weight * :math.pow(color.green - other_color.green, 2) +
-        blue_weight * :math.pow(color.blue - other_color.blue, 2)
-    )
+  @spec from_tuple(
+          {Decimal.t() | number, Decimal.t() | number, Decimal.t() | number}
+        ) :: t
+  def from_tuple({red, green, blue}) do
+    new(red, green, blue)
   end
 
   @doc """
@@ -171,10 +202,44 @@ defmodule Tint.RGB do
 
   @doc """
   Converts a RGB color to a hex code.
+
+  ## Example
+
+      iex> Tint.RGB.to_hex(%Tint.RGB{red: 255, green: 127, blue: 30})
+      "#FF7F1E"
   """
   @spec to_hex(t) :: String.t()
   def to_hex(%__MODULE__{} = color) do
     HexCode.serialize(color)
+  end
+
+  @doc """
+  Converts RGB color into a tuple containing the red, green and blue parts.
+
+  ## Example
+
+      iex> Tint.RGB.to_tuple(%Tint.RGB{red: 255, green: 127, blue: 30})
+      {255, 127, 30}
+  """
+  @spec to_tuple(t) :: {non_neg_integer, non_neg_integer, non_neg_integer}
+  def to_tuple(%__MODULE__{} = color) do
+    {color.red, color.green, color.blue}
+  end
+
+  defimpl Inspect do
+    import Inspect.Algebra
+
+    def inspect(color, opts) do
+      concat([
+        "#Tint.RGB<",
+        to_doc(color.red, opts),
+        ",",
+        to_doc(color.green, opts),
+        ",",
+        to_doc(color.blue, opts),
+        ">"
+      ])
+    end
   end
 
   defimpl Tint.RGB.Convertible do

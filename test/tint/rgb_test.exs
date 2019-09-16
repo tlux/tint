@@ -7,6 +7,8 @@ defmodule Tint.RGBTest do
   alias Tint.OutOfRangeError
   alias Tint.RGB
 
+  doctest Tint.RGB
+
   describe "new/3" do
     test "build RGB color" do
       for num <- 0..255 do
@@ -67,63 +69,42 @@ defmodule Tint.RGBTest do
     end
   end
 
-  describe "from_tuple/1" do
-    test "convert tuple to RGB struct" do
-      assert RGB.from_tuple({123, 45, 67}) == RGB.new(123, 45, 67)
-    end
-
-    test "raise when invalid arg given" do
-      assert_raise FunctionClauseError, fn ->
-        RGB.from_tuple({332.763, 0.943})
-      end
-
-      assert_raise FunctionClauseError, fn ->
-        RGB.from_tuple(nil)
-      end
+  describe "euclidean_distance/2" do
+    test "get Euclidean distance for two colors" do
+      assert RGB.euclidean_distance(~K[#FFCC00], ~K[#FCFFCC]) ==
+               RGB.euclidean_distance(~K[#FFCC00], ~K[#FCFFCC], [])
     end
   end
 
-  describe "to_tuple" do
-    test "get tuple" do
-      assert RGB.to_tuple(RGB.new(123, 45, 67)) == {123, 45, 67}
-    end
-  end
+  describe "euclidean_distance/3" do
+    test "get Euclidean distance for two colors" do
+      assert RGB.euclidean_distance(~K[#FFFFFF], ~K[#000000], []) ==
+               441.6729559300637
 
-  describe "from_ratios/3" do
-    test "build RGB color" do
-      assert RGB.from_ratios(0, 0, 0) == RGB.new(0, 0, 0)
-      assert RGB.from_ratios(1, 1, 1) == RGB.new(255, 255, 255)
-      assert RGB.from_ratios(0.5, 0.3, 0.2) == RGB.new(128, 77, 51)
-    end
+      assert RGB.euclidean_distance(~K[#FFFFFF], ~K[#000000], []) ==
+               RGB.euclidean_distance(~K[#FFFFFF], ~K[#000000],
+                 weight: {1, 1, 1}
+               )
 
-    test "raise when red part out of range" do
-      assert_raise OutOfRangeError, fn ->
-        RGB.from_ratios(-1, 0, 0)
-      end
+      assert RGB.euclidean_distance(~K[#FFFFFF], ~K[#000000], weights: {2, 4, 3}) ==
+               765.0
 
-      assert_raise OutOfRangeError, fn ->
-        RGB.from_ratios(1.1, 0, 0)
-      end
-    end
+      assert RGB.euclidean_distance(~K[#000000], ~K[#FFFFFF], []) ==
+               441.6729559300637
 
-    test "raise when green part out of range" do
-      assert_raise OutOfRangeError, fn ->
-        RGB.from_ratios(0, -1, 0)
-      end
+      assert RGB.euclidean_distance(~K[#000000], ~K[#FFFFFF], weights: {2, 4, 3}) ==
+               765.0
 
-      assert_raise OutOfRangeError, fn ->
-        RGB.from_ratios(0, 1.1, 0)
-      end
-    end
+      assert RGB.euclidean_distance(~K[#FF0000], ~K[#FC0000], []) == 3.0
 
-    test "raise when blue part out of range" do
-      assert_raise OutOfRangeError, fn ->
-        RGB.from_ratios(0, 0, -1)
-      end
+      assert RGB.euclidean_distance(~K[#FF0000], ~K[#FC0000], weights: {2, 4, 3}) ==
+               4.242640687119285
 
-      assert_raise OutOfRangeError, fn ->
-        RGB.from_ratios(0, 0, 1.1)
-      end
+      assert RGB.euclidean_distance(~K[#FFCC00], ~K[#FCFFCC], []) ==
+               210.2997860198626
+
+      assert RGB.euclidean_distance(~K[#FFCC00], ~K[#FCFFCC], weights: {2, 4, 3}) ==
+               367.7907013506459
     end
   end
 
@@ -184,42 +165,57 @@ defmodule Tint.RGBTest do
     end
   end
 
-  describe "euclidean_distance/2" do
-    test "get Euclidean distance for two colors" do
-      assert RGB.euclidean_distance(~K[#FFCC00], ~K[#FCFFCC]) ==
-               RGB.euclidean_distance(~K[#FFCC00], ~K[#FCFFCC], [])
+  describe "from_ratios/3" do
+    test "build RGB color" do
+      assert RGB.from_ratios(0, 0, 0) == RGB.new(0, 0, 0)
+      assert RGB.from_ratios(1, 1, 1) == RGB.new(255, 255, 255)
+      assert RGB.from_ratios(0.5, 0.3, 0.2) == RGB.new(128, 77, 51)
+    end
+
+    test "raise when red part out of range" do
+      assert_raise OutOfRangeError, fn ->
+        RGB.from_ratios(-1, 0, 0)
+      end
+
+      assert_raise OutOfRangeError, fn ->
+        RGB.from_ratios(1.1, 0, 0)
+      end
+    end
+
+    test "raise when green part out of range" do
+      assert_raise OutOfRangeError, fn ->
+        RGB.from_ratios(0, -1, 0)
+      end
+
+      assert_raise OutOfRangeError, fn ->
+        RGB.from_ratios(0, 1.1, 0)
+      end
+    end
+
+    test "raise when blue part out of range" do
+      assert_raise OutOfRangeError, fn ->
+        RGB.from_ratios(0, 0, -1)
+      end
+
+      assert_raise OutOfRangeError, fn ->
+        RGB.from_ratios(0, 0, 1.1)
+      end
     end
   end
 
-  describe "euclidean_distance/3" do
-    test "get Euclidean distance for two colors" do
-      assert RGB.euclidean_distance(~K[#FFFFFF], ~K[#000000], []) ==
-               441.6729559300637
+  describe "from_tuple/1" do
+    test "convert tuple to RGB struct" do
+      assert RGB.from_tuple({123, 45, 67}) == RGB.new(123, 45, 67)
+    end
 
-      assert RGB.euclidean_distance(~K[#FFFFFF], ~K[#000000], []) ==
-               RGB.euclidean_distance(~K[#FFFFFF], ~K[#000000],
-                 weight: {1, 1, 1}
-               )
+    test "raise when invalid arg given" do
+      assert_raise FunctionClauseError, fn ->
+        RGB.from_tuple({332.763, 0.943})
+      end
 
-      assert RGB.euclidean_distance(~K[#FFFFFF], ~K[#000000], weights: {2, 4, 3}) ==
-               765.0
-
-      assert RGB.euclidean_distance(~K[#000000], ~K[#FFFFFF], []) ==
-               441.6729559300637
-
-      assert RGB.euclidean_distance(~K[#000000], ~K[#FFFFFF], weights: {2, 4, 3}) ==
-               765.0
-
-      assert RGB.euclidean_distance(~K[#FF0000], ~K[#FC0000], []) == 3.0
-
-      assert RGB.euclidean_distance(~K[#FF0000], ~K[#FC0000], weights: {2, 4, 3}) ==
-               4.242640687119285
-
-      assert RGB.euclidean_distance(~K[#FFCC00], ~K[#FCFFCC], []) ==
-               210.2997860198626
-
-      assert RGB.euclidean_distance(~K[#FFCC00], ~K[#FCFFCC], weights: {2, 4, 3}) ==
-               367.7907013506459
+      assert_raise FunctionClauseError, fn ->
+        RGB.from_tuple(nil)
+      end
     end
   end
 
@@ -301,6 +297,18 @@ defmodule Tint.RGBTest do
       assert RGB.to_hex(RGB.new(255, 204, 0)) == "#FFCC00"
       assert RGB.to_hex(RGB.new(138, 8, 67)) == "#8A0843"
       assert RGB.to_hex(RGB.new(181, 200, 240)) == "#B5C8F0"
+    end
+  end
+
+  describe "to_tuple" do
+    test "get tuple" do
+      assert RGB.to_tuple(RGB.new(123, 45, 67)) == {123, 45, 67}
+    end
+  end
+
+  describe "Inspect.inspect/2" do
+    test "inspect" do
+      assert inspect(RGB.new(255, 127, 30)) == "#Tint.RGB<255,127,30>"
     end
   end
 

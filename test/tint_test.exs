@@ -4,6 +4,8 @@ defmodule TintTest do
   alias Tint.HSV
   alias Tint.RGB
 
+  doctest Tint
+
   describe "to_hsv/1" do
     test "convert color to HSV" do
       assert Tint.to_hsv(RGB.new(0, 50, 100)) == HSV.new(210, 1, 0.392)

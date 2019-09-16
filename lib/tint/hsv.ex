@@ -19,7 +19,14 @@ defmodule Tint.HSV do
         }
 
   @doc """
-  Builds a new HSV color from hue, saturation and value color parts.
+  Builds a new HSV color from hue, saturation and value color parts. Please
+  always use this function to build a new HSV struct from hue, saturation and
+  value color components.
+
+  ## Examples
+
+      iex> Tint.HSV.new(25.8, 0.882, 1)
+      #Tint.HSV<25.8°,88.2%,100%>
   """
   @spec new(Decimal.t() | number, Decimal.t() | number, Decimal.t() | number) ::
           t
@@ -57,6 +64,37 @@ defmodule Tint.HSV do
   def to_tuple(%__MODULE__{} = color) do
     {Decimal.to_float(color.hue), Decimal.to_float(color.saturation),
      Decimal.to_float(color.value)}
+  end
+
+  defimpl Inspect do
+    import Inspect.Algebra
+
+    def inspect(color, _opts) do
+      concat([
+        "#Tint.HSV<",
+        degrees_to_doc(color.hue),
+        ",",
+        percentage_to_doc(color.saturation),
+        ",",
+        percentage_to_doc(color.value),
+        ">"
+      ])
+    end
+
+    defp degrees_to_doc(value) do
+      value
+      |> Decimal.reduce()
+      |> Decimal.to_string(:normal)
+      |> Kernel.<>("°")
+    end
+
+    defp percentage_to_doc(value) do
+      value
+      |> Decimal.mult(100)
+      |> Decimal.reduce()
+      |> Decimal.to_string(:normal)
+      |> Kernel.<>("%")
+    end
   end
 
   defimpl Tint.HSV.Convertible do

@@ -24,17 +24,17 @@ defmodule Tint.Sigil do
   does:
 
       iex> ~K[#FFCC00]
-      %Tint.RGB{red: 255, green: 204, blue: 0}
+      #Tint.RGB<255,204,0>
 
   Or using the red, green and blue components using the `r` modifier.
 
       iex> ~K[255,204,0]r
-      %Tint.RGB{red: 255, green: 204, blue: 0}
+      #Tint.RGB<255,204,0>
 
   HSV colors are also supported using the `h` modifier.
 
       iex> ~K[48,1,1]h
-      %Tint.HSV{hue: ..., saturation: ..., value: ...}
+      #Tint.HSV<48°,100%,100%>
   """
   @spec sigil_K(String.t(), [char]) :: Tint.color()
   def sigil_K(str, []) do
