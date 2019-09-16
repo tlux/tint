@@ -14,6 +14,6 @@ defmodule Tint.OutOfRangeError do
 
   @impl true
   def message(exception) do
-    "value #{exception.orig_value} is out of range #{exception.interval}"
+    "Value #{exception.orig_value} is out of range #{exception.interval}"
   end
 end
