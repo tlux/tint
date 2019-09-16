@@ -1,6 +1,6 @@
 defmodule Tint.Sigil do
   @moduledoc """
-  A module providing a sigil to build colors in a certain colorspace.
+  A module providing a sigil to build colors.
   """
 
   alias Tint.HSV
