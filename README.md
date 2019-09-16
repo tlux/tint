@@ -8,8 +8,8 @@ Elixir library to convert colors between different colorspaces.
 
 ## Prerequisites
 
-* Erlang 20 or greater
-* Elixir 1.8 or greater
+-   Erlang 20 or greater
+-   Elixir 1.8 or greater
 
 ## Installation
 
@@ -19,7 +19,7 @@ by adding `tint` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:tint, "~> 0.1.0"}
+    {:tint, "~> 0.2"}
   ]
 end
 ```
@@ -33,9 +33,18 @@ hsv = Tint.to_hsv(yellow)
 Tint.RGB.to_hex(yellow)
 ```
 
+## Conversions
+
+Following are conversions that are currently possible with this library.
+
+-   Hex Triplet -> RGB
+-   RGB -> Hex Triplet
+-   RGB -> HSV
+-   HSV -> RGB
+
 ## Docs
 
 Documentation can be generated with
 [ExDoc](https://github.com/elixir-lang/ex_doc) and published on
 [HexDocs](https://hexdocs.pm). Once published, the docs can be found at
-[https://hexdocs.pm/tint](https://hexdocs.pm/tint).
+<https://hexdocs.pm/tint>.
