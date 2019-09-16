@@ -5,6 +5,7 @@ defmodule Tint.RGB do
 
   import Tint.Utils
 
+  alias Tint.RGB.Convertible
   alias Tint.RGB.HexCode
   alias Tint.Utils.Interval
 
@@ -103,6 +104,67 @@ defmodule Tint.RGB do
       {:ok, color} -> color
       :error -> raise ArgumentError, "Invalid hex code: #{code}"
     end
+  end
+
+  @doc """
+  Calculates the distance of two colors using the Euclidean distance algorithm.
+
+  ## Options
+
+  * `:weights` - A tuple defining the weights for the red, green and blue color
+    components. Defaults to `{1, 1, 1}`.
+  """
+  @doc since: "0.2.0"
+  @spec euclidean_distance(t, Convertible.t()) :: float
+  def euclidean_distance(%__MODULE__{} = color, other_color, opts \\ []) do
+    other_color = Convertible.to_rgb(other_color)
+
+    {red_weight, green_weight, blue_weight} =
+      Keyword.get(opts, :weights, {1, 1, 1})
+
+    :math.sqrt(
+      red_weight * :math.pow(color.red - other_color.red, 2) +
+        green_weight * :math.pow(color.green - other_color.green, 2) +
+        blue_weight * :math.pow(color.blue - other_color.blue, 2)
+    )
+  end
+
+  @doc """
+  A version of the Euclidean distance algorithm that uses weights that are
+  optimized for human color perception.
+  """
+  @doc since: "0.2.0"
+  @spec human_euclidean_distance(t, Convertible.t()) :: float
+  def human_euclidean_distance(%__MODULE__{} = color, other_color) do
+    weights =
+      if color.red < 128 do
+        {2, 4, 3}
+      else
+        {3, 4, 2}
+      end
+
+    euclidean_distance(color, other_color, weights: weights)
+  end
+
+  @doc """
+  Finds the nearest color for the specified color using the given color palette
+  and an optional distance algorithm.
+  """
+  @doc since: "0.2.0"
+  @spec nearest(t(), [Convertible.t()], (t, t -> number)) ::
+          nil | Convertible.t()
+  def nearest(
+        %__MODULE__{} = color,
+        palette,
+        distance_algorithm \\ &human_euclidean_distance/2
+      ) do
+    Enum.min_by(
+      palette,
+      fn other_color ->
+        distance_algorithm.(color, Convertible.to_rgb(other_color))
+      end,
+      fn -> nil end
+    )
   end
 
   @doc """
