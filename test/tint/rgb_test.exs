@@ -244,20 +244,16 @@ defmodule Tint.RGBTest do
         ~K[#333333]
       ]
 
-      assert RGB.nearest(~K[#FF0000], palette, algorithm) ==
-               ~K[#CC0000]
-
-      assert RGB.nearest(~K[#FFCC00], palette, algorithm) ==
-               ~K[#FF9900]
-
-      assert RGB.nearest(~K[#000000], palette, algorithm) ==
-               ~K[#333333]
-
-      assert RGB.nearest(~K[#10A110], palette, algorithm) ==
-               ~K[#00FF00]
-
-      assert RGB.nearest(~K[#0497D6], palette, algorithm) ==
-               ~K[#00CCFF]
+      assert RGB.nearest(~K[#000000], palette, algorithm) == ~K[#333333]
+      assert RGB.nearest(~K[#004CA8], palette, algorithm) == ~K[#000FFF]
+      assert RGB.nearest(~K[#0497D6], palette, algorithm) == ~K[#00CCFF]
+      assert RGB.nearest(~K[#094F6E], palette, algorithm) == ~K[#333333]
+      assert RGB.nearest(~K[#10A110], palette, algorithm) == ~K[#00FF00]
+      assert RGB.nearest(~K[#666666], palette, algorithm) == ~K[#333333]
+      assert RGB.nearest(~K[#FF0000], palette, algorithm) == ~K[#CC0000]
+      assert RGB.nearest(~K[#FFCC00], palette, algorithm) == ~K[#FF9900]
+      assert RGB.nearest(~K[#FFEC70], palette, algorithm) == ~K[#FCFF00]
+      assert RGB.nearest(~K[#FFFFFF], palette, algorithm) == ~K[#FCFF00]
     end
   end
 
