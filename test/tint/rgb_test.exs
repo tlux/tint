@@ -182,6 +182,79 @@ defmodule Tint.RGBTest do
     end
   end
 
+  describe "euclidean_distance/2" do
+    test "get Euclidean distance for two colors" do
+      assert RGB.euclidean_distance(
+               RGB.from_hex!("#FFFFFF"),
+               RGB.from_hex!("#000000")
+             ) == 441.6729559300637
+
+      assert RGB.euclidean_distance(
+               RGB.from_hex!("#000000"),
+               RGB.from_hex!("#FFFFFF")
+             ) == 441.6729559300637
+
+      assert RGB.euclidean_distance(
+               RGB.from_hex!("#FF0000"),
+               RGB.from_hex!("#FC0000")
+             ) == 3.0
+
+      assert RGB.euclidean_distance(
+               RGB.from_hex!("#FFCC00"),
+               RGB.from_hex!("#FCFFCC")
+             ) == 210.2997860198626
+    end
+  end
+
+  describe "euclidean_distance/3" do
+    # TODO
+  end
+
+  describe "nearest/2" do
+    test "is nil when palette is empty" do
+      color = RGB.from_hex!("#FF0000")
+
+      palette = [
+        RGB.from_hex!("#FCFF00"),
+        RGB.from_hex!("#CCFF00"),
+        RGB.from_hex!("#CC0000"),
+        RGB.from_hex!("#FC0000"),
+        RGB.from_hex!("#00CCFF"),
+        RGB.from_hex!("#000FFF")
+      ]
+
+      assert RGB.nearest(color, []) ==
+               RGB.nearest(color, [], &RGB.human_euclidean_distance/2)
+
+      assert RGB.nearest(color, palette) ==
+               RGB.nearest(color, palette, &RGB.human_euclidean_distance/2)
+    end
+  end
+
+  describe "nearest/3" do
+    test "is nil when palette is empty" do
+      color = RGB.from_hex!("#FF0000")
+
+      assert RGB.nearest(color, [], &RGB.human_euclidean_distance/2) == nil
+    end
+
+    test "get nearest color" do
+      color = RGB.from_hex!("#FF0000")
+
+      palette = [
+        RGB.from_hex!("#FCFF00"),
+        RGB.from_hex!("#CCFF00"),
+        RGB.from_hex!("#CC0000"),
+        RGB.from_hex!("#FC0000"),
+        RGB.from_hex!("#00CCFF"),
+        RGB.from_hex!("#000FFF")
+      ]
+
+      assert RGB.nearest(color, palette, &RGB.human_euclidean_distance/2) ==
+               RGB.from_hex!("#FC0000")
+    end
+  end
+
   describe "to_hex/1" do
     test "convert RGB color struct to hex code" do
       assert RGB.to_hex(RGB.new(0, 0, 0)) == "#000000"
