@@ -239,19 +239,32 @@ defmodule Tint.RGBTest do
     end
 
     test "get nearest color" do
-      color = RGB.from_hex!("#FF0000")
+      algorithm = &RGB.human_euclidean_distance/2
 
       palette = [
         RGB.from_hex!("#FCFF00"),
-        RGB.from_hex!("#CCFF00"),
+        RGB.from_hex!("#00FF00"),
         RGB.from_hex!("#CC0000"),
-        RGB.from_hex!("#FC0000"),
+        RGB.from_hex!("#FF9900"),
         RGB.from_hex!("#00CCFF"),
-        RGB.from_hex!("#000FFF")
+        RGB.from_hex!("#000FFF"),
+        RGB.from_hex!("#333333")
       ]
 
-      assert RGB.nearest(color, palette, &RGB.human_euclidean_distance/2) ==
-               RGB.from_hex!("#FC0000")
+      assert RGB.nearest(RGB.from_hex!("#FF0000"), palette, algorithm) ==
+               RGB.from_hex!("#CC0000")
+
+      assert RGB.nearest(RGB.from_hex!("#FFCC00"), palette, algorithm) ==
+               RGB.from_hex!("#FF9900")
+
+      assert RGB.nearest(RGB.from_hex!("#000000"), palette, algorithm) ==
+               RGB.from_hex!("#333333")
+
+      assert RGB.nearest(RGB.from_hex!("#10A110"), palette, algorithm) ==
+               RGB.from_hex!("#00FF00")
+
+      assert RGB.nearest(RGB.from_hex!("#0497D6"), palette, algorithm) ==
+               RGB.from_hex!("#00CCFF")
     end
   end
 
