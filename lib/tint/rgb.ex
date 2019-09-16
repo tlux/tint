@@ -107,7 +107,9 @@ defmodule Tint.RGB do
   end
 
   @doc """
-  Calculates the distance of two colors using the Euclidean distance algorithm.
+  Calculates the distance of two colors using the
+  [Euclidean distance](https://en.wikipedia.org/wiki/Euclidean_distance)
+  algorithm.
 
   ## Options
 

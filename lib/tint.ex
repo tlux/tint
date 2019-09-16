@@ -1,6 +1,7 @@
 defmodule Tint do
   @moduledoc """
-  a library to convert colors between different colorspaces.
+  A library allowing calculations with colors and conversions between different
+  colorspaces.
   """
 
   alias Tint.HSV

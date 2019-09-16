@@ -10,6 +10,31 @@ defmodule Tint.Sigil do
 
   @doc """
   A sigil to build a color.
+
+  The sigil identifier is `K` (try using "kolor" as mnemonic) because `C` is
+  already taken by the built-in charlist sigil.
+
+  ## Examples
+
+  First you need to import this particular module.
+
+      import Tint.Sigil
+
+  You can build a RGB color using a hex code, just like `Tint.RGB.from_hex/1`
+  does:
+
+      iex> ~K[#FFCC00]
+      %Tint.RGB{red: 255, green: 204, blue: 0}
+
+  Or using the red, green and blue components using the `r` modifier.
+
+      iex> ~K[255,204,0]r
+      %Tint.RGB{red: 255, green: 204, blue: 0}
+
+  HSV colors are also supported using the `h` modifier.
+
+      iex> ~K[48,1,1]h
+      %Tint.HSV{hue: ..., saturation: ..., value: ...}
   """
   @spec sigil_K(String.t(), [char]) :: Tint.color()
   def sigil_K(str, []) do
