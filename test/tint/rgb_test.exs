@@ -1,6 +1,8 @@
 defmodule Tint.RGBTest do
   use ExUnit.Case
 
+  import Tint.Sigil
+
   alias Tint.HSV
   alias Tint.OutOfRangeError
   alias Tint.RGB
@@ -184,25 +186,16 @@ defmodule Tint.RGBTest do
 
   describe "euclidean_distance/2" do
     test "get Euclidean distance for two colors" do
-      assert RGB.euclidean_distance(
-               RGB.from_hex!("#FFFFFF"),
-               RGB.from_hex!("#000000")
-             ) == 441.6729559300637
+      assert RGB.euclidean_distance(~K[#FFFFFF], ~K[#000000]) ==
+               441.6729559300637
 
-      assert RGB.euclidean_distance(
-               RGB.from_hex!("#000000"),
-               RGB.from_hex!("#FFFFFF")
-             ) == 441.6729559300637
+      assert RGB.euclidean_distance(~K[#000000], ~K[#FFFFFF]) ==
+               441.6729559300637
 
-      assert RGB.euclidean_distance(
-               RGB.from_hex!("#FF0000"),
-               RGB.from_hex!("#FC0000")
-             ) == 3.0
+      assert RGB.euclidean_distance(~K[#FF0000], ~K[#FC0000]) == 3.0
 
-      assert RGB.euclidean_distance(
-               RGB.from_hex!("#FFCC00"),
-               RGB.from_hex!("#FCFFCC")
-             ) == 210.2997860198626
+      assert RGB.euclidean_distance(~K[#FFCC00], ~K[#FCFFCC]) ==
+               210.2997860198626
     end
   end
 
@@ -212,15 +205,15 @@ defmodule Tint.RGBTest do
 
   describe "nearest/2" do
     test "is nil when palette is empty" do
-      color = RGB.from_hex!("#FF0000")
+      color = ~K[#FF0000]
 
       palette = [
-        RGB.from_hex!("#FCFF00"),
-        RGB.from_hex!("#CCFF00"),
-        RGB.from_hex!("#CC0000"),
-        RGB.from_hex!("#FC0000"),
-        RGB.from_hex!("#00CCFF"),
-        RGB.from_hex!("#000FFF")
+        ~K[#FCFF00],
+        ~K[#CCFF00],
+        ~K[#CC0000],
+        ~K[#FC0000],
+        ~K[#00CCFF],
+        ~K[#000FFF]
       ]
 
       assert RGB.nearest(color, []) ==
@@ -233,7 +226,7 @@ defmodule Tint.RGBTest do
 
   describe "nearest/3" do
     test "is nil when palette is empty" do
-      color = RGB.from_hex!("#FF0000")
+      color = ~K[#FF0000]
 
       assert RGB.nearest(color, [], &RGB.human_euclidean_distance/2) == nil
     end
@@ -242,29 +235,29 @@ defmodule Tint.RGBTest do
       algorithm = &RGB.human_euclidean_distance/2
 
       palette = [
-        RGB.from_hex!("#FCFF00"),
-        RGB.from_hex!("#00FF00"),
-        RGB.from_hex!("#CC0000"),
-        RGB.from_hex!("#FF9900"),
-        RGB.from_hex!("#00CCFF"),
-        RGB.from_hex!("#000FFF"),
-        RGB.from_hex!("#333333")
+        ~K[#FCFF00],
+        ~K[#00FF00],
+        ~K[#CC0000],
+        ~K[#FF9900],
+        ~K[#00CCFF],
+        ~K[#000FFF],
+        ~K[#333333]
       ]
 
-      assert RGB.nearest(RGB.from_hex!("#FF0000"), palette, algorithm) ==
-               RGB.from_hex!("#CC0000")
+      assert RGB.nearest(~K[#FF0000], palette, algorithm) ==
+               ~K[#CC0000]
 
-      assert RGB.nearest(RGB.from_hex!("#FFCC00"), palette, algorithm) ==
-               RGB.from_hex!("#FF9900")
+      assert RGB.nearest(~K[#FFCC00], palette, algorithm) ==
+               ~K[#FF9900]
 
-      assert RGB.nearest(RGB.from_hex!("#000000"), palette, algorithm) ==
-               RGB.from_hex!("#333333")
+      assert RGB.nearest(~K[#000000], palette, algorithm) ==
+               ~K[#333333]
 
-      assert RGB.nearest(RGB.from_hex!("#10A110"), palette, algorithm) ==
-               RGB.from_hex!("#00FF00")
+      assert RGB.nearest(~K[#10A110], palette, algorithm) ==
+               ~K[#00FF00]
 
-      assert RGB.nearest(RGB.from_hex!("#0497D6"), palette, algorithm) ==
-               RGB.from_hex!("#00CCFF")
+      assert RGB.nearest(~K[#0497D6], palette, algorithm) ==
+               ~K[#00CCFF]
     end
   end
 
