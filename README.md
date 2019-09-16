@@ -4,7 +4,8 @@
 [![Coverage Status](https://coveralls.io/repos/github/tlux/tint/badge.svg?branch=master)](https://coveralls.io/github/tlux/tint?branch=master)
 [![Hex.pm](https://img.shields.io/hexpm/v/tint.svg)](https://hex.pm/packages/tint)
 
-Elixir library to convert colors between different colorspaces.
+A library allowing calculations with colors and conversions between different
+colorspaces.
 
 ## Prerequisites
 
