@@ -20,8 +20,7 @@ defmodule Tint.HSV do
 
   @doc """
   Builds a new HSV color from hue, saturation and value color parts. Please
-  always use this function to build a new HSV struct from hue, saturation and
-  value color components.
+  always use this function to build a new HSV color.
 
   ## Examples
 
