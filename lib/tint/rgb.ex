@@ -22,8 +22,7 @@ defmodule Tint.RGB do
 
   @doc """
   Builds a new RGB color from red, green and blue color values. Please always
-  use this function to build a new RGB struct from red, green and blue color
-  components.
+  use this function to build a new RGB color.
 
   ## Examples
 
