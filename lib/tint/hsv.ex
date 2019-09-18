@@ -59,50 +59,43 @@ defmodule Tint.HSV do
 
   defimpl Inspect do
     import Inspect.Algebra
+    import Tint.Utils.Formatter
 
     def inspect(color, _opts) do
       concat([
         "#Tint.HSV<",
-        degrees_to_doc(color.hue),
+        format_degrees(color.hue),
         ",",
-        percentage_to_doc(color.saturation),
+        format_percentage(color.saturation),
         ",",
-        percentage_to_doc(color.value),
+        format_percentage(color.value),
         ">"
       ])
     end
+  end
 
-    defp degrees_to_doc(value) do
-      value
-      |> Decimal.reduce()
-      |> Decimal.to_string(:normal)
-      |> Kernel.<>("°")
-    end
-
-    defp percentage_to_doc(value) do
-      value
-      |> Decimal.mult(100)
-      |> Decimal.reduce()
-      |> Decimal.to_string(:normal)
-      |> Kernel.<>("%")
+  defimpl Tint.CMYK.Convertible do
+    def to_cmyk(color) do
+      color
+      |> Tint.to_rgb()
+      |> Tint.to_cmyk()
     end
   end
 
   defimpl Tint.HSV.Convertible do
-    def to_hsv(hsv), do: hsv
+    def to_hsv(color), do: color
   end
 
   defimpl Tint.RGB.Convertible do
     alias Tint.RGB
     alias Tint.Utils.Interval
 
-    def to_rgb(hsv) do
-      c = Decimal.mult(hsv.saturation, hsv.value)
-      x = Decimal.mult(c, calc_x_part(hsv.hue))
-      m = Decimal.sub(hsv.value, c)
+    def to_rgb(color) do
+      c = Decimal.mult(color.saturation, color.value)
+      x = Decimal.mult(c, calc_x_part(color.hue))
+      m = Decimal.sub(color.value, c)
 
-      {red_ratio, green_ratio, blue_ratio} = calc_ratios(hsv.hue, c, x)
-
+      {red_ratio, green_ratio, blue_ratio} = calc_ratios(color.hue, c, x)
       red = calc_value(red_ratio, m)
       green = calc_value(green_ratio, m)
       blue = calc_value(blue_ratio, m)

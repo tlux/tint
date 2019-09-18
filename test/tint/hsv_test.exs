@@ -1,6 +1,7 @@
 defmodule Tint.HSVTest do
   use ExUnit.Case, async: true
 
+  alias Tint.CMYK
   alias Tint.HSV
   alias Tint.OutOfRangeError
   alias Tint.RGB
@@ -13,8 +14,14 @@ defmodule Tint.HSVTest do
                value: Decimal.new("0.400")
              }
 
-      assert HSV.new(332.763, 0.9, 0.4343) == %HSV{
+      assert HSV.new("332.763", "0.94356", "0.4343") == %HSV{
                hue: Decimal.new("332.7"),
+               saturation: Decimal.new("0.943"),
+               value: Decimal.new("0.434")
+             }
+
+      assert HSV.new(332, Decimal.new("0.9"), "0.4343") == %HSV{
+               hue: Decimal.new("332.0"),
                saturation: Decimal.new("0.900"),
                value: Decimal.new("0.434")
              }
@@ -90,6 +97,33 @@ defmodule Tint.HSVTest do
     end
   end
 
+  describe "CMYK.Convertible.to_cmyk/1" do
+    test "convert to CMYK" do
+      conversions = [
+        {HSV.new(0, 0, 0), CMYK.new(0, 0, 0, 1)},
+        {HSV.new(0, 0, 1), CMYK.new(0, 0, 0, 0)},
+        {HSV.new(0, 1, 1), CMYK.new(0, 1, 1, 0)},
+        {HSV.new(120, 1, 1), CMYK.new(1, 0, 1, 0)},
+        {HSV.new(240, 1, 1), CMYK.new(1, 1, 0, 0)},
+        {HSV.new(60, 1, 1), CMYK.new(0, 0, 1, 0)},
+        {HSV.new(180, 1, 1), CMYK.new(1, 0, 0, 0)},
+        {HSV.new(300, 1, 1), CMYK.new(0, 1, 0, 0)},
+        {HSV.new(0, 0, 0.749), CMYK.new(0, 0, 0, "0.25")},
+        {HSV.new(0, 0, 0.501), CMYK.new(0, 0, 0, "0.498")},
+        {HSV.new(0, 1, 0.501), CMYK.new(0, 1, 1, "0.498")},
+        {HSV.new(60, 1, 0.501), CMYK.new(0, 0, 1, "0.498")},
+        {HSV.new(120, 1, 0.501), CMYK.new(1, 0, 1, "0.498")},
+        {HSV.new(300, 1, 0.501), CMYK.new(0, 1, 0, "0.498")},
+        {HSV.new(180, 1, 0.501), CMYK.new(1, 0, 0, "0.498")},
+        {HSV.new(240, 1, 0.501), CMYK.new(1, 1, 0, "0.498")}
+      ]
+
+      Enum.each(conversions, fn {hsv, cmyk} ->
+        assert CMYK.Convertible.to_cmyk(hsv) == cmyk
+      end)
+    end
+  end
+
   describe "HSV.Convertible.to_hsv/1" do
     test "convert to HSV" do
       colors = [
@@ -117,25 +151,25 @@ defmodule Tint.HSVTest do
   describe "RGB.Convertible.to_rgb/1" do
     test "convert to RGB" do
       conversions = [
-        {RGB.new(0, 0, 0), HSV.new(0, 0, 0)},
-        {RGB.new(255, 255, 255), HSV.new(0, 0, 1)},
-        {RGB.new(255, 0, 0), HSV.new(0, 1, 1)},
-        {RGB.new(0, 255, 0), HSV.new(120, 1, 1)},
-        {RGB.new(0, 0, 255), HSV.new(240, 1, 1)},
-        {RGB.new(255, 255, 0), HSV.new(60, 1, 1)},
-        {RGB.new(0, 255, 255), HSV.new(180, 1, 1)},
-        {RGB.new(255, 0, 255), HSV.new(300, 1, 1)},
-        {RGB.new(191, 191, 191), HSV.new(0, 0, 0.75)},
-        {RGB.new(128, 128, 128), HSV.new(0, 0, 0.5)},
-        {RGB.new(128, 0, 0), HSV.new(0, 1, 0.5)},
-        {RGB.new(128, 128, 0), HSV.new(60, 1, 0.5)},
-        {RGB.new(0, 128, 0), HSV.new(120, 1, 0.5)},
-        {RGB.new(128, 0, 128), HSV.new(300, 1, 0.5)},
-        {RGB.new(0, 128, 128), HSV.new(180, 1, 0.5)},
-        {RGB.new(0, 0, 128), HSV.new(240, 1, 0.5)}
+        {HSV.new(0, 0, 0), RGB.new(0, 0, 0)},
+        {HSV.new(0, 0, 1), RGB.new(255, 255, 255)},
+        {HSV.new(0, 1, 1), RGB.new(255, 0, 0)},
+        {HSV.new(120, 1, 1), RGB.new(0, 255, 0)},
+        {HSV.new(240, 1, 1), RGB.new(0, 0, 255)},
+        {HSV.new(60, 1, 1), RGB.new(255, 255, 0)},
+        {HSV.new(180, 1, 1), RGB.new(0, 255, 255)},
+        {HSV.new(300, 1, 1), RGB.new(255, 0, 255)},
+        {HSV.new(0, 0, "0.75"), RGB.new(191, 191, 191)},
+        {HSV.new(0, 0, "0.5"), RGB.new(128, 128, 128)},
+        {HSV.new(0, 1, "0.5"), RGB.new(128, 0, 0)},
+        {HSV.new(60, 1, "0.5"), RGB.new(128, 128, 0)},
+        {HSV.new(120, 1, "0.5"), RGB.new(0, 128, 0)},
+        {HSV.new(300, 1, "0.5"), RGB.new(128, 0, 128)},
+        {HSV.new(180, 1, "0.5"), RGB.new(0, 128, 128)},
+        {HSV.new(240, 1, "0.5"), RGB.new(0, 0, 128)}
       ]
 
-      Enum.each(conversions, fn {rgb, hsv} ->
+      Enum.each(conversions, fn {hsv, rgb} ->
         assert RGB.Convertible.to_rgb(hsv) == rgb
       end)
     end

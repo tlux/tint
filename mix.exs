@@ -29,10 +29,12 @@ defmodule Tint.MixProject do
         extras: ["README.md"],
         groups_for_modules: [
           Colorspaces: [
+            Tint.CMYK,
             Tint.HSV,
             Tint.RGB
           ],
           "Conversion Protocols": [
+            Tint.CMYK.Convertible,
             Tint.HSV.Convertible,
             Tint.RGB.Convertible
           ]

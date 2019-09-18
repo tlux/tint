@@ -206,6 +206,17 @@ defmodule Tint.RGB do
   end
 
   @doc """
+  Builds a tuple containing the ratios of the red, green and blue components of
+  a given color.
+  """
+  @spec to_ratios(t) :: {Decimal.t(), Decimal.t(), Decimal.t()}
+  def to_ratios(%__MODULE__{} = color) do
+    {calc_ratio(color.red), calc_ratio(color.green), calc_ratio(color.blue)}
+  end
+
+  defp calc_ratio(value), do: Decimal.div(value, 255)
+
+  @doc """
   Converts RGB color into a tuple containing the red, green and blue parts.
 
   ## Example
@@ -221,44 +232,63 @@ defmodule Tint.RGB do
   defimpl Inspect do
     import Inspect.Algebra
 
-    def inspect(color, opts) do
+    def inspect(rgb, opts) do
       concat([
         "#Tint.RGB<",
-        to_doc(color.red, opts),
+        to_doc(rgb.red, opts),
         ",",
-        to_doc(color.green, opts),
+        to_doc(rgb.green, opts),
         ",",
-        to_doc(color.blue, opts),
+        to_doc(rgb.blue, opts),
         ">"
       ])
     end
   end
 
-  defimpl Tint.RGB.Convertible do
-    def to_rgb(rgb), do: rgb
+  defimpl Tint.CMYK.Convertible do
+    alias Tint.CMYK
+    alias Tint.RGB
+
+    def to_cmyk(%{red: 0, green: 0, blue: 0}) do
+      CMYK.new(0, 0, 0, 1)
+    end
+
+    def to_cmyk(color) do
+      {red_ratio, green_ratio, blue_ratio} = RGB.to_ratios(color)
+
+      max_ratio =
+        Enum.reduce([red_ratio, green_ratio, blue_ratio], &Decimal.max/2)
+
+      key = Decimal.sub(1, max_ratio)
+      cyan = calc_value(key, red_ratio)
+      magenta = calc_value(key, green_ratio)
+      yellow = calc_value(key, blue_ratio)
+
+      CMYK.new(cyan, magenta, yellow, key)
+    end
+
+    defp calc_value(key, ratio) do
+      dividend = 1 |> Decimal.sub(ratio) |> Decimal.sub(key)
+      divisor = Decimal.sub(1, key)
+      Decimal.div(dividend, divisor)
+    end
   end
 
   defimpl Tint.HSV.Convertible do
     alias Tint.HSV
+    alias Tint.RGB
 
-    def to_hsv(rgb) do
-      red_ratio = calc_ratio(rgb.red)
-      green_ratio = calc_ratio(rgb.green)
-      blue_ratio = calc_ratio(rgb.blue)
-      rgb_ratios = [red_ratio, green_ratio, blue_ratio]
-
-      min_ratio = Enum.reduce(rgb_ratios, &Decimal.min(&1, &2))
-      max_ratio = Enum.reduce(rgb_ratios, &Decimal.max(&1, &2))
+    def to_hsv(color) do
+      rgb_ratios = RGB.to_ratios(color)
+      rgb_ratio_list = Tuple.to_list(rgb_ratios)
+      min_ratio = Enum.reduce(rgb_ratio_list, &Decimal.min(&1, &2))
+      max_ratio = Enum.reduce(rgb_ratio_list, &Decimal.max(&1, &2))
       ratio_delta = Decimal.sub(max_ratio, min_ratio)
 
       hue = calc_hue(ratio_delta, max_ratio, rgb_ratios)
       saturation = calc_saturation(ratio_delta, max_ratio)
 
       HSV.new(hue, saturation, max_ratio)
-    end
-
-    defp calc_ratio(value) do
-      Decimal.div(value, 255)
     end
 
     defp calc_hue(ratio_delta, max_ratio, rgb_ratios) do
@@ -271,11 +301,11 @@ defmodule Tint.RGB do
       end
     end
 
-    defp do_calc_hue(ratio_delta, max_ratio, [
+    defp do_calc_hue(ratio_delta, max_ratio, {
            red_ratio,
            green_ratio,
            blue_ratio
-         ]) do
+         }) do
       cond do
         Decimal.eq?(ratio_delta, 0) ->
           Decimal.new(0)
@@ -308,5 +338,9 @@ defmodule Tint.RGB do
         Decimal.div(ratio_delta, max_ratio)
       end
     end
+  end
+
+  defimpl Tint.RGB.Convertible do
+    def to_rgb(color), do: color
   end
 end

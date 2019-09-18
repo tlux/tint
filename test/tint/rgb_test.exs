@@ -3,6 +3,7 @@ defmodule Tint.RGBTest do
 
   import Tint.Sigil
 
+  alias Tint.CMYK
   alias Tint.HSV
   alias Tint.OutOfRangeError
   alias Tint.RGB
@@ -312,18 +313,29 @@ defmodule Tint.RGBTest do
     end
   end
 
-  describe "RGB.Convertible.to_rgb/1" do
-    test "convert to RGB" do
-      colors = [
-        RGB.new(0, 0, 0),
-        RGB.new(255, 255, 255),
-        RGB.new(255, 204, 0),
-        RGB.new(138, 8, 67),
-        RGB.new(181, 200, 240)
+  describe "CMYK.Convertible.to_cmyk/1" do
+    test "convert to CMYK" do
+      conversions = [
+        {RGB.new(0, 0, 0), CMYK.new(0, 0, 0, 1)},
+        {RGB.new(255, 255, 255), CMYK.new(0, 0, 0, 0)},
+        {RGB.new(255, 0, 0), CMYK.new(0, 1, 1, 0)},
+        {RGB.new(0, 255, 0), CMYK.new(1, 0, 1, 0)},
+        {RGB.new(0, 0, 255), CMYK.new(1, 1, 0, 0)},
+        {RGB.new(255, 255, 0), CMYK.new(0, 0, 1, 0)},
+        {RGB.new(0, 255, 255), CMYK.new(1, 0, 0, 0)},
+        {RGB.new(255, 0, 255), CMYK.new(0, 1, 0, 0)},
+        {RGB.new(191, 191, 191), CMYK.new(0, 0, 0, "0.25")},
+        {RGB.new(128, 128, 128), CMYK.new(0, 0, 0, "0.498")},
+        {RGB.new(128, 0, 0), CMYK.new(0, 1, 1, "0.498")},
+        {RGB.new(128, 128, 0), CMYK.new(0, 0, 1, "0.498")},
+        {RGB.new(0, 128, 0), CMYK.new(1, 0, 1, "0.498")},
+        {RGB.new(128, 0, 128), CMYK.new(0, 1, 0, "0.498")},
+        {RGB.new(0, 128, 128), CMYK.new(1, 0, 0, "0.498")},
+        {RGB.new(0, 0, 128), CMYK.new(1, 1, 0, "0.498")}
       ]
 
-      Enum.each(colors, fn color ->
-        assert RGB.Convertible.to_rgb(color) == color
+      Enum.each(conversions, fn {rgb, cmyk} ->
+        assert CMYK.Convertible.to_cmyk(rgb) == cmyk
       end)
     end
   end
@@ -351,6 +363,22 @@ defmodule Tint.RGBTest do
 
       Enum.each(conversions, fn {rgb, hsv} ->
         assert HSV.Convertible.to_hsv(rgb) == hsv
+      end)
+    end
+  end
+
+  describe "RGB.Convertible.to_rgb/1" do
+    test "convert to RGB" do
+      colors = [
+        RGB.new(0, 0, 0),
+        RGB.new(255, 255, 255),
+        RGB.new(255, 204, 0),
+        RGB.new(138, 8, 67),
+        RGB.new(181, 200, 240)
+      ]
+
+      Enum.each(colors, fn color ->
+        assert RGB.Convertible.to_rgb(color) == color
       end)
     end
   end
