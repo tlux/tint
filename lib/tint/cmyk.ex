@@ -45,8 +45,8 @@ defmodule Tint.CMYK do
   end
 
   @doc """
-  Converts a tuple containing hue, saturation and value into a `Tint.CMYK`
-  struct.
+  Converts a tuple containing cyan, magenta, yellow and key color parts into a 
+  `Tint.CMYK` struct.
   """
   @spec from_tuple({
           Decimal.t() | number,
