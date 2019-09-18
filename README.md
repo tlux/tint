@@ -72,6 +72,11 @@ iex> Tint.RGB.from_hex("invalid hex code")
 :error
 ```
 
+```elixir
+iex> Tint.RGB.to_hex(Tint.RGB.new(255, 0, 0))
+"#FF0000"
+```
+
 ## Docs
 
 Documentation can be generated with
