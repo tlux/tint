@@ -12,8 +12,7 @@ Currently supports the [RGB](https://en.wikipedia.org/wiki/RGB_color_space),
 
 ## Prerequisites
 
--   Erlang 20 or greater
--   Elixir 1.8 or greater
+-   Elixir 1.7 or greater
 
 ## Installation
 
