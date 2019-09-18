@@ -9,9 +9,6 @@ defmodule Tint.HSV do
 
   defstruct [:hue, :saturation, :value]
 
-  @deg_interval Interval.new(0, 360, exclude_max: true)
-  @ratio_interval Interval.new(0, 1)
-
   @type t :: %__MODULE__{
           hue: Decimal.t(),
           saturation: Decimal.t(),
@@ -30,15 +27,10 @@ defmodule Tint.HSV do
   @spec new(Decimal.t() | number, Decimal.t() | number, Decimal.t() | number) ::
           t
   def new(hue, saturation, value) do
-    with {:ok, hue} <- check_and_cast_value(:decimal, hue, @deg_interval),
-         {:ok, saturation} <-
-           check_and_cast_value(:decimal, saturation, @ratio_interval),
-         {:ok, value} <- check_and_cast_value(:decimal, value, @ratio_interval) do
-      %__MODULE__{
-        hue: Decimal.round(hue, 1, :floor),
-        saturation: Decimal.round(saturation, 3, :floor),
-        value: Decimal.round(value, 3, :floor)
-      }
+    with {:ok, hue} <- cast_degrees(hue),
+         {:ok, saturation} <- cast_ratio(saturation),
+         {:ok, value} <- cast_ratio(value) do
+      %__MODULE__{hue: hue, saturation: saturation, value: value}
     else
       {:error, error} -> raise error
     end

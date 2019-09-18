@@ -7,12 +7,8 @@ defmodule Tint.RGB do
 
   alias Tint.RGB.Convertible
   alias Tint.RGB.HexCode
-  alias Tint.Utils.Interval
 
   defstruct [:red, :green, :blue]
-
-  @value_interval Interval.new(0, 255)
-  @ratio_interval Interval.new(0, 1)
 
   @type t :: %__MODULE__{
           red: non_neg_integer,
@@ -38,9 +34,9 @@ defmodule Tint.RGB do
   @spec new(Decimal.t() | number, Decimal.t() | number, Decimal.t() | number) ::
           t
   def new(red, green, blue) do
-    with {:ok, red} <- check_and_cast_value(:integer, red, @value_interval),
-         {:ok, green} <- check_and_cast_value(:integer, green, @value_interval),
-         {:ok, blue} <- check_and_cast_value(:integer, blue, @value_interval) do
+    with {:ok, red} <- cast_component(red),
+         {:ok, green} <- cast_component(green),
+         {:ok, blue} <- cast_component(blue) do
       %__MODULE__{red: red, green: green, blue: blue}
     else
       {:error, error} -> raise error
@@ -122,12 +118,9 @@ defmodule Tint.RGB do
           Decimal.t() | number
         ) :: t
   def from_ratios(red_ratio, green_ratio, blue_ratio) do
-    with {:ok, red_ratio} <-
-           check_and_cast_value(:decimal, red_ratio, @ratio_interval),
-         {:ok, green_ratio} <-
-           check_and_cast_value(:decimal, green_ratio, @ratio_interval),
-         {:ok, blue_ratio} <-
-           check_and_cast_value(:decimal, blue_ratio, @ratio_interval) do
+    with {:ok, red_ratio} <- cast_ratio(red_ratio),
+         {:ok, green_ratio} <- cast_ratio(green_ratio),
+         {:ok, blue_ratio} <- cast_ratio(blue_ratio) do
       %__MODULE__{
         red: ratio_to_value(red_ratio),
         green: ratio_to_value(green_ratio),
