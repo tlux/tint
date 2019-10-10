@@ -12,12 +12,12 @@ Currently supports the [RGB](https://en.wikipedia.org/wiki/RGB_color_space),
 
 ## Prerequisites
 
--   Elixir 1.7 or greater
+- Elixir 1.7 or greater
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `tint` to your list of dependencies in `mix.exs`:
+The package can be installed by adding `tint` to your list of dependencies in
+`mix.exs`:
 
 ```elixir
 def deps do
@@ -79,7 +79,4 @@ iex> Tint.RGB.to_hex(Tint.RGB.new(255, 0, 0))
 
 ## Docs
 
-Documentation can be generated with
-[ExDoc](https://github.com/elixir-lang/ex_doc) and published on
-[HexDocs](https://hexdocs.pm). The docs can be found at
-<https://hexdocs.pm/tint>.
+The API docs can be found at [HexDocs](https://hexdocs.pm/tint).
