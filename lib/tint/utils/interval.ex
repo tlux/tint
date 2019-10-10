@@ -46,18 +46,18 @@ defmodule Tint.Utils.Interval do
   defimpl String.Chars do
     def to_string(interval) do
       Enum.join([
-        start_bound_sym(interval.exclude_min),
+        start_token(interval.exclude_min),
         interval.min,
         ",",
         interval.max,
-        end_bound_sym(!interval.exclude_max)
+        end_token(interval.exclude_max)
       ])
     end
 
-    defp start_bound_sym(true), do: "("
-    defp start_bound_sym(false), do: "["
+    defp start_token(true), do: "("
+    defp start_token(false), do: "["
 
-    defp end_bound_sym(true), do: "]"
-    defp end_bound_sym(false), do: ")"
+    defp end_token(true), do: ")"
+    defp end_token(false), do: "]"
   end
 end
