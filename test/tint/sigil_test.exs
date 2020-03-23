@@ -3,6 +3,7 @@ defmodule Tint.SigilTest do
 
   import Tint.Sigil
 
+  alias Tint.CMYK
   alias Tint.HSV
   alias Tint.OutOfRangeError
   alias Tint.RGB
@@ -71,6 +72,33 @@ defmodule Tint.SigilTest do
                    "Invalid number of args: 2 (expected 3)",
                    fn ->
                      ~K(255,1)h
+                   end
+    end
+  end
+
+  describe "CMYK color" do
+    test "success" do
+      assert ~K(0.06,0.32,0.8846,0.23)c == CMYK.new(0.06, 0.32, 0.8846, 0.23)
+      assert ~K(0.06, 0.32, 0.8846, 0.23)c == CMYK.new(0.06, 0.32, 0.8846, 0.23)
+    end
+
+    test "error when value out of range" do
+      assert_raise OutOfRangeError, "Value 2 is out of range [0,1]", fn ->
+        ~K(0.06,0.32,2,0.23)c
+      end
+    end
+
+    test "raise when invalid number of args" do
+      assert_raise ArgumentError,
+                   "Invalid number of args: 5 (expected 4)",
+                   fn ->
+                     ~K(0.06,0.32,0.8846,0.23,1)c
+                   end
+
+      assert_raise ArgumentError,
+                   "Invalid number of args: 3 (expected 4)",
+                   fn ->
+                     ~K(0.06,0.32,0.8846)c
                    end
     end
   end
