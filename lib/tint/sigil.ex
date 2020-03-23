@@ -3,6 +3,7 @@ defmodule Tint.Sigil do
   A module providing a sigil to build colors.
   """
 
+  alias Tint.CMYK
   alias Tint.HSV
   alias Tint.RGB
 
@@ -47,6 +48,10 @@ defmodule Tint.Sigil do
 
   def sigil_K(str, [?h]) do
     apply(HSV, :new, extract_args(str, 3))
+  end
+
+  def sigil_K(str, [?c]) do
+    apply(CMYK, :new, extract_args(str, 4))
   end
 
   defp extract_args(str, expected_count) do
