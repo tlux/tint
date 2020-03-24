@@ -45,7 +45,7 @@ defmodule Tint.CMYK do
   end
 
   @doc """
-  Converts a tuple containing cyan, magenta, yellow and key color parts into a 
+  Converts a tuple containing cyan, magenta, yellow and key color parts into a
   `Tint.CMYK` struct.
   """
   @spec from_tuple({
@@ -84,35 +84,6 @@ defmodule Tint.CMYK do
         format_percentage(cmyk.key),
         ">"
       ])
-    end
-  end
-
-  defimpl Tint.CMYK.Convertible do
-    def to_cmyk(color), do: color
-  end
-
-  defimpl Tint.HSV.Convertible do
-    def to_hsv(color) do
-      color
-      |> Tint.to_rgb()
-      |> Tint.to_hsv()
-    end
-  end
-
-  defimpl Tint.RGB.Convertible do
-    alias Tint.RGB
-
-    def to_rgb(color) do
-      red = calc_value(color.key, color.cyan)
-      green = calc_value(color.key, color.magenta)
-      blue = calc_value(color.key, color.yellow)
-      RGB.new(red, green, blue)
-    end
-
-    defp calc_value(key, component) do
-      255
-      |> Decimal.mult(Decimal.sub(1, component))
-      |> Decimal.mult(Decimal.sub(1, key))
     end
   end
 end

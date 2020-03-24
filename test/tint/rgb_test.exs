@@ -3,10 +3,13 @@ defmodule Tint.RGBTest do
 
   import Tint.Sigil
 
+  alias Tint.CIELAB
   alias Tint.CMYK
+  alias Tint.DIN99
   alias Tint.HSV
   alias Tint.OutOfRangeError
   alias Tint.RGB
+  alias Tint.XYZ
 
   doctest Tint.RGB
 
@@ -313,6 +316,20 @@ defmodule Tint.RGBTest do
     end
   end
 
+  describe "CIELAB.Convertible.to_lab/1" do
+    test "convert to CIELAB" do
+      conversions = [
+        {RGB.new(0, 0, 0), CIELAB.new(0, 0, 0)},
+        {RGB.new(255, 255, 255), CIELAB.new(100, "0.002", "-0.010")},
+        {RGB.new(255, 0, 0), CIELAB.new("53.233", "80.107", "67.220")}
+      ]
+
+      Enum.each(conversions, fn {rgb, lab} ->
+        assert CIELAB.Convertible.to_lab(rgb) == lab
+      end)
+    end
+  end
+
   describe "CMYK.Convertible.to_cmyk/1" do
     test "convert to CMYK" do
       conversions = [
@@ -336,6 +353,20 @@ defmodule Tint.RGBTest do
 
       Enum.each(conversions, fn {rgb, cmyk} ->
         assert CMYK.Convertible.to_cmyk(rgb) == cmyk
+      end)
+    end
+  end
+
+  describe "DIN99.Convertible.to_din99/1" do
+    test "convert to DIN99" do
+      conversions = [
+        {RGB.new(0, 0, 0), DIN99.new(0, 0, 0)},
+        {RGB.new(255, 255, 255), DIN99.new("100.001", "0.001", "0.007")},
+        {RGB.new(255, 0, 0), DIN99.new("64.398", "-36.332", "-10.936")}
+      ]
+
+      Enum.each(conversions, fn {rgb, din99} ->
+        assert DIN99.Convertible.to_din99(rgb) == din99
       end)
     end
   end
@@ -379,6 +410,20 @@ defmodule Tint.RGBTest do
 
       Enum.each(colors, fn color ->
         assert RGB.Convertible.to_rgb(color) == color
+      end)
+    end
+  end
+
+  describe "XYZ.Convertible.to_xyz/1" do
+    test "convert to XYZ" do
+      conversions = [
+        {RGB.new(0, 0, 0), XYZ.new(0, 0, 0)},
+        {RGB.new(0, 255, 162), XYZ.new(42.282, 74.129, 46.262)},
+        {RGB.new(255, 255, 255), XYZ.new(95.05, 100, 108.9)}
+      ]
+
+      Enum.each(conversions, fn {rgb, xyz} ->
+        assert XYZ.Convertible.to_xyz(rgb) == xyz
       end)
     end
   end

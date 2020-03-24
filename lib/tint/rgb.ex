@@ -7,6 +7,7 @@ defmodule Tint.RGB do
 
   alias Tint.RGB.Convertible
   alias Tint.RGB.HexCode
+  alias Tint.Utils
 
   defstruct [:red, :green, :blue]
 
@@ -176,20 +177,14 @@ defmodule Tint.RGB do
   and an optional distance algorithm.
   """
   @doc since: "0.2.0"
-  @spec nearest(t(), [Convertible.t()], (t, t -> number)) ::
+  @spec nearest(t, [Convertible.t()], (t, t -> number)) ::
           nil | Convertible.t()
   def nearest(
         %__MODULE__{} = color,
         palette,
         distance_algorithm \\ &human_euclidean_distance/2
       ) do
-    Enum.min_by(
-      palette,
-      fn other_color ->
-        distance_algorithm.(color, Convertible.to_rgb(other_color))
-      end,
-      fn -> nil end
-    )
+    Utils.nearest(color, palette, distance_algorithm, &Convertible.to_rgb/1)
   end
 
   @doc """
@@ -243,104 +238,5 @@ defmodule Tint.RGB do
         ">"
       ])
     end
-  end
-
-  defimpl Tint.CMYK.Convertible do
-    alias Tint.CMYK
-    alias Tint.RGB
-
-    def to_cmyk(%{red: 0, green: 0, blue: 0}) do
-      CMYK.new(0, 0, 0, 1)
-    end
-
-    def to_cmyk(color) do
-      {red_ratio, green_ratio, blue_ratio} = RGB.to_ratios(color)
-
-      max_ratio =
-        Enum.reduce([red_ratio, green_ratio, blue_ratio], &Decimal.max/2)
-
-      key = Decimal.sub(1, max_ratio)
-      cyan = calc_value(key, red_ratio)
-      magenta = calc_value(key, green_ratio)
-      yellow = calc_value(key, blue_ratio)
-
-      CMYK.new(cyan, magenta, yellow, key)
-    end
-
-    defp calc_value(key, ratio) do
-      dividend = 1 |> Decimal.sub(ratio) |> Decimal.sub(key)
-      divisor = Decimal.sub(1, key)
-      Decimal.div(dividend, divisor)
-    end
-  end
-
-  defimpl Tint.HSV.Convertible do
-    alias Tint.HSV
-    alias Tint.RGB
-
-    def to_hsv(color) do
-      rgb_ratios = RGB.to_ratios(color)
-      rgb_ratio_list = Tuple.to_list(rgb_ratios)
-      min_ratio = Enum.reduce(rgb_ratio_list, &Decimal.min(&1, &2))
-      max_ratio = Enum.reduce(rgb_ratio_list, &Decimal.max(&1, &2))
-      ratio_delta = Decimal.sub(max_ratio, min_ratio)
-
-      hue = calc_hue(ratio_delta, max_ratio, rgb_ratios)
-      saturation = calc_saturation(ratio_delta, max_ratio)
-
-      HSV.new(hue, saturation, max_ratio)
-    end
-
-    defp calc_hue(ratio_delta, max_ratio, rgb_ratios) do
-      hue = do_calc_hue(ratio_delta, max_ratio, rgb_ratios)
-
-      if Decimal.lt?(hue, 0) do
-        Decimal.add(hue, 360)
-      else
-        hue
-      end
-    end
-
-    defp do_calc_hue(ratio_delta, max_ratio, {
-           red_ratio,
-           green_ratio,
-           blue_ratio
-         }) do
-      cond do
-        Decimal.eq?(ratio_delta, 0) ->
-          Decimal.new(0)
-
-        Decimal.eq?(red_ratio, max_ratio) ->
-          calc_hue_component(green_ratio, blue_ratio, ratio_delta, 0)
-
-        Decimal.eq?(green_ratio, max_ratio) ->
-          calc_hue_component(blue_ratio, red_ratio, ratio_delta, 2)
-
-        Decimal.eq?(blue_ratio, max_ratio) ->
-          calc_hue_component(red_ratio, green_ratio, ratio_delta, 4)
-      end
-    end
-
-    defp calc_hue_component(first_ratio, second_ratio, ratio_delta, offset) do
-      Decimal.mult(
-        60,
-        Decimal.add(
-          Decimal.div(Decimal.sub(first_ratio, second_ratio), ratio_delta),
-          offset
-        )
-      )
-    end
-
-    defp calc_saturation(ratio_delta, max_ratio) do
-      if Decimal.eq?(ratio_delta, 0) do
-        Decimal.new(0)
-      else
-        Decimal.div(ratio_delta, max_ratio)
-      end
-    end
-  end
-
-  defimpl Tint.RGB.Convertible do
-    def to_rgb(color), do: color
   end
 end

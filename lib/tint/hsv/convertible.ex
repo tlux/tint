@@ -1,12 +1,16 @@
 defprotocol Tint.HSV.Convertible do
-  @moduledoc """
-  A protocol that can be implemented by color structs to support HSV colorspace
-  conversion.
-  """
+  @moduledoc false
 
-  @doc """
-  Converts the specified color to the HSV colorspace.
-  """
+  @fallback_to_any true
+
   @spec to_hsv(Tint.color()) :: Tint.HSV.t()
   def to_hsv(color)
+end
+
+defimpl Tint.HSV.Convertible, for: Any do
+  def to_hsv(color) do
+    color
+    |> Tint.to_rgb()
+    |> Tint.to_hsv()
+  end
 end
