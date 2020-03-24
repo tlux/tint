@@ -241,7 +241,7 @@ defmodule Tint.RGBTest do
   end
 
   describe "nearest/2" do
-    test "is nil when palette is empty" do
+    test "delegate to nearest/3 with human euclidean distance algorithm" do
       color = ~K[#FF0000]
 
       palette = [
