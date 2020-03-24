@@ -13,6 +13,13 @@ defmodule Tint.CIELABTest do
     end
   end
 
+  describe "delta_e/2" do
+    test ""
+  end
+
+  describe "nearest/2" do
+  end
+
   describe "CIELAB.Convertible.to_lab/1" do
     test "convert to CIELAB" do
       color = CIELAB.new(50, 10, 10)

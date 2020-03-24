@@ -3,10 +3,13 @@ defmodule Tint.SigilTest do
 
   import Tint.Sigil
 
+  alias Tint.CIELAB
   alias Tint.CMYK
+  alias Tint.DIN99
   alias Tint.HSV
   alias Tint.OutOfRangeError
   alias Tint.RGB
+  alias Tint.XYZ
 
   doctest Tint.Sigil
 
@@ -99,6 +102,72 @@ defmodule Tint.SigilTest do
                    "Invalid number of args: 3 (expected 4)",
                    fn ->
                      ~K(0.06,0.32,0.8846)c
+                   end
+    end
+  end
+
+  describe "CIELAB color" do
+    test "success" do
+      assert ~K(50.1234, 10.7643, 10.4322)l == %CIELAB{
+               l: Decimal.new("50.123"),
+               a: Decimal.new("10.764"),
+               b: Decimal.new("10.432")
+             }
+
+      assert ~K(50.1234,10.7643,10.4322)l == %CIELAB{
+               l: Decimal.new("50.123"),
+               a: Decimal.new("10.764"),
+               b: Decimal.new("10.432")
+             }
+    end
+
+    test "raise when invalid number of args" do
+      assert_raise ArgumentError,
+                   "Invalid number of args: 4 (expected 3)",
+                   fn ->
+                     ~K(50.1234,10.7643,10.4322,12)l
+                   end
+
+      assert_raise ArgumentError,
+                   "Invalid number of args: 2 (expected 3)",
+                   fn ->
+                     ~K(50.1234,10.76436)l
+                   end
+    end
+  end
+
+  describe "DIN99 color" do
+    test "success"
+
+    test "raise when invalid number of args"
+  end
+
+  describe "XYZ color" do
+    test "success" do
+      assert ~K(0.9505, 1, 1.09)x == %XYZ{
+               x: Decimal.new("0.951"),
+               y: Decimal.new("1.000"),
+               z: Decimal.new("1.090")
+             }
+
+      assert ~K(0.9505,1,1.09)x == %XYZ{
+               x: Decimal.new("0.951"),
+               y: Decimal.new("1.000"),
+               z: Decimal.new("1.090")
+             }
+    end
+
+    test "raise when invalid number of args" do
+      assert_raise ArgumentError,
+                   "Invalid number of args: 4 (expected 3)",
+                   fn ->
+                     ~K(0.9505,1,1.09,12)x
+                   end
+
+      assert_raise ArgumentError,
+                   "Invalid number of args: 2 (expected 3)",
+                   fn ->
+                     ~K(0.9505,1)x
                    end
     end
   end
