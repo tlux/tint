@@ -156,6 +156,16 @@ defmodule Tint.RGB do
   end
 
   @doc """
+  Determines whether the given color is a grayscale color which basically means
+  that the red, green and blue components of the color have the same value.
+  """
+  @doc since: "0.4.0"
+  @spec grayscale?(t) :: boolean
+  def grayscale?(color)
+  def grayscale?(%__MODULE__{red: value, green: value, blue: value}), do: true
+  def grayscale?(%__MODULE__{}), do: false
+
+  @doc """
   A version of the Euclidean distance algorithm that uses weights that are
   optimized for human color perception.
   """

@@ -223,6 +223,28 @@ defmodule Tint.RGBTest do
     end
   end
 
+  describe "grayscale?/1" do
+    test "is true for grayscale colors" do
+      assert RGB.grayscale?(~K[#000000]) == true
+      assert RGB.grayscale?(~K[#333333]) == true
+      assert RGB.grayscale?(~K[#666666]) == true
+      assert RGB.grayscale?(~K[#999999]) == true
+      assert RGB.grayscale?(~K[#CCCCCC]) == true
+      assert RGB.grayscale?(~K[#EEEEEE]) == true
+      assert RGB.grayscale?(~K[#FFFFFF]) == true
+    end
+
+    test "is false for non-grayscale colors" do
+      assert RGB.grayscale?(~K[#FF0000]) == false
+      assert RGB.grayscale?(~K[#FF9900]) == false
+      assert RGB.grayscale?(~K[#00FFFF]) == false
+      assert RGB.grayscale?(~K[#000FFF]) == false
+      assert RGB.grayscale?(~K[#00FF99]) == false
+      assert RGB.grayscale?(~K[#99FF00]) == false
+      assert RGB.grayscale?(~K[#FFFF00]) == false
+    end
+  end
+
   describe "human_euclidean_distance/2" do
     test "get Euclidean distance with weights optimized for human perception" do
       Enum.each(
