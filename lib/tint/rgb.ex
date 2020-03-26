@@ -253,19 +253,19 @@ defmodule Tint.RGB do
   @doc since: "0.4.0"
   @spec bluish?(t) :: boolean
   def bluish?(%__MODULE__{} = color) do
-    color.blue > color.red && color.blue > color.green
+    color.blue > color.red && color.blue >= color.green
   end
 
   @doc since: "0.4.0"
   @spec greenish?(t) :: boolean
   def greenish?(%__MODULE__{} = color) do
-    color.green > color.red && color.green > color.blue
+    color.green > color.red && color.green >= color.blue
   end
 
   @doc since: "0.4.0"
   @spec rose?(t) :: boolean
   def rose?(%__MODULE__{} = color) do
-    color.red > color.green && color.blue > color.green
+    color.red >= color.green && color.blue > color.green
   end
 
   defimpl Inspect do
