@@ -262,6 +262,12 @@ defmodule Tint.RGB do
     color.green > color.red && color.green > color.blue
   end
 
+  @doc since: "0.4.0"
+  @spec rose?(t) :: boolean
+  def rose?(%__MODULE__{} = color) do
+    color.red > color.green && color.blue > color.green
+  end
+
   defimpl Inspect do
     import Inspect.Algebra
 
