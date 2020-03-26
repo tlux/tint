@@ -15,8 +15,11 @@ defmodule Tint.DIN99 do
           b: Decimal.t()
         }
 
-  @spec new(Decimal.t() | number, Decimal.t() | number, Decimal.t() | number) ::
-          t
+  @spec new(
+          float | Decimal.decimal(),
+          float | Decimal.decimal(),
+          float | Decimal.decimal()
+        ) :: t
   def new(l, a, b) do
     %__MODULE__{l: cast_value(l), a: cast_value(a), b: cast_value(b)}
   end

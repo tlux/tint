@@ -22,8 +22,11 @@ defmodule Tint.HSV do
       iex> Tint.HSV.new(25.8, 0.882, 1)
       #Tint.HSV<25.8°,88.2%,100%>
   """
-  @spec new(Decimal.t() | number, Decimal.t() | number, Decimal.t() | number) ::
-          t
+  @spec new(
+          float | Decimal.decimal(),
+          float | Decimal.decimal(),
+          float | Decimal.decimal()
+        ) :: t
   def new(hue, saturation, value) do
     with {:ok, hue} <- cast_degrees(hue),
          {:ok, saturation} <- cast_ratio(saturation),
@@ -39,7 +42,9 @@ defmodule Tint.HSV do
   struct.
   """
   @spec from_tuple(
-          {Decimal.t() | number, Decimal.t() | number, Decimal.t() | number}
+          {hue :: float | Decimal.decimal(),
+           saturation :: float | Decimal.decimal(),
+           value :: float | Decimal.decimal()}
         ) :: t
   def from_tuple({hue, saturation, value}) do
     new(hue, saturation, value)
@@ -53,6 +58,55 @@ defmodule Tint.HSV do
   def to_tuple(%__MODULE__{} = color) do
     {Decimal.to_float(color.hue), Decimal.to_float(color.saturation),
      Decimal.to_float(color.value)}
+  end
+
+  @doc """
+  Determines whether the given color is a grayscale color which basically means
+  that the saturation is 0.
+  """
+  @doc since: "0.4.0"
+  @spec grayscale?(t) :: boolean
+  def grayscale?(%__MODULE__{} = color) do
+    Decimal.eq?(color.saturation, 0)
+  end
+
+  @doc """
+  Checks whether the hue of the given color is in the specified bounds. This
+  can be used to cluster colors by their chromaticity.
+  """
+  @doc since: "0.4.0"
+  @spec hue_between?(
+          t,
+          min :: float | Decimal.decimal(),
+          max :: float | Decimal.decimal()
+        ) :: boolean
+  def hue_between?(%__MODULE__{} = color, min, max) do
+    Decimal.cmp(color.hue, Decimal.cast(min)) in [:gt, :eq] &&
+      Decimal.lt?(color.hue, Decimal.cast(max))
+  end
+
+  @cluster_table [
+    {0, 35, :red},
+    {35, 64, :yellow},
+    {64, 181, :green},
+    {181, 272, :blue},
+    {272, 345, :magenta},
+    {345, 360, :red}
+  ]
+
+  def cluster(color) do
+    cond do
+      Decimal.lt?(color.saturation, "0.15") ->
+        :grayish
+
+      Decimal.lt?(color.value, "0.2") ->
+        :grayish
+
+      true ->
+        Enum.find_value(@cluster_table, fn {min_hue, max_hue, category} ->
+          if hue_between?(color, min_hue, max_hue), do: category
+        end)
+    end
   end
 
   defimpl Inspect do

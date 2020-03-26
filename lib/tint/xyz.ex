@@ -12,8 +12,11 @@ defmodule Tint.XYZ do
           z: Decimal.t()
         }
 
-  @spec new(Decimal.t() | number, Decimal.t() | number, Decimal.t() | number) ::
-          t
+  @spec new(
+          float | Decimal.decimal(),
+          float | Decimal.decimal(),
+          float | Decimal.decimal()
+        ) :: t
   def new(x, y, z) do
     %__MODULE__{x: cast_value(x), y: cast_value(y), z: cast_value(z)}
   end

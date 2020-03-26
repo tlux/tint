@@ -226,8 +226,6 @@ defmodule Tint.RGB do
     Utils.nearest(color, palette, distance_algorithm, &Convertible.to_rgb/1)
   end
 
-  # Chromacity
-
   @doc """
   Determines whether the given color is a grayscale color which basically means
   that the red, green and blue components of the color have the same value.
@@ -237,36 +235,6 @@ defmodule Tint.RGB do
   def grayscale?(color)
   def grayscale?(%__MODULE__{red: value, green: value, blue: value}), do: true
   def grayscale?(%__MODULE__{}), do: false
-
-  @doc since: "0.4.0"
-  @spec reddish?(t) :: boolean
-  def reddish?(%__MODULE__{} = color) do
-    color.red > color.green && color.red > color.blue
-  end
-
-  @doc since: "0.4.0"
-  @spec yellowish?(t) :: boolean
-  def yellowish?(%__MODULE__{} = color) do
-    color.red > color.blue && color.green > color.blue
-  end
-
-  @doc since: "0.4.0"
-  @spec bluish?(t) :: boolean
-  def bluish?(%__MODULE__{} = color) do
-    color.blue > color.red && color.blue >= color.green
-  end
-
-  @doc since: "0.4.0"
-  @spec greenish?(t) :: boolean
-  def greenish?(%__MODULE__{} = color) do
-    color.green > color.red && color.green >= color.blue
-  end
-
-  @doc since: "0.4.0"
-  @spec rose?(t) :: boolean
-  def rose?(%__MODULE__{} = color) do
-    color.red >= color.green && color.blue > color.green
-  end
 
   defimpl Inspect do
     import Inspect.Algebra

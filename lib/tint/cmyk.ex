@@ -28,10 +28,10 @@ defmodule Tint.CMYK do
       ** (Tint.OutOfRangeError) Value 3.2 is out of range [0,1]
   """
   @spec new(
-          Decimal.t() | number,
-          Decimal.t() | number,
-          Decimal.t() | number,
-          Decimal.t() | number
+          float | Decimal.decimal(),
+          float | Decimal.decimal(),
+          float | Decimal.decimal(),
+          float | Decimal.decimal()
         ) :: t
   def new(cyan, magenta, yellow, key) do
     with {:ok, cyan} <- cast_ratio(cyan),
@@ -49,10 +49,10 @@ defmodule Tint.CMYK do
   `Tint.CMYK` struct.
   """
   @spec from_tuple({
-          Decimal.t() | number,
-          Decimal.t() | number,
-          Decimal.t() | number,
-          Decimal.t() | number
+          cyan :: float | Decimal.decimal(),
+          magenta :: float | Decimal.decimal(),
+          yellow :: float | Decimal.decimal(),
+          key :: float | Decimal.decimal()
         }) :: t
   def from_tuple({cyan, magenta, yellow, key}) do
     new(cyan, magenta, yellow, key)
