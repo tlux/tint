@@ -7,8 +7,13 @@
 An Elixir library allowing calculations with colors and conversions between
 different colorspaces.
 
-Currently supports the [RGB](https://en.wikipedia.org/wiki/RGB_color_space),
-[CMYK](https://en.wikipedia.org/wiki/CMYK_color_model) and [HSV](https://en.wikipedia.org/wiki/HSL_and_HSV) color models.
+Currently supports the following color models:
+* [RGB](https://en.wikipedia.org/wiki/RGB_color_space)
+* [CMYK](https://en.wikipedia.org/wiki/CMYK_color_model)
+* [HSV](https://en.wikipedia.org/wiki/HSL_and_HSV)
+* XYZ
+* CIELAB
+* DIN99
 
 ## Prerequisites
 
