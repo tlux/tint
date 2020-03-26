@@ -45,31 +45,6 @@ defmodule Tint.RGB do
   end
 
   @doc """
-  Calculates the distance of two colors using the
-  [Euclidean distance](https://en.wikipedia.org/wiki/Euclidean_distance)
-  algorithm.
-
-  ## Options
-
-  * `:weights` - A tuple defining the weights for the red, green and blue color
-    components. Defaults to `{1, 1, 1}`.
-  """
-  @doc since: "0.2.0"
-  @spec euclidean_distance(t, Convertible.t()) :: float
-  def euclidean_distance(%__MODULE__{} = color, other_color, opts \\ []) do
-    other_color = Convertible.to_rgb(other_color)
-
-    {red_weight, green_weight, blue_weight} =
-      Keyword.get(opts, :weights, {1, 1, 1})
-
-    :math.sqrt(
-      red_weight * :math.pow(color.red - other_color.red, 2) +
-        green_weight * :math.pow(color.green - other_color.green, 2) +
-        blue_weight * :math.pow(color.blue - other_color.blue, 2)
-    )
-  end
-
-  @doc """
   Builds a new RGB color from the given hex code.
 
   ## Examples
@@ -156,48 +131,6 @@ defmodule Tint.RGB do
   end
 
   @doc """
-  Determines whether the given color is a grayscale color which basically means
-  that the red, green and blue components of the color have the same value.
-  """
-  @doc since: "0.4.0"
-  @spec grayscale?(t) :: boolean
-  def grayscale?(color)
-  def grayscale?(%__MODULE__{red: value, green: value, blue: value}), do: true
-  def grayscale?(%__MODULE__{}), do: false
-
-  @doc """
-  A version of the Euclidean distance algorithm that uses weights that are
-  optimized for human color perception.
-  """
-  @doc since: "0.2.0"
-  @spec human_euclidean_distance(t, Convertible.t()) :: float
-  def human_euclidean_distance(%__MODULE__{} = color, other_color) do
-    weights =
-      if color.red < 128 do
-        {2, 4, 3}
-      else
-        {3, 4, 2}
-      end
-
-    euclidean_distance(color, other_color, weights: weights)
-  end
-
-  @doc """
-  Finds the nearest color for the specified color using the given color palette
-  and an optional distance algorithm.
-  """
-  @doc since: "0.2.0"
-  @spec nearest(t, [Convertible.t()], (t, t -> number)) ::
-          nil | Convertible.t()
-  def nearest(
-        %__MODULE__{} = color,
-        palette,
-        distance_algorithm \\ &human_euclidean_distance/2
-      ) do
-    Utils.nearest(color, palette, distance_algorithm, &Convertible.to_rgb/1)
-  end
-
-  @doc """
   Converts a RGB color to a hex code.
 
   ## Example
@@ -232,6 +165,101 @@ defmodule Tint.RGB do
   @spec to_tuple(t) :: {non_neg_integer, non_neg_integer, non_neg_integer}
   def to_tuple(%__MODULE__{} = color) do
     {color.red, color.green, color.blue}
+  end
+
+  # Distance
+
+  @doc """
+  Calculates the distance of two colors using the
+  [Euclidean distance](https://en.wikipedia.org/wiki/Euclidean_distance)
+  algorithm.
+
+  ## Options
+
+  * `:weights` - A tuple defining the weights for the red, green and blue color
+    components. Defaults to `{1, 1, 1}`.
+  """
+  @doc since: "0.2.0"
+  @spec euclidean_distance(t, Convertible.t()) :: float
+  def euclidean_distance(%__MODULE__{} = color, other_color, opts \\ []) do
+    other_color = Convertible.to_rgb(other_color)
+
+    {red_weight, green_weight, blue_weight} =
+      Keyword.get(opts, :weights, {1, 1, 1})
+
+    :math.sqrt(
+      red_weight * :math.pow(color.red - other_color.red, 2) +
+        green_weight * :math.pow(color.green - other_color.green, 2) +
+        blue_weight * :math.pow(color.blue - other_color.blue, 2)
+    )
+  end
+
+  @doc """
+  A version of the Euclidean distance algorithm that uses weights that are
+  optimized for human color perception.
+  """
+  @doc since: "0.2.0"
+  @spec human_euclidean_distance(t, Convertible.t()) :: float
+  def human_euclidean_distance(%__MODULE__{} = color, other_color) do
+    weights =
+      if color.red < 128 do
+        {2, 4, 3}
+      else
+        {3, 4, 2}
+      end
+
+    euclidean_distance(color, other_color, weights: weights)
+  end
+
+  @doc """
+  Finds the nearest color for the specified color using the given color palette
+  and an optional distance algorithm.
+  """
+  @doc since: "0.2.0"
+  @spec nearest(t, [Convertible.t()], (t, t -> number)) ::
+          nil | Convertible.t()
+  def nearest(
+        %__MODULE__{} = color,
+        palette,
+        distance_algorithm \\ &human_euclidean_distance/2
+      ) do
+    Utils.nearest(color, palette, distance_algorithm, &Convertible.to_rgb/1)
+  end
+
+  # Chromacity
+
+  @doc """
+  Determines whether the given color is a grayscale color which basically means
+  that the red, green and blue components of the color have the same value.
+  """
+  @doc since: "0.4.0"
+  @spec grayscale?(t) :: boolean
+  def grayscale?(color)
+  def grayscale?(%__MODULE__{red: value, green: value, blue: value}), do: true
+  def grayscale?(%__MODULE__{}), do: false
+
+  @doc since: "0.4.0"
+  @spec reddish?(t) :: boolean
+  def reddish?(%__MODULE__{} = color) do
+    color.red > color.green && color.red > color.blue
+  end
+
+  @doc since: "0.4.0"
+  @spec yellowish?(t) :: boolean
+  def yellowish?(%__MODULE__{} = color) do
+    color.red > color.blue && color.green > color.blue
+  end
+
+  @doc since: "0.4.0"
+  @spec bluish?(t) :: boolean
+  def bluish?(%__MODULE__{} = color) do
+    color.blue > color.red && color.blue > color.green
+  end
+
+  @doc since: "0.4.0"
+  @spec greenish?(t) :: boolean
+  def greenish?(%__MODULE__{} = color) do
+    color.green > color.red && color.green > color.blue
   end
 
   defimpl Inspect do
