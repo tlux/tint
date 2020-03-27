@@ -10,7 +10,7 @@ defmodule Tint.DIN99 do
   alias Tint.Utils
 
   @type t :: %__MODULE__{
-          l: Decimal.t(),
+          lightness: Decimal.t(),
           a: Decimal.t(),
           b: Decimal.t()
         }
@@ -36,6 +36,7 @@ defmodule Tint.DIN99 do
 
   @spec delta_e(t, Convertible.t()) :: float
   def delta_e(%__MODULE__{} = color, other_color) do
+    # TODO: Use Tint.Distance.euclidean_distance/3
     Utils.delta_e(color, Convertible.to_din99(other_color))
   end
 

@@ -5,7 +5,7 @@ defmodule Tint.RGB do
 
   import Tint.Utils
 
-  alias Tint.alias(Tint.RGB.Convertible)
+  alias Tint.RGB.Convertible
   alias Tint.RGB.HexCode
   alias Tint.Utils
 
@@ -183,14 +183,15 @@ defmodule Tint.RGB do
   @spec euclidean_distance(t, Convertible.t()) :: float
   def euclidean_distance(%__MODULE__{} = color, other_color, opts \\ []) do
     other_color = Convertible.to_rgb(other_color)
+    # TODO: Use Tint.Distance.euclidean_distance/3
 
     {red_weight, green_weight, blue_weight} =
       Keyword.get(opts, :weights, {1, 1, 1})
 
     :math.sqrt(
-      red_weight * :math.pow(other_color.red, color.red, 2) +
-        green_weight * :math.pow(other_color.green, color.green, 2) +
-        blue_weight * :math.pow(other_color.blue, color.blue, 2)
+      red_weight * :math.pow(other_color.red - color.red, 2) +
+        green_weight * :math.pow(other_color.green - color.green, 2) +
+        blue_weight * :math.pow(other_color.blue - color.blue, 2)
     )
   end
 

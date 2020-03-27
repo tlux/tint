@@ -36,6 +36,7 @@ defmodule Tint.CIELAB do
 
   @spec delta_e(t, Convertible.t()) :: float
   def delta_e(%__MODULE__{} = color, other_color) do
+    # TODO: Use Tint.Distance.euclidean_distance/3
     Utils.delta_e(color, Convertible.to_lab(other_color))
   end
 
