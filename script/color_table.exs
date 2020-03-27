@@ -1,4 +1,4 @@
-alias Tint.{DIN99, HSV, RGB}
+alias Tint.{DIN99, LCh, HSV, RGB}
 
 step = 20
 
@@ -160,16 +160,15 @@ color_cluster = fn color ->
       :grayish
 
     true ->
-      Enum.find_value(@cluster_table, fn {min_hue, max_hue, category} ->
-        if hue_between?(hsv_color, min_hue, max_hue), do: category
+      Enum.find_value(cluster_table, fn {min_hue, max_hue, category} ->
+        if HSV.hue_between?(hsv_color, min_hue, max_hue), do: category
       end)
   end
 end
 
 clustered_palettes =
   Enum.reduce(palette, %{}, fn color, palettes ->
-    cluster = color |> Tint.to_hsv() |> HSV.cluster()
-    Map.update(palettes, cluster, [color], &[color | &1])
+    Map.update(palettes, color_cluster.(color), [color], &[color | &1])
   end)
 
 IO.inspect(clustered_palettes, label: "categorized palettes")
@@ -177,22 +176,32 @@ IO.inspect(clustered_palettes, label: "categorized palettes")
 file = File.open!("color_table.html", [:write, :binary])
 
 add_color_row = fn color ->
-  din99_color = Tint.to_din99(color)
   cluster = color_cluster.(color)
+  hex_code = RGB.to_hex(color)
 
-  quant_color =
+  din99_color = Tint.to_din99(color)
+
+  din99_quant_color =
     case clustered_palettes[cluster] do
       nil -> DIN99.nearest(din99_color, palette)
       clustered_palette -> DIN99.nearest(din99_color, clustered_palette)
     end
 
-  hex_code = RGB.to_hex(color)
-  quant_hex_code = quant_color |> Tint.to_rgb() |> RGB.to_hex()
+  din99_quant_hex_code = din99_quant_color |> Tint.to_rgb() |> RGB.to_hex()
+
+  lch_color = Tint.to_lch(color)
+  lch_quant_color = LCh.nearest(lch_color, palette)
+  lch_quant_hex_code = lch_quant_color |> Tint.to_rgb() |> RGB.to_hex()
 
   IO.write(file, """
     <tr>
       <td style="background-color: #{hex_code}">#{hex_code}</td>
-      <td style="background-color: #{quant_hex_code}">#{quant_hex_code}</td>
+      <td style="background-color: #{din99_quant_hex_code}">
+        #{din99_quant_hex_code}
+      </td>
+      <td style="background-color: #{lch_quant_hex_code}">
+        #{lch_quant_hex_code}
+      </td>
       <td>#{cluster}</td>
     </tr>
   """)
@@ -224,6 +233,7 @@ IO.write(file, """
     <tr>
       <th>Orig</th>
       <th>DIN99 Quant + C</th>
+      <th>LCh Quant</th>
       <th>Cluster</th>
     </tr>
   </thead>
@@ -244,6 +254,7 @@ IO.write(file, """
     <tr>
       <th>Orig</th>
       <th>DIN99 Quant + C</th>
+      <th>LCh Quant</th>
       <th>Cluster</th>
     </tr>
   </thead>

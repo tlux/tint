@@ -1,6 +1,9 @@
 defmodule Tint.LCh do
   @moduledoc since: "0.4.0"
 
+  import Tint.Utils
+
+  alias Tint.Distance
   alias Tint.LCh.Convertible
   alias Tint.Math
 
@@ -25,7 +28,40 @@ defmodule Tint.LCh do
           float | Decimal.decimal()
         ) :: t
   def new(lightness, a, b, chroma, hue) do
-    %__MODULE__{lightness: lightness, a: a, b: b, chroma: chroma, hue: hue}
+    case cast_degrees(hue) do
+      {:ok, hue} ->
+        %__MODULE__{
+          lightness: cast_value(lightness),
+          a: cast_value(a),
+          b: cast_value(b),
+          chroma: cast_value(chroma),
+          hue: hue
+        }
+
+      {:error, error} ->
+        raise error
+    end
+  end
+
+  defp cast_value(value) do
+    value
+    |> Decimal.cast()
+    |> Decimal.round(3)
+  end
+
+  @doc """
+  Finds the nearest color for the specified color using the given color palette
+  and an optional distance algorithm.
+  """
+  @doc since: "0.2.0"
+  @spec nearest(t, [Convertible.t()], (t, t -> number)) ::
+          nil | Convertible.t()
+  def nearest(
+        %__MODULE__{} = color,
+        palette,
+        distance_algorithm \\ &delta_e_ciede2000/2
+      ) do
+    Distance.nearest(color, palette, &Convertible.to_lch/1, distance_algorithm)
   end
 
   @pow_25_7 Math.pow(25, 7)
@@ -54,8 +90,8 @@ defmodule Tint.LCh do
         )
       )
 
-    a_apo_1 = calc_a_apo(color, apo_factor)
-    a_apo_2 = calc_a_apo(other_color, apo_factor)
+    # a_apo_1 = calc_a_apo(color, apo_factor)
+    # a_apo_2 = calc_a_apo(other_color, apo_factor)
 
     c_apo_1 = calc_c_apo(color)
     c_apo_2 = calc_c_apo(other_color)
@@ -132,9 +168,9 @@ defmodule Tint.LCh do
     |> Decimal.sqrt()
   end
 
-  defp calc_a_apo(color, apo_factor) do
-    Decimal.add(color.a, Decimal.mult(Decimal.div(color.a, 2), apo_factor))
-  end
+  # defp calc_a_apo(color, apo_factor) do
+  #   Decimal.add(color.a, Decimal.mult(Decimal.div(color.a, 2), apo_factor))
+  # end
 
   defp calc_c_apo(color) do
     Decimal.sqrt(Decimal.add(Math.pow(color.a, 2), Math.pow(color.b, 2)))

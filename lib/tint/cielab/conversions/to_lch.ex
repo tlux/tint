@@ -25,6 +25,15 @@ defimpl Tint.LCh.Convertible, for: Tint.CIELAB do
       |> Decimal.div(color.a)
       |> Math.arctan()
       |> Math.rad_to_deg()
+      |> normalize_deg()
+    end
+  end
+
+  defp normalize_deg(value) do
+    if Decimal.negative?(value) do
+      Decimal.add(360, value)
+    else
+      value
     end
   end
 end
