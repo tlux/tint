@@ -1,5 +1,6 @@
 defimpl Tint.DIN99.Convertible, for: Tint.CIELAB do
   alias Tint.DIN99
+  alias Tint.Math
 
   @cos_16 Decimal.from_float(:math.cos(16))
   @sin_16 Decimal.from_float(:math.sin(16))
@@ -8,7 +9,7 @@ defimpl Tint.DIN99.Convertible, for: Tint.CIELAB do
     l99 =
       Decimal.mult(
         "105.51",
-        decimal_ln(Decimal.add(1, Decimal.mult("0.0158", color.lightness)))
+        Math.ln(Decimal.add(1, Decimal.mult("0.0158", color.lightness)))
       )
 
     {a99, b99} =
@@ -46,20 +47,12 @@ defimpl Tint.DIN99.Convertible, for: Tint.CIELAB do
 
     k =
       Decimal.div(
-        decimal_ln(Decimal.add(1, Decimal.mult("0.045", g))),
+        Math.ln(Decimal.add(1, Decimal.mult("0.045", g))),
         "0.045"
       )
 
     a99 = Decimal.mult(k, Decimal.div(e, g))
     b99 = Decimal.mult(k, Decimal.div(f, g))
     {a99, b99}
-  end
-
-  defp decimal_ln(value) do
-    value
-    |> Decimal.new()
-    |> Decimal.to_float()
-    |> :math.log()
-    |> Decimal.from_float()
   end
 end

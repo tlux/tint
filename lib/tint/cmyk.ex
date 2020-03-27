@@ -62,10 +62,9 @@ defmodule Tint.CMYK do
   Converts CMYK color into a tuple containing the cyan, magenta, yellow and key
   parts.
   """
-  @spec to_tuple(t) :: {float, float, float, float}
-  def to_tuple(%__MODULE__{} = cmyk) do
-    {Decimal.to_float(cmyk.cyan), Decimal.to_float(cmyk.magenta),
-     Decimal.to_float(cmyk.yellow), Decimal.to_float(cmyk.key)}
+  @spec to_tuple(t) :: {Decimal.t(), Decimal.t(), Decimal.t(), Decimal.t()}
+  def to_tuple(%__MODULE__{} = color) do
+    {color.cyan, color.magenta, color.yellow, color.key}
   end
 
   defimpl Inspect do

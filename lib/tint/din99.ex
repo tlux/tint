@@ -7,7 +7,7 @@ defmodule Tint.DIN99 do
   defstruct [:lightness, :a, :b]
 
   alias Tint.DIN99.Convertible
-  alias Tint.Utils
+  alias Tint.Distance
 
   @type t :: %__MODULE__{
           lightness: Decimal.t(),
@@ -34,10 +34,23 @@ defmodule Tint.DIN99 do
     |> Decimal.round(3)
   end
 
+  @spec from_tuple(
+          {lightness :: float | Decimal.decimal(),
+           a :: float | Decimal.decimal(), b :: float | Decimal.decimal()}
+        ) :: t
+  def from_tuple({lightness, a, b}) do
+    new(lightness, a, b)
+  end
+
+  @spec to_tuple(t) :: {Decimal.t(), Decimal.t(), Decimal.t()}
+  def to_tuple(%__MODULE__{} = color) do
+    {color.lightness, color.a, color.b}
+  end
+
   @spec delta_e(t, Convertible.t()) :: float
   def delta_e(%__MODULE__{} = color, other_color) do
-    # TODO: Use Tint.Distance.euclidean_distance/3
-    Utils.delta_e(color, Convertible.to_din99(other_color))
+    other_color = other_color |> Convertible.to_din99() |> to_tuple()
+    Distance.euclidean_distance(to_tuple(color), other_color)
   end
 
   @spec nearest(t, [Convertible.t()], (t, t -> number)) ::
@@ -47,6 +60,11 @@ defmodule Tint.DIN99 do
         palette,
         distance_algorithm \\ &delta_e/2
       ) do
-    Utils.nearest(color, palette, distance_algorithm, &Convertible.to_din99/1)
+    Distance.nearest(
+      color,
+      palette,
+      &Convertible.to_din99/1,
+      distance_algorithm
+    )
   end
 end

@@ -6,11 +6,7 @@ defmodule Tint.XYZ do
 
   defstruct [:x, :y, :z]
 
-  @type t :: %__MODULE__{
-          x: Decimal.t(),
-          y: Decimal.t(),
-          z: Decimal.t()
-        }
+  @type t :: %__MODULE__{x: Decimal.t(), y: Decimal.t(), z: Decimal.t()}
 
   @spec new(
           float | Decimal.decimal(),

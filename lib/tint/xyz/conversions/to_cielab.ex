@@ -1,6 +1,6 @@
 defimpl Tint.CIELAB.Convertible, for: Tint.XYZ do
   alias Tint.CIELAB
-  alias Tint.Utils
+  alias Tint.Math
 
   @small_value_threshold Decimal.div(216, 24_389)
   @xn Decimal.new("95.0489")
@@ -42,10 +42,7 @@ defimpl Tint.CIELAB.Convertible, for: Tint.XYZ do
         Decimal.add(Decimal.mult(Decimal.div(24_389, 27), value), 16)
       )
     else
-      value
-      |> Decimal.to_float()
-      |> Utils.nth_root(3)
-      |> Decimal.from_float()
+      Math.nth_root(value, 3)
     end
   end
 end

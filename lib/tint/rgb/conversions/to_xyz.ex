@@ -1,4 +1,5 @@
 defimpl Tint.XYZ.Convertible, for: Tint.RGB do
+  alias Tint.Math
   alias Tint.RGB
   alias Tint.XYZ
 
@@ -19,7 +20,7 @@ defimpl Tint.XYZ.Convertible, for: Tint.RGB do
         ratio
         |> Decimal.add("0.055")
         |> Decimal.div("1.055")
-        |> decimal_pow(2.4)
+        |> Math.pow(2.4)
       else
         Decimal.div(ratio, "12.92")
       end
@@ -72,14 +73,5 @@ defimpl Tint.XYZ.Convertible, for: Tint.RGB do
     |> Decimal.mult(red_coeff)
     |> Decimal.add(Decimal.mult(green_ratio, green_coeff))
     |> Decimal.add(Decimal.mult(blue_ratio, blue_coeff))
-  end
-
-  defp decimal_pow(value, exp) do
-    # This is a workaround that may not be very precise, but our only chance
-    # as long as `Decimal.pow/2` is still missing.
-    value
-    |> Decimal.to_float()
-    |> :math.pow(exp)
-    |> Decimal.from_float()
   end
 end

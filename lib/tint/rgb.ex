@@ -5,9 +5,9 @@ defmodule Tint.RGB do
 
   import Tint.Utils
 
+  alias Tint.Distance
   alias Tint.RGB.Convertible
   alias Tint.RGB.HexCode
-  alias Tint.Utils
 
   defstruct [:red, :green, :blue]
 
@@ -182,17 +182,9 @@ defmodule Tint.RGB do
   @doc since: "0.2.0"
   @spec euclidean_distance(t, Convertible.t()) :: float
   def euclidean_distance(%__MODULE__{} = color, other_color, opts \\ []) do
-    other_color = Convertible.to_rgb(other_color)
-    # TODO: Use Tint.Distance.euclidean_distance/3
-
-    {red_weight, green_weight, blue_weight} =
-      Keyword.get(opts, :weights, {1, 1, 1})
-
-    :math.sqrt(
-      red_weight * :math.pow(other_color.red - color.red, 2) +
-        green_weight * :math.pow(other_color.green - color.green, 2) +
-        blue_weight * :math.pow(other_color.blue - color.blue, 2)
-    )
+    other_color = other_color |> Convertible.to_rgb() |> to_tuple()
+    weights = Keyword.get(opts, :weights, {1, 1, 1})
+    Distance.euclidean_distance(to_tuple(color), other_color, weights)
   end
 
   @doc """
@@ -224,7 +216,7 @@ defmodule Tint.RGB do
         palette,
         distance_algorithm \\ &human_euclidean_distance/2
       ) do
-    Utils.nearest(color, palette, distance_algorithm, &Convertible.to_rgb/1)
+    Distance.nearest(color, palette, &Convertible.to_rgb/1, distance_algorithm)
   end
 
   @doc """

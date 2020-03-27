@@ -54,10 +54,9 @@ defmodule Tint.HSV do
   Converts HSV color into a tuple containing the hue, saturation and value
   parts.
   """
-  @spec to_tuple(t) :: {float, float, float}
+  @spec to_tuple(t) :: {Decimal.t(), Decimal.t(), Decimal.t()}
   def to_tuple(%__MODULE__{} = color) do
-    {Decimal.to_float(color.hue), Decimal.to_float(color.saturation),
-     Decimal.to_float(color.value)}
+    {color.hue, color.saturation, color.value}
   end
 
   @doc """
@@ -83,30 +82,6 @@ defmodule Tint.HSV do
   def hue_between?(%__MODULE__{} = color, min, max) do
     Decimal.cmp(color.hue, Decimal.cast(min)) in [:gt, :eq] &&
       Decimal.lt?(color.hue, Decimal.cast(max))
-  end
-
-  @cluster_table [
-    {0, 35, :red},
-    {35, 64, :yellow},
-    {64, 181, :green},
-    {181, 272, :blue},
-    {272, 345, :magenta},
-    {345, 360, :red}
-  ]
-
-  def cluster(color) do
-    cond do
-      Decimal.lt?(color.saturation, "0.15") ->
-        :grayish
-
-      Decimal.lt?(color.value, "0.2") ->
-        :grayish
-
-      true ->
-        Enum.find_value(@cluster_table, fn {min_hue, max_hue, category} ->
-          if hue_between?(color, min_hue, max_hue), do: category
-        end)
-    end
   end
 
   defimpl Inspect do
