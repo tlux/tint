@@ -87,8 +87,8 @@ defmodule Tint.Utils do
           Tint.CIELAB.t() | Tint.DIN99.t()
         ) :: float
   def delta_e(color, other_color) do
-    other_color.l
-    |> Decimal.sub(color.l)
+    other_color.lightness
+    |> Decimal.sub(color.lightness)
     |> decimal_pow()
     |> Decimal.add(decimal_pow(Decimal.sub(other_color.a, color.a)))
     |> Decimal.add(decimal_pow(Decimal.sub(other_color.b, color.b)))

@@ -8,7 +8,7 @@ defimpl Tint.DIN99.Convertible, for: Tint.CIELAB do
     l99 =
       Decimal.mult(
         "105.51",
-        decimal_ln(Decimal.add(1, Decimal.mult("0.0158", color.l)))
+        decimal_ln(Decimal.add(1, Decimal.mult("0.0158", color.lightness)))
       )
 
     {a99, b99} =

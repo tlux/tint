@@ -4,13 +4,13 @@ defmodule Tint.CIELAB do
   """
   @moduledoc since: "0.4.0"
 
-  defstruct [:l, :a, :b]
+  defstruct [:lightness, :a, :b]
 
   alias Tint.CIELAB.Convertible
   alias Tint.Utils
 
   @type t :: %__MODULE__{
-          l: Decimal.t(),
+          lightness: Decimal.t(),
           a: Decimal.t(),
           b: Decimal.t()
         }
@@ -20,8 +20,12 @@ defmodule Tint.CIELAB do
           float | Decimal.decimal(),
           float | Decimal.decimal()
         ) :: t
-  def new(l, a, b) do
-    %__MODULE__{l: cast_value(l), a: cast_value(a), b: cast_value(b)}
+  def new(lightness, a, b) do
+    %__MODULE__{
+      lightness: cast_value(lightness),
+      a: cast_value(a),
+      b: cast_value(b)
+    }
   end
 
   defp cast_value(value) do
