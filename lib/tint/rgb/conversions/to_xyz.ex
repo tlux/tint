@@ -29,7 +29,7 @@ defimpl Tint.XYZ.Convertible, for: Tint.RGB do
   end
 
   defp calc_x(red_ratio, green_ratio, blue_ratio) do
-    calc_component(
+    calc_channel(
       red_ratio,
       green_ratio,
       blue_ratio,
@@ -40,7 +40,7 @@ defimpl Tint.XYZ.Convertible, for: Tint.RGB do
   end
 
   defp calc_y(red_ratio, green_ratio, blue_ratio) do
-    calc_component(
+    calc_channel(
       red_ratio,
       green_ratio,
       blue_ratio,
@@ -51,7 +51,7 @@ defimpl Tint.XYZ.Convertible, for: Tint.RGB do
   end
 
   defp calc_z(red_ratio, green_ratio, blue_ratio) do
-    calc_component(
+    calc_channel(
       red_ratio,
       green_ratio,
       blue_ratio,
@@ -61,7 +61,7 @@ defimpl Tint.XYZ.Convertible, for: Tint.RGB do
     )
   end
 
-  defp calc_component(
+  defp calc_channel(
          red_ratio,
          green_ratio,
          blue_ratio,

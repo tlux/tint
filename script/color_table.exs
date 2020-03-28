@@ -1,4 +1,4 @@
-alias Tint.{CIELAB, DIN99, HSV, RGB}
+alias Tint.{CIELAB, RGB}
 
 known_colors =
   Enum.map(
@@ -138,78 +138,36 @@ palette =
     &RGB.from_hex!/1
   )
 
-color_cluster = fn color ->
-  hsv_color = Tint.to_hsv(color)
-
-  cluster_table = [
-    red: {0, 35},
-    yellow: {35, 64},
-    green: {64, 181},
-    blue: {181, 272},
-    magenta: {272, 345},
-    red: {345, 360}
-  ]
-
-  # cluster_table = [
-  #   red: {0, 20},
-  #   orange: {20, 46},
-  #   yellow: {46, 64},
-  #   green: {64, 181},
-  #   blue: {181, 228},
-  #   violet: {228, 287},
-  #   magenta: {287, 345},
-  #   red: {345, 360}
-  # ]
-
-  cond do
-    Decimal.lt?(hsv_color.saturation, "0.15") ->
-      :grayish
-
-    Decimal.lt?(hsv_color.value, "0.2") ->
-      :grayish
-
-    true ->
-      Enum.find_value(cluster_table, fn {category, {min_hue, max_hue}} ->
-        if HSV.hue_between?(hsv_color, min_hue, max_hue), do: category
-      end)
-  end
-end
-
-clustered_palettes =
-  Enum.reduce(palette, %{}, fn color, palettes ->
-    Map.update(palettes, color_cluster.(color), [color], &[color | &1])
-  end)
-
 file = File.open!("color_table.html", [:write, :binary])
 
 add_color_row = fn color ->
-  cluster = color_cluster.(color)
   hex_code = RGB.to_hex(color)
-
-  din99_color = Tint.to_din99(color)
-
-  din99_quant_color =
-    case clustered_palettes[cluster] do
-      nil -> DIN99.nearest(din99_color, palette)
-      clustered_palette -> DIN99.nearest(din99_color, clustered_palette)
-    end
-
-  din99_quant_hex_code = din99_quant_color |> Tint.to_rgb() |> RGB.to_hex()
-
   lab_color = Tint.to_lab(color)
-  lab_quant_color = CIELAB.nearest(lab_color, palette)
-  lab_quant_hex_code = lab_quant_color |> Tint.to_rgb() |> RGB.to_hex()
+
+  quant_hex_codes_with_distance =
+    palette
+    |> Enum.map(fn palette_color ->
+      {RGB.to_hex(palette_color),
+       CIELAB.delta_e_ciede2000(lab_color, Tint.to_lab(palette_color))}
+    end)
+    |> Enum.sort_by(&elem(&1, 1))
+    |> Enum.take(3)
 
   IO.write(file, """
     <tr>
       <td style="background-color: #{hex_code}">#{hex_code}</td>
-      <td style="background-color: #{din99_quant_hex_code}">
-        #{din99_quant_hex_code}
+  """)
+
+  for {quant_hex_code, distance} <- quant_hex_codes_with_distance do
+    IO.write(file, """
+      <td style="background-color: #{quant_hex_code}">
+        #{quant_hex_code}
+        <small>(#{round(distance)})</small>
       </td>
-      <td style="background-color: #{lab_quant_hex_code}">
-        #{lab_quant_hex_code}
-      </td>
-      <td>#{cluster}</td>
+    """)
+  end
+
+  IO.write(file, """
     </tr>
   """)
 end
@@ -225,7 +183,6 @@ for color <- palette,
   IO.write(file, """
     <tr>
       <td style="background-color: #{hex_code}">#{hex_code}</td>
-      <td>#{color_cluster.(color)}</td>
     </tr>
   """)
 end
@@ -239,9 +196,7 @@ IO.write(file, """
   <thead>
     <tr>
       <th>Orig</th>
-      <th>DIN99 Quant + C</th>
-      <th>L*a*b Quant</th>
-      <th>Cluster</th>
+      <th>CIEDE2000</th>
     </tr>
   </thead>
   <tbody>

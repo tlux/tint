@@ -4,7 +4,7 @@ defmodule Tint do
   colorspaces.
   """
 
-  alias Tint.{CIELAB, CMYK, DIN99, HSV, LCh, RGB, XYZ}
+  alias Tint.{CIELAB, CMYK, DIN99, HSV, RGB, XYZ}
 
   @typedoc """
   A type representing a color.
@@ -13,7 +13,6 @@ defmodule Tint do
           CIELAB.t()
           | CMYK.t()
           | DIN99.t()
-          | LCh.t()
           | HSV.t()
           | RGB.t()
           | XYZ.t()
@@ -54,13 +53,6 @@ defmodule Tint do
   """
   @spec to_hsv(color) :: HSV.t()
   defdelegate to_hsv(color), to: HSV.Convertible
-
-  @doc """
-  Converts the given color to LCh colorspace.
-  """
-  @doc since: "0.4.0"
-  @spec to_lch(color) :: LCh.t()
-  defdelegate to_lch(color), to: LCh.Convertible
 
   @doc """
   Converts the given color to RGB colorspace.
