@@ -31,7 +31,7 @@ defmodule Tint.CIELAB do
   defp cast_value(value) do
     value
     |> Decimal.cast()
-    |> Decimal.round(3)
+    |> Decimal.round(4)
   end
 
   @spec from_tuple(

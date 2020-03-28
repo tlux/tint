@@ -1,6 +1,4 @@
-alias Tint.{CIELAB, DIN99, LCh, HSV, RGB}
-
-step = 20
+alias Tint.{CIELAB, DIN99, HSV, RGB}
 
 known_colors =
   Enum.map(
@@ -144,23 +142,34 @@ color_cluster = fn color ->
   hsv_color = Tint.to_hsv(color)
 
   cluster_table = [
-    {0, 35, :red},
-    {35, 64, :yellow},
-    {64, 181, :green},
-    {181, 272, :blue},
-    {272, 345, :magenta},
-    {345, 360, :red}
+    red: {0, 35},
+    yellow: {35, 64},
+    green: {64, 181},
+    blue: {181, 272},
+    magenta: {272, 345},
+    red: {345, 360}
   ]
 
+  # cluster_table = [
+  #   red: {0, 20},
+  #   orange: {20, 46},
+  #   yellow: {46, 64},
+  #   green: {64, 181},
+  #   blue: {181, 228},
+  #   violet: {228, 287},
+  #   magenta: {287, 345},
+  #   red: {345, 360}
+  # ]
+
   cond do
-    Decimal.lt?(hsv_color.saturation, "0.2") ->
+    Decimal.lt?(hsv_color.saturation, "0.15") ->
       :grayish
 
     Decimal.lt?(hsv_color.value, "0.2") ->
       :grayish
 
     true ->
-      Enum.find_value(cluster_table, fn {min_hue, max_hue, category} ->
+      Enum.find_value(cluster_table, fn {category, {min_hue, max_hue}} ->
         if HSV.hue_between?(hsv_color, min_hue, max_hue), do: category
       end)
   end
@@ -170,8 +179,6 @@ clustered_palettes =
   Enum.reduce(palette, %{}, fn color, palettes ->
     Map.update(palettes, color_cluster.(color), [color], &[color | &1])
   end)
-
-IO.inspect(clustered_palettes, label: "categorized palettes")
 
 file = File.open!("color_table.html", [:write, :binary])
 
@@ -242,30 +249,6 @@ IO.write(file, """
 
 for color <- known_colors do
   add_color_row.(color)
-end
-
-IO.write(file, """
-  </tbody>
-</table>
-
-<h1>Tests</h1>
-<table>
-  <thead>
-    <tr>
-      <th>Orig</th>
-      <th>DIN99 Quant + C</th>
-      <th>L*a*b Quant</th>
-      <th>Cluster</th>
-    </tr>
-  </thead>
-  <tbody>
-""")
-
-for red <- 0..255, green <- 0..255, blue <- 0..255 do
-  if rem(red, step) == 0 && rem(green, step) == 0 && rem(blue, step) == 0 do
-    color = RGB.new(red, green, blue)
-    add_color_row.(color)
-  end
 end
 
 IO.write(file, """

@@ -119,7 +119,7 @@ defmodule Tint.Distance.CIEDE2000 do
   defp calc_delta_cap_h_apo(c_apo_1, c_apo_2, delta_h_apo) do
     2
     |> Decimal.mult(Decimal.sqrt(Decimal.mult(c_apo_1, c_apo_2)))
-    |> Decimal.mult(Math.sin(Decimal.div(delta_h_apo, 2)))
+    |> Decimal.mult(Math.sin(Decimal.div(Math.deg_to_rad(delta_h_apo), 2)))
   end
 
   defp calc_cl_apo_dash(v1, v2) do
@@ -148,30 +148,55 @@ defmodule Tint.Distance.CIEDE2000 do
   end
 
   defp calc_t(h_apo_dash) do
+    h_apo_dash_rad = Math.deg_to_rad(h_apo_dash)
+
     1
-    |> Decimal.sub(Decimal.mult("0.17", Math.cos(Decimal.sub(h_apo_dash, 30))))
-    |> Decimal.add(Decimal.mult("0.24", Math.cos(Decimal.mult(2, h_apo_dash))))
+    |> Decimal.sub(
+      Decimal.mult(
+        "0.17",
+        Math.cos(Decimal.sub(h_apo_dash_rad, Math.deg_to_rad(30)))
+      )
+    )
+    |> Decimal.add(
+      Decimal.mult("0.24", Math.cos(Decimal.mult(2, h_apo_dash_rad)))
+    )
     |> Decimal.add(
       Decimal.mult(
         "0.32",
-        Math.cos(Decimal.add(Decimal.mult(3, h_apo_dash), 6))
+        Math.cos(
+          Decimal.add(
+            Decimal.mult(3, h_apo_dash_rad),
+            Math.deg_to_rad(6)
+          )
+        )
       )
     )
     |> Decimal.sub(
       Decimal.mult(
         "0.2",
-        Math.cos(Decimal.sub(Decimal.mult(4, h_apo_dash), 63))
+        Math.cos(
+          Decimal.sub(
+            Decimal.mult(4, h_apo_dash_rad),
+            Math.deg_to_rad(63)
+          )
+        )
       )
     )
   end
 
   defp calc_delta_theta(h_apo_dash) do
     Decimal.mult(
-      30,
+      Math.deg_to_rad(30),
       Math.exp(
         Decimal.mult(
           -1,
-          Math.pow(Decimal.div(Decimal.sub(h_apo_dash, 275), 25), 2)
+          Math.pow(
+            Decimal.div(
+              Decimal.sub(Math.deg_to_rad(h_apo_dash), Math.deg_to_rad(275)),
+              Math.deg_to_rad(25)
+            ),
+            2
+          )
         )
       )
     )
@@ -237,5 +262,6 @@ defmodule Tint.Distance.CIEDE2000 do
     |> Decimal.add(Math.pow(Decimal.div(delta_h_apo, sh_div), 2))
     |> Decimal.add(inner)
     |> Decimal.sqrt()
+    |> Decimal.to_float()
   end
 end

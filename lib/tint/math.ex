@@ -61,16 +61,19 @@ defmodule Tint.Math do
 
   @spec rad_to_deg(Decimal.decimal()) :: Decimal.t()
   def rad_to_deg(value) do
-    value
-    |> Decimal.new()
-    |> Decimal.mult(180)
-    |> Decimal.div(@pi)
-    |> Decimal.reduce()
+    value =
+      if Decimal.lt?(value, 0) do
+        Decimal.add(value, Decimal.mult(2, @pi))
+      else
+        value
+      end
+
+    Decimal.mult(value, Decimal.div(180, @pi))
   end
 
   @spec deg_to_rad(Decimal.decimal()) :: Decimal.t()
   def deg_to_rad(value) do
-    # TODO
+    Decimal.mult(value, Decimal.div(@pi, 180))
   end
 
   @spec rem(Decimal.decimal(), Decimal.decimal()) :: Decimal.t()
