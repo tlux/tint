@@ -1,4 +1,4 @@
-alias Tint.{DIN99, LCh, HSV, RGB}
+alias Tint.{CIELAB, DIN99, LCh, HSV, RGB}
 
 step = 20
 
@@ -153,7 +153,7 @@ color_cluster = fn color ->
   ]
 
   cond do
-    Decimal.lt?(hsv_color.saturation, "0.15") ->
+    Decimal.lt?(hsv_color.saturation, "0.2") ->
       :grayish
 
     Decimal.lt?(hsv_color.value, "0.2") ->
@@ -189,9 +189,9 @@ add_color_row = fn color ->
 
   din99_quant_hex_code = din99_quant_color |> Tint.to_rgb() |> RGB.to_hex()
 
-  lch_color = Tint.to_lch(color)
-  lch_quant_color = LCh.nearest(lch_color, palette)
-  lch_quant_hex_code = lch_quant_color |> Tint.to_rgb() |> RGB.to_hex()
+  lab_color = Tint.to_lab(color)
+  lab_quant_color = CIELAB.nearest(lab_color, palette)
+  lab_quant_hex_code = lab_quant_color |> Tint.to_rgb() |> RGB.to_hex()
 
   IO.write(file, """
     <tr>
@@ -199,8 +199,8 @@ add_color_row = fn color ->
       <td style="background-color: #{din99_quant_hex_code}">
         #{din99_quant_hex_code}
       </td>
-      <td style="background-color: #{lch_quant_hex_code}">
-        #{lch_quant_hex_code}
+      <td style="background-color: #{lab_quant_hex_code}">
+        #{lab_quant_hex_code}
       </td>
       <td>#{cluster}</td>
     </tr>
@@ -233,7 +233,7 @@ IO.write(file, """
     <tr>
       <th>Orig</th>
       <th>DIN99 Quant + C</th>
-      <th>LCh Quant</th>
+      <th>L*a*b Quant</th>
       <th>Cluster</th>
     </tr>
   </thead>
@@ -254,7 +254,7 @@ IO.write(file, """
     <tr>
       <th>Orig</th>
       <th>DIN99 Quant + C</th>
-      <th>LCh Quant</th>
+      <th>L*a*b Quant</th>
       <th>Cluster</th>
     </tr>
   </thead>
