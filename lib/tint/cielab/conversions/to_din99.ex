@@ -2,8 +2,8 @@ defimpl Tint.DIN99.Convertible, for: Tint.CIELAB do
   alias Tint.DIN99
   alias Tint.Math
 
-  @cos_16 Decimal.from_float(:math.cos(16))
-  @sin_16 Decimal.from_float(:math.sin(16))
+  @cos_16 Math.cos(16)
+  @sin_16 Math.sin(16)
 
   def to_din99(color) do
     l99 =

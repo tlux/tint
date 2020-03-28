@@ -4,12 +4,12 @@ defmodule Tint.Distance.CIEDE2000 do
   http://www2.ece.rochester.edu/~gsharma/ciede2000/ciede2000noteCRNA.pdf
   """
 
-  alias Tint.LCh
+  alias Tint.CIELAB
   alias Tint.Math
 
   @pow_25_7 Math.pow(25, 7)
 
-  @spec ciede2000(LCh.t(), LCh.t()) :: float
+  @spec ciede2000(CIELAB.t(), CIELAB.t()) :: float
   def ciede2000(color, other_color) do
     # 2)
     c_star_1 = calc_c_star_i(color.a, color.b)
@@ -56,6 +56,18 @@ defmodule Tint.Distance.CIEDE2000 do
     # 21)
     rt = calc_rt(delta_theta, rc)
     # 22)
+    # IO.inspect([CIELAB.to_tuple(color), CIELAB.to_tuple(other_color)])
+    # IO.inspect([a_apo_1, a_apo_2], label: "a'i")
+    # IO.inspect([c_apo_1, c_apo_2], label: "c'i")
+    # IO.inspect([h_apo_1, h_apo_2], label: "h'i")
+    # IO.inspect(h_apo_dash, label: "h'-")
+    # IO.inspect(g, label: "G")
+    # IO.inspect(t, label: "T")
+    # IO.inspect(delta_theta, label: "delta theta")
+    # IO.inspect(sl, label: "SL")
+    # IO.inspect(sc, label: "SC")
+    # IO.inspect(sh, label: "SH")
+    # IO.inspect(rt, label: "RT")
     calc_delta_e00(delta_l_apo, delta_c_apo, delta_cap_h_apo, rt, sl, sc, sh)
   end
 
@@ -244,10 +256,7 @@ defmodule Tint.Distance.CIEDE2000 do
 
   defp calc_delta_e00(delta_l_apo, delta_c_apo, delta_h_apo, rt, sl, sc, sh) do
     # The factors kL, kC, and kH are usually unity.
-    kl = 1
-    kc = 1
-    kh = 1
-
+    kl = kc = kh = 1
     sc_div = Decimal.mult(kc, sc)
     sh_div = Decimal.mult(kh, sh)
 
