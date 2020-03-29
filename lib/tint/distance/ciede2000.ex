@@ -1,6 +1,8 @@
 defmodule Tint.Distance.CIEDE2000 do
   @moduledoc false
 
+  @behaviour Tint.Distance
+
   alias Tint.Math
 
   @deg_6_in_rad Math.deg_to_rad(6)
@@ -10,8 +12,8 @@ defmodule Tint.Distance.CIEDE2000 do
   @deg_275_in_rad Math.deg_to_rad(275)
   @pow_25_7 Math.pow(25, 7)
 
-  @spec ciede2000_distance(Tint.color(), Tint.color(), Keyword.t()) :: float
-  def ciede2000_distance(color, other_color, opts \\ []) do
+  @impl true
+  def distance(color, other_color, opts) do
     color = Tint.to_lab(color)
     other_color = Tint.to_lab(other_color)
 

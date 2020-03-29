@@ -52,17 +52,17 @@ defmodule Tint.Lab do
   """
   @spec ciede2000_distance(t, Tint.color(), Keyword.t()) :: float
   def ciede2000_distance(%__MODULE__{} = color, other_color, opts \\ []) do
-    Distance.CIEDE2000.ciede2000_distance(color, other_color, opts)
+    Distance.distance(color, other_color, {Distance.CIEDE2000, opts})
   end
 
   @spec nearest_color(t, [Tint.color()]) :: nil | Tint.color()
   def nearest_color(%__MODULE__{} = color, palette) do
-    Distance.nearest_color(color, palette, &ciede2000_distance/2)
+    Distance.nearest_color(color, palette, Distance.CIEDE2000)
   end
 
   @spec nearest_colors(t, [Tint.color()], non_neg_integer) :: [Tint.color()]
   def nearest_colors(%__MODULE__{} = color, palette, n) do
-    Distance.nearest_colors(color, palette, n, &ciede2000_distance/2)
+    Distance.nearest_colors(color, palette, n, Distance.CIEDE2000)
   end
 
   defimpl Inspect do
