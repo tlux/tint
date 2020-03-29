@@ -11,8 +11,8 @@ Currently supports the following color models:
 * [RGB](https://en.wikipedia.org/wiki/RGB_color_space)
 * [CMYK](https://en.wikipedia.org/wiki/CMYK_color_model)
 * [HSV](https://en.wikipedia.org/wiki/HSL_and_HSV)
+* L\*a\*b\* ([CIELAB](https://en.wikipedia.org/wiki/CIELAB_color_space))
 * XYZ ([CIE 1931](https://en.wikipedia.org/wiki/CIE_1931_color_space))
-* Lab ([CIELAB](https://en.wikipedia.org/wiki/CIELAB_color_space))
 * [DIN99](https://de.wikipedia.org/wiki/DIN99-Farbraum)
 
 ## Prerequisites
@@ -161,9 +161,9 @@ iex> import Tint.Sigil
 
 ### Color Distance
 
-There are functions to calculate the distance between two colors.
+There are a couple of functions to calculate the distance between two colors.
 
-#### Euclidean Distance (Delta E)
+#### Euclidean Distance (ΔE)
 
 The Delta E algorithm operates on the RGB colorspace. Given colors are converted
 before calculation if needed. Delta E is very fast but may not be very precise.
