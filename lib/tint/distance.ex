@@ -1,27 +1,28 @@
 defmodule Tint.Distance do
-  @doc """
-  Determines the nearest color from the given color palette using the specified
-  distance algorithm.
-  """
-  @doc since: "0.4.0"
-  @spec nearest(
+  @moduledoc false
+
+  @type distance_fun :: (Tint.color(), Tint.color() -> Tint.color())
+
+  @spec nearest_color(Tint.color(), [Tint.color()], distance_fun) ::
+          nil | Tint.color()
+  def nearest_color(color, palette, distance_fun) do
+    case nearest_colors(color, palette, 1, distance_fun) do
+      [nearest_color] -> nearest_color
+      _ -> nil
+    end
+  end
+
+  @spec nearest_colors(
           Tint.color(),
           [Tint.color()],
-          (Tint.color() -> Tint.color()),
-          (Tint.color(), Tint.color() -> number)
-        ) :: nil | Tint.color()
-  def nearest(
-        color,
-        palette,
-        palette_map_fun,
-        distance_algorithm
-      ) do
-    Enum.min_by(
-      palette,
-      fn other_color ->
-        distance_algorithm.(color, palette_map_fun.(other_color))
-      end,
-      fn -> nil end
-    )
+          non_neg_integer,
+          distance_fun
+        ) :: [Tint.color()]
+  def nearest_colors(color, palette, n, distance_fun) do
+    palette
+    |> Enum.sort_by(fn palette_color ->
+      distance_fun.(color, palette_color)
+    end)
+    |> Enum.take(n)
   end
 end

@@ -6,6 +6,7 @@ defmodule Tint.RGBTest do
   alias Tint.CIELAB
   alias Tint.CMYK
   alias Tint.DIN99
+  alias Tint.Distance.Euclidean
   alias Tint.HSV
   alias Tint.OutOfRangeError
   alias Tint.RGB
@@ -74,41 +75,23 @@ defmodule Tint.RGBTest do
   end
 
   describe "euclidean_distance/2" do
-    test "get Euclidean distance for two colors" do
-      assert RGB.euclidean_distance(~K[#FFCC00], ~K[#FCFFCC]) ==
-               RGB.euclidean_distance(~K[#FFCC00], ~K[#FCFFCC], [])
+    test "delegate to Distance.Euclidean" do
+      color = ~K[#FFFF00]
+      other_color = ~K[#FF0000]
+
+      assert RGB.euclidean_distance(color, other_color) ==
+               Euclidean.euclidean_distance(color, other_color)
     end
   end
 
   describe "euclidean_distance/3" do
-    test "get Euclidean distance for two colors" do
-      assert RGB.euclidean_distance(~K[#FFFFFF], ~K[#000000], []) ==
-               441.6729559300637
+    test "delegate to Distance.Euclidean" do
+      color = ~K[#FFFF00]
+      other_color = ~K[#FF0000]
+      opts = [weights: {2, 3, 4}]
 
-      assert RGB.euclidean_distance(~K[#FFFFFF], ~K[#000000], []) ==
-               RGB.euclidean_distance(~K[#FFFFFF], ~K[#000000],
-                 weight: {1, 1, 1}
-               )
-
-      assert RGB.euclidean_distance(~K[#FFFFFF], ~K[#000000], weights: {2, 4, 3}) ==
-               765.0
-
-      assert RGB.euclidean_distance(~K[#000000], ~K[#FFFFFF], []) ==
-               441.6729559300637
-
-      assert RGB.euclidean_distance(~K[#000000], ~K[#FFFFFF], weights: {2, 4, 3}) ==
-               765.0
-
-      assert RGB.euclidean_distance(~K[#FF0000], ~K[#FC0000], []) == 3.0
-
-      assert RGB.euclidean_distance(~K[#FF0000], ~K[#FC0000], weights: {2, 4, 3}) ==
-               4.242640687119285
-
-      assert RGB.euclidean_distance(~K[#FFCC00], ~K[#FCFFCC], []) ==
-               210.2997860198626
-
-      assert RGB.euclidean_distance(~K[#FFCC00], ~K[#FCFFCC], weights: {2, 4, 3}) ==
-               367.7907013506459
+      assert RGB.euclidean_distance(color, other_color, opts) ==
+               Euclidean.euclidean_distance(color, other_color, opts)
     end
   end
 
@@ -246,48 +229,38 @@ defmodule Tint.RGBTest do
   end
 
   describe "human_euclidean_distance/2" do
-    test "get Euclidean distance with weights optimized for human perception" do
-      Enum.each(
-        [
-          {~K[127,0,255]r, ~K[#FFF], {2, 4, 3}},
-          {~K[127,255,0]r, ~K[#000], {2, 4, 3}},
-          {~K[128,0,255]r, ~K[#FFF], {3, 4, 2}},
-          {~K[128,255,0]r, ~K[#000], {3, 4, 2}}
-        ],
-        fn {color, other_color, weights} ->
-          assert RGB.human_euclidean_distance(color, other_color) ==
-                   RGB.euclidean_distance(color, other_color, weights: weights)
-        end
-      )
+    test "delegate to Distance.Euclidean" do
+      color = ~K[#FFFF00]
+      other_color = ~K[#FF0000]
+
+      assert RGB.human_euclidean_distance(color, other_color) ==
+               Euclidean.human_euclidean_distance(color, other_color)
     end
   end
 
-  describe "nearest/2" do
+  describe "nearest_color/2" do
     test "delegate to nearest/3 with human euclidean distance algorithm" do
       color = ~K[#FF0000]
+      palette = [~K[#FCFF00], ~K[#CCFF00], ~K[#CC0000]]
 
-      palette = [
-        ~K[#FCFF00],
-        ~K[#CCFF00],
-        ~K[#CC0000],
-        ~K[#FC0000],
-        ~K[#00CCFF],
-        ~K[#000FFF]
-      ]
+      assert RGB.nearest_color(color, []) ==
+               RGB.nearest_color(color, [], &RGB.human_euclidean_distance/2)
 
-      assert RGB.nearest(color, []) ==
-               RGB.nearest(color, [], &RGB.human_euclidean_distance/2)
-
-      assert RGB.nearest(color, palette) ==
-               RGB.nearest(color, palette, &RGB.human_euclidean_distance/2)
+      assert RGB.nearest_color(color, palette) ==
+               RGB.nearest_color(
+                 color,
+                 palette,
+                 &RGB.human_euclidean_distance/2
+               )
     end
   end
 
-  describe "nearest/3" do
+  describe "nearest_color/3" do
     test "is nil when palette is empty" do
       color = ~K[#FF0000]
 
-      assert RGB.nearest(color, [], &RGB.human_euclidean_distance/2) == nil
+      assert RGB.nearest_color(color, [], &RGB.human_euclidean_distance/2) ==
+               nil
     end
 
     test "get nearest color" do
@@ -303,17 +276,25 @@ defmodule Tint.RGBTest do
         ~K[#333333]
       ]
 
-      assert RGB.nearest(~K[#000000], palette, algorithm) == ~K[#333333]
-      assert RGB.nearest(~K[#004CA8], palette, algorithm) == ~K[#000FFF]
-      assert RGB.nearest(~K[#0497D6], palette, algorithm) == ~K[#00CCFF]
-      assert RGB.nearest(~K[#094F6E], palette, algorithm) == ~K[#333333]
-      assert RGB.nearest(~K[#10A110], palette, algorithm) == ~K[#00FF00]
-      assert RGB.nearest(~K[#666666], palette, algorithm) == ~K[#333333]
-      assert RGB.nearest(~K[#FF0000], palette, algorithm) == ~K[#CC0000]
-      assert RGB.nearest(~K[#FFCC00], palette, algorithm) == ~K[#FF9900]
-      assert RGB.nearest(~K[#FFEC70], palette, algorithm) == ~K[#FCFF00]
-      assert RGB.nearest(~K[#FFFFFF], palette, algorithm) == ~K[#FCFF00]
+      assert RGB.nearest_color(~K[#000000], palette, algorithm) == ~K[#333333]
+      assert RGB.nearest_color(~K[#004CA8], palette, algorithm) == ~K[#000FFF]
+      assert RGB.nearest_color(~K[#0497D6], palette, algorithm) == ~K[#00CCFF]
+      assert RGB.nearest_color(~K[#094F6E], palette, algorithm) == ~K[#333333]
+      assert RGB.nearest_color(~K[#10A110], palette, algorithm) == ~K[#00FF00]
+      assert RGB.nearest_color(~K[#666666], palette, algorithm) == ~K[#333333]
+      assert RGB.nearest_color(~K[#FF0000], palette, algorithm) == ~K[#CC0000]
+      assert RGB.nearest_color(~K[#FFCC00], palette, algorithm) == ~K[#FF9900]
+      assert RGB.nearest_color(~K[#FFEC70], palette, algorithm) == ~K[#FCFF00]
+      assert RGB.nearest_color(~K[#FFFFFF], palette, algorithm) == ~K[#FCFF00]
     end
+  end
+
+  describe "nearest_colors/3" do
+    # TODO
+  end
+
+  describe "nearest_colors/4" do
+    # TODO
   end
 
   describe "to_hex/1" do

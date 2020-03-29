@@ -1,6 +1,13 @@
 defmodule Tint.Utils.Formatter do
   @moduledoc false
 
+  @spec format_value(Decimal.t()) :: String.t()
+  def format_value(value) do
+    value
+    |> Decimal.reduce()
+    |> Decimal.to_string(:normal)
+  end
+
   @spec format_degrees(Decimal.t()) :: String.t()
   def format_degrees(value) do
     value

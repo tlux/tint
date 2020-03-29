@@ -43,4 +43,21 @@ defmodule Tint.DIN99 do
   def to_tuple(%__MODULE__{} = color) do
     {color.lightness, color.a, color.b}
   end
+
+  defimpl Inspect do
+    import Inspect.Algebra
+    import Tint.Utils.Formatter
+
+    def inspect(color, _opts) do
+      concat([
+        "#Tint.DIN99<",
+        format_value(color.lightness),
+        ",",
+        format_value(color.a),
+        ",",
+        format_value(color.b),
+        ">"
+      ])
+    end
+  end
 end

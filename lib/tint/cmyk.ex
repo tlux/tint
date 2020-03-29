@@ -71,16 +71,16 @@ defmodule Tint.CMYK do
     import Inspect.Algebra
     import Tint.Utils.Formatter
 
-    def inspect(cmyk, _opts) do
+    def inspect(color, _opts) do
       concat([
         "#Tint.CMYK<",
-        format_percentage(cmyk.cyan),
+        format_percentage(color.cyan),
         ",",
-        format_percentage(cmyk.magenta),
+        format_percentage(color.magenta),
         ",",
-        format_percentage(cmyk.yellow),
+        format_percentage(color.yellow),
         ",",
-        format_percentage(cmyk.key),
+        format_percentage(color.key),
         ">"
       ])
     end

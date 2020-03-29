@@ -22,4 +22,21 @@ defmodule Tint.XYZ do
     |> Decimal.cast()
     |> Decimal.round(3)
   end
+
+  defimpl Inspect do
+    import Inspect.Algebra
+    import Tint.Utils.Formatter
+
+    def inspect(color, _opts) do
+      concat([
+        "#Tint.XYZ<",
+        format_value(color.x),
+        ",",
+        format_value(color.y),
+        ",",
+        format_value(color.z),
+        ">"
+      ])
+    end
+  end
 end

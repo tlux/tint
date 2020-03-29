@@ -1,10 +1,6 @@
 defmodule Tint.Distance.CIEDE2000 do
-  @moduledoc """
-  Implements the CIEDE2000 color distance algorithm as described here:
-  http://www2.ece.rochester.edu/~gsharma/ciede2000/ciede2000noteCRNA.pdf
-  """
+  @moduledoc false
 
-  alias Tint.CIELAB
   alias Tint.Math
 
   @deg_6_in_rad Math.deg_to_rad(6)
@@ -14,8 +10,11 @@ defmodule Tint.Distance.CIEDE2000 do
   @deg_275_in_rad Math.deg_to_rad(275)
   @pow_25_7 Math.pow(25, 7)
 
-  @spec ciede2000_distance(CIELAB.t(), CIELAB.t(), Keyword.t()) :: float
+  @spec ciede2000_distance(Tint.color(), Tint.color(), Keyword.t()) :: float
   def ciede2000_distance(color, other_color, opts \\ []) do
+    color = Tint.to_lab(color)
+    other_color = Tint.to_lab(other_color)
+
     # 2)
     c_star_1 = calc_c_star_i(color.a, color.b)
     c_star_2 = calc_c_star_i(other_color.a, other_color.b)

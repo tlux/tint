@@ -6,7 +6,6 @@ defmodule Tint.RGB do
   import Tint.Utils
 
   alias Tint.Distance
-  alias Tint.RGB.Convertible
   alias Tint.RGB.HexCode
 
   defstruct [:red, :green, :blue]
@@ -180,13 +179,9 @@ defmodule Tint.RGB do
     components. Defaults to `{1, 1, 1}`.
   """
   @doc since: "0.2.0"
-  @spec euclidean_distance(t, Convertible.t()) :: float
+  @spec euclidean_distance(t, Tint.color()) :: float
   def euclidean_distance(%__MODULE__{} = color, other_color, opts \\ []) do
-    Distance.Euclidean.euclidean_distance(
-      color,
-      Convertible.to_rgb(other_color),
-      opts
-    )
+    Distance.Euclidean.euclidean_distance(color, other_color, opts)
   end
 
   @doc """
@@ -194,7 +189,7 @@ defmodule Tint.RGB do
   optimized for human color perception.
   """
   @doc since: "0.2.0"
-  @spec human_euclidean_distance(t, Convertible.t()) :: float
+  @spec human_euclidean_distance(t, Tint.color()) :: float
   def human_euclidean_distance(%__MODULE__{} = color, other_color) do
     Distance.Euclidean.human_euclidean_distance(color, other_color)
   end
@@ -204,14 +199,50 @@ defmodule Tint.RGB do
   and an optional distance algorithm.
   """
   @doc since: "0.2.0"
-  @spec nearest(t, [Convertible.t()], (t, t -> number)) ::
-          nil | Convertible.t()
+  @deprecated "Use nearest_color/2 or nearest_color/3 instead"
+  @spec nearest(t, [Tint.color()], Distance.distance_fun()) ::
+          nil | Tint.color()
   def nearest(
         %__MODULE__{} = color,
         palette,
-        distance_algorithm \\ &human_euclidean_distance/2
+        distance_fun \\ &human_euclidean_distance/2
       ) do
-    Distance.nearest(color, palette, &Convertible.to_rgb/1, distance_algorithm)
+    nearest_color(color, palette, distance_fun)
+  end
+
+  @doc """
+  Finds the nearest color for the specified color using the given color palette
+  and an optional distance algorithm.
+  """
+  @doc since: "0.4.0"
+  @spec nearest_color(t, [Tint.color()], Distance.distance_fun()) ::
+          nil | Tint.color()
+  def nearest_color(
+        %__MODULE__{} = color,
+        palette,
+        distance_fun \\ &human_euclidean_distance/2
+      ) do
+    Distance.nearest_color(color, palette, distance_fun)
+  end
+
+  @doc """
+  Finds the n nearest colors for the specified color using the given color
+  palette and an optional distance algorithm.
+  """
+  @doc since: "0.4.0"
+  @spec nearest_colors(
+          t,
+          [Tint.color()],
+          non_neg_integer,
+          Distance.distance_fun()
+        ) :: [Tint.color()]
+  def nearest_colors(
+        %__MODULE__{} = color,
+        palette,
+        n,
+        distance_fun \\ &human_euclidean_distance/2
+      ) do
+    Distance.nearest_colors(color, palette, n, distance_fun)
   end
 
   @doc """
@@ -227,14 +258,14 @@ defmodule Tint.RGB do
   defimpl Inspect do
     import Inspect.Algebra
 
-    def inspect(rgb, opts) do
+    def inspect(color, opts) do
       concat([
         "#Tint.RGB<",
-        to_doc(rgb.red, opts),
+        to_doc(color.red, opts),
         ",",
-        to_doc(rgb.green, opts),
+        to_doc(color.green, opts),
         ",",
-        to_doc(rgb.blue, opts),
+        to_doc(color.blue, opts),
         ">"
       ])
     end

@@ -1,8 +1,6 @@
 defmodule Tint.CIELABTest do
   use ExUnit.Case, async: true
 
-  import Tint.Sigil
-
   alias Tint.CIELAB
 
   describe "new/3" do
@@ -15,14 +13,20 @@ defmodule Tint.CIELABTest do
     end
   end
 
-  describe "nearest/2" do
-    test "delegate to nearest/3 with CIEDE2000 algorithm" do
-      color = Tint.to_lab(~K[#FF0000])
-      palette = [~K[#E7CDB0], ~K[#00A1DE], ~K[#B76A40], ~K[#FECB00]]
+  describe "nearest_color/2" do
+    # TODO
+  end
 
-      assert CIELAB.nearest(color, palette) ==
-               CIELAB.nearest(color, palette, &CIELAB.ciede2000_distance/2)
-    end
+  describe "nearest_color/3" do
+    # TODO
+  end
+
+  describe "nearest_colors/3" do
+    # TODO
+  end
+
+  describe "nearest_colors/4" do
+    # TODO
   end
 
   describe "CIELAB.Convertible.to_lab/1" do

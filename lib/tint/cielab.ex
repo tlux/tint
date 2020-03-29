@@ -6,7 +6,6 @@ defmodule Tint.CIELAB do
 
   defstruct [:lightness, :a, :b]
 
-  alias Tint.CIELAB.Convertible
   alias Tint.Distance
 
   @type t :: %__MODULE__{
@@ -47,22 +46,39 @@ defmodule Tint.CIELAB do
     {color.lightness, color.a, color.b}
   end
 
-  @spec ciede2000_distance(t, Convertible.t()) :: float
+  @doc """
+  Implements the CIEDE2000 color distance algorithm as described here:
+  http://www2.ece.rochester.edu/~gsharma/ciede2000/ciede2000noteCRNA.pdf
+  """
+  @spec ciede2000_distance(t, Tint.color(), Keyword.t()) :: float
   def ciede2000_distance(%__MODULE__{} = color, other_color, opts \\ []) do
-    Distance.CIEDE2000.ciede2000_distance(
-      color,
-      Convertible.to_lab(other_color),
-      opts
-    )
+    Distance.CIEDE2000.ciede2000_distance(color, other_color, opts)
   end
 
-  @spec nearest(t, [Convertible.t()], (t, t -> number)) ::
-          nil | Convertible.t()
-  def nearest(
-        %__MODULE__{} = color,
-        palette,
-        distance_algorithm \\ &ciede2000_distance/2
-      ) do
-    Distance.nearest(color, palette, &Convertible.to_lab/1, distance_algorithm)
+  @spec nearest_color(t, [Tint.color()]) :: nil | Tint.color()
+  def nearest_color(%__MODULE__{} = color, palette) do
+    Distance.nearest_color(color, palette, &ciede2000_distance/2)
+  end
+
+  @spec nearest_colors(t, [Tint.color()], non_neg_integer) :: [Tint.color()]
+  def nearest_colors(%__MODULE__{} = color, palette, n) do
+    Distance.nearest_colors(color, palette, n, &ciede2000_distance/2)
+  end
+
+  defimpl Inspect do
+    import Inspect.Algebra
+    import Tint.Utils.Formatter
+
+    def inspect(color, _opts) do
+      concat([
+        "#Tint.CIELAB<",
+        format_value(color.lightness),
+        ",",
+        format_value(color.a),
+        ",",
+        format_value(color.b),
+        ">"
+      ])
+    end
   end
 end

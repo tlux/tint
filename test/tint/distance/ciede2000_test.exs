@@ -10,7 +10,7 @@ defmodule Tint.Distance.CIEDE2000Test do
     {{50, 2.5, 0}, {61, -5, 29}, 22.8977}
   ]
 
-  describe "ciede_2000/2" do
+  describe "ciede_2000_distance/2" do
     test "matches test data" do
       for {lab_tuple_a, lab_tuple_b, distance} <- @test_data,
           color = CIELAB.from_tuple(lab_tuple_a),

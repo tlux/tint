@@ -1,4 +1,4 @@
-alias Tint.{CIELAB, HSV, RGB}
+alias Tint.{CIELAB, RGB}
 
 known_colors =
   Enum.map(
@@ -152,14 +152,14 @@ color_cluster = fn color ->
 
   cond do
     Decimal.lt?(hsv_color.saturation, "0.15") ->
-      :gray
+      :grayscale
 
     Decimal.lt?(hsv_color.value, "0.2") ->
-      :gray
+      :grayscale
 
     true ->
       Enum.find_value(cluster_table, fn {name, {min_hue, max_hue}} ->
-        if HSV.hue_between?(hsv_color, min_hue, max_hue), do: name
+        if Tint.HSV.hue_between?(hsv_color, min_hue, max_hue), do: name
       end)
   end
 end
@@ -176,13 +176,14 @@ add_color_row = fn color ->
   lab_color = Tint.to_lab(color)
 
   cluster = color_cluster.(color)
+  IO.inspect(cluster)
   clustered_palette = clustered_palettes[cluster]
 
   quant_hex_codes_with_distance =
     clustered_palette
     |> Enum.map(fn palette_color ->
       {RGB.to_hex(palette_color),
-       CIELAB.delta_e_ciede2000(lab_color, Tint.to_lab(palette_color))}
+       CIELAB.ciede2000_distance(lab_color, Tint.to_lab(palette_color))}
     end)
     |> Enum.sort_by(&elem(&1, 1))
     |> Enum.take(1)
