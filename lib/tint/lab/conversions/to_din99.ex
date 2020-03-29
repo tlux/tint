@@ -1,4 +1,4 @@
-defimpl Tint.DIN99.Convertible, for: Tint.CIELAB do
+defimpl Tint.DIN99.Convertible, for: Tint.Lab do
   alias Tint.DIN99
   alias Tint.Math
 

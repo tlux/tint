@@ -1,5 +1,5 @@
-defimpl Tint.CIELAB.Convertible, for: Tint.XYZ do
-  alias Tint.CIELAB
+defimpl Tint.Lab.Convertible, for: Tint.XYZ do
+  alias Tint.Lab
   alias Tint.Math
 
   @small_value_threshold Decimal.div(216, 24_389)
@@ -31,7 +31,7 @@ defimpl Tint.CIELAB.Convertible, for: Tint.XYZ do
         )
       )
 
-    CIELAB.new(l, a, b)
+    Lab.new(l, a, b)
   end
 
   defp inner_fun(value) do

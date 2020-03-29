@@ -3,7 +3,7 @@ defmodule Tint.SigilTest do
 
   import Tint.Sigil
 
-  alias Tint.CIELAB
+  alias Tint.Lab
   alias Tint.CMYK
   alias Tint.DIN99
   alias Tint.HSV
@@ -106,15 +106,15 @@ defmodule Tint.SigilTest do
     end
   end
 
-  describe "CIELAB color" do
+  describe "Lab color" do
     test "success" do
-      assert ~K(50.1234, 10.7643, 10.4322)l == %CIELAB{
+      assert ~K(50.1234, 10.7643, 10.4322)l == %Lab{
                lightness: Decimal.new("50.1234"),
                a: Decimal.new("10.7643"),
                b: Decimal.new("10.4322")
              }
 
-      assert ~K(50.1234,10.7643,10.4322)l == %CIELAB{
+      assert ~K(50.1234,10.7643,10.4322)l == %Lab{
                lightness: Decimal.new("50.1234"),
                a: Decimal.new("10.7643"),
                b: Decimal.new("10.4322")

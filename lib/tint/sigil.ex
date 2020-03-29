@@ -3,7 +3,7 @@ defmodule Tint.Sigil do
   A module providing a sigil to build colors.
   """
 
-  alias Tint.{CIELAB, CMYK, DIN99, HSV, RGB, XYZ}
+  alias Tint.{CMYK, DIN99, HSV, Lab, RGB, XYZ}
 
   @separator ","
 
@@ -53,7 +53,7 @@ defmodule Tint.Sigil do
   end
 
   def sigil_K(str, [?l]) do
-    apply(CIELAB, :new, extract_args(str, 3))
+    apply(Lab, :new, extract_args(str, 3))
   end
 
   def sigil_K(str, [?d]) do

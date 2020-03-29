@@ -3,7 +3,7 @@ defmodule Tint.RGBTest do
 
   import Tint.Sigil
 
-  alias Tint.CIELAB
+  alias Tint.Lab
   alias Tint.CMYK
   alias Tint.DIN99
   alias Tint.Distance.Euclidean
@@ -319,16 +319,16 @@ defmodule Tint.RGBTest do
     end
   end
 
-  describe "CIELAB.Convertible.to_lab/1" do
-    test "convert to CIELAB" do
+  describe "Lab.Convertible.to_lab/1" do
+    test "convert to Lab" do
       conversions = [
-        {RGB.new(0, 0, 0), CIELAB.new(0, 0, 0)},
-        {RGB.new(255, 255, 255), CIELAB.new(100, "0.0019", "-0.0098")},
-        {RGB.new(255, 0, 0), CIELAB.new("53.2329", "80.1068", "67.2202")}
+        {RGB.new(0, 0, 0), Lab.new(0, 0, 0)},
+        {RGB.new(255, 255, 255), Lab.new(100, "0.0019", "-0.0098")},
+        {RGB.new(255, 0, 0), Lab.new("53.2329", "80.1068", "67.2202")}
       ]
 
       Enum.each(conversions, fn {rgb, lab} ->
-        assert CIELAB.Convertible.to_lab(rgb) == lab
+        assert Lab.Convertible.to_lab(rgb) == lab
       end)
     end
   end

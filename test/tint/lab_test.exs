@@ -1,11 +1,11 @@
-defmodule Tint.CIELABTest do
+defmodule Tint.LabTest do
   use ExUnit.Case, async: true
 
-  alias Tint.CIELAB
+  alias Tint.Lab
 
   describe "new/3" do
-    test "build CIELAB color" do
-      assert CIELAB.new(50.1234, 10.7643, 10.4322) == %CIELAB{
+    test "build Lab color" do
+      assert Lab.new(50.1234, 10.7643, 10.4322) == %Lab{
                lightness: Decimal.new("50.1234"),
                a: Decimal.new("10.7643"),
                b: Decimal.new("10.4322")
@@ -29,11 +29,11 @@ defmodule Tint.CIELABTest do
     # TODO
   end
 
-  describe "CIELAB.Convertible.to_lab/1" do
-    test "convert to CIELAB" do
-      color = CIELAB.new(50, 10, 10)
+  describe "Lab.Convertible.to_lab/1" do
+    test "convert to Lab" do
+      color = Lab.new(50, 10, 10)
 
-      assert CIELAB.Convertible.to_lab(color) == color
+      assert Lab.Convertible.to_lab(color) == color
     end
   end
 end

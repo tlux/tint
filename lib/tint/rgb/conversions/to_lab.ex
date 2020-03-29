@@ -1,4 +1,4 @@
-defimpl Tint.CIELAB.Convertible, for: Tint.RGB do
+defimpl Tint.Lab.Convertible, for: Tint.RGB do
   def to_lab(color) do
     color
     |> Tint.to_xyz()

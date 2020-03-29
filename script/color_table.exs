@@ -1,5 +1,3 @@
-alias Tint.{CIELAB, RGB}
-
 known_colors =
   Enum.map(
     [
@@ -112,7 +110,7 @@ known_colors =
       "#FFC0CB",
       "#FFFFFF"
     ],
-    &RGB.from_hex!/1
+    &Tint.RGB.from_hex!/1
   )
 
 palette =
@@ -135,15 +133,15 @@ palette =
       "#5DF6FF",
       "#B357B3"
     ],
-    &RGB.from_hex!/1
+    &Tint.RGB.from_hex!/1
   )
 
 color_cluster = fn color ->
   hsv_color = Tint.to_hsv(color)
 
   cluster_table = [
-    red: {0, 35},
-    yellow: {35, 64},
+    red: {0, 23},
+    yellow: {23, 64},
     green: {64, 181},
     blue: {181, 272},
     magenta: {272, 345},
@@ -172,21 +170,30 @@ clustered_palettes =
 file = File.open!("color_table.html", [:write, :binary])
 
 add_color_row = fn color ->
-  hex_code = RGB.to_hex(color)
+  hex_code = Tint.RGB.to_hex(color)
   lab_color = Tint.to_lab(color)
 
-  cluster = color_cluster.(color)
-  IO.inspect(cluster)
-  clustered_palette = clustered_palettes[cluster]
-
-  quant_hex_codes_with_distance =
-    clustered_palette
+  quant_colors = fn palette ->
+    palette
     |> Enum.map(fn palette_color ->
-      {RGB.to_hex(palette_color),
-       CIELAB.ciede2000_distance(lab_color, Tint.to_lab(palette_color))}
+      {Tint.RGB.to_hex(palette_color),
+       Tint.Distance.CIEDE2000.ciede2000_distance(
+         lab_color,
+         Tint.to_lab(palette_color)
+       )}
     end)
     |> Enum.sort_by(&elem(&1, 1))
     |> Enum.take(1)
+  end
+
+  cluster = color_cluster.(color)
+  clustered_palette = clustered_palettes[cluster]
+
+  quant_hex_codes_with_distance =
+    Enum.uniq(
+      quant_colors.(palette) ++
+        quant_colors.(clustered_palette)
+    )
 
   IO.write(file, """
     <tr>
@@ -197,7 +204,7 @@ add_color_row = fn color ->
     IO.write(file, """
       <td style="background-color: #{quant_hex_code}">
         #{quant_hex_code}
-        <small>(#{round(distance)})</small>
+        <small>(#{distance})</small>
       </td>
     """)
   end
@@ -214,10 +221,12 @@ IO.write(file, """
 """)
 
 for color <- palette,
-    hex_code = RGB.to_hex(color) do
+    hex_code = Tint.RGB.to_hex(color),
+    cluster = color_cluster.(color) do
   IO.write(file, """
     <tr>
       <td style="background-color: #{hex_code}">#{hex_code}</td>
+      <td>#{cluster}</td>
     </tr>
   """)
 end

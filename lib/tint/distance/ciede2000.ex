@@ -60,7 +60,7 @@ defmodule Tint.Distance.CIEDE2000 do
     # 21)
     rt = calc_rt(delta_theta, rc)
     # 22)
-    # IO.inspect([CIELAB.to_tuple(color), CIELAB.to_tuple(other_color)])
+    # IO.inspect([Lab.to_tuple(color), Lab.to_tuple(other_color)])
     # IO.inspect([a_apo_1, a_apo_2], label: "a'i")
     # IO.inspect([c_apo_1, c_apo_2], label: "c'i")
     # IO.inspect([h_apo_1, h_apo_2], label: "h'i")

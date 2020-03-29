@@ -1,7 +1,7 @@
 defmodule Tint.Distance.CIEDE2000Test do
   use ExUnit.Case, async: true
 
-  alias Tint.CIELAB
+  alias Tint.Lab
   alias Tint.Distance.CIEDE2000
 
   @test_data [
@@ -13,8 +13,8 @@ defmodule Tint.Distance.CIEDE2000Test do
   describe "ciede_2000_distance/2" do
     test "matches test data" do
       for {lab_tuple_a, lab_tuple_b, distance} <- @test_data,
-          color = CIELAB.from_tuple(lab_tuple_a),
-          other_color = CIELAB.from_tuple(lab_tuple_b) do
+          color = Lab.from_tuple(lab_tuple_a),
+          other_color = Lab.from_tuple(lab_tuple_b) do
         assert_in_delta CIEDE2000.ciede2000_distance(color, other_color),
                         distance,
                         0.5

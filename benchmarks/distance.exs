@@ -1,6 +1,6 @@
 import Tint.Sigil
 
-alias Tint.{CIELAB, RGB}
+alias Tint.{Lab, RGB}
 
 color = ~K[#FF0000]
 other_color = ~K[#00FF00]
@@ -12,6 +12,6 @@ Benchee.run(%{
     RGB.euclidean_distance(color, other_color)
   end,
   "ciede2000" => fn ->
-    CIELAB.ciede2000_distance(color_in_lab, other_color_in_lab)
+    Lab.ciede2000_distance(color_in_lab, other_color_in_lab)
   end
 })

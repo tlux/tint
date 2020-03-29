@@ -1,7 +1,7 @@
 defmodule TintTest do
   use ExUnit.Case
 
-  alias Tint.CIELAB
+  alias Tint.Lab
   alias Tint.CMYK
   alias Tint.DIN99
   alias Tint.HSV
@@ -32,7 +32,7 @@ defmodule TintTest do
 
   describe "to_lab/1" do
     test "convert color to HSV" do
-      assert Tint.to_lab(@rgb_color) == CIELAB.Convertible.to_lab(@rgb_color)
+      assert Tint.to_lab(@rgb_color) == Lab.Convertible.to_lab(@rgb_color)
     end
   end
 

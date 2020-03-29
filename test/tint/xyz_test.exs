@@ -1,7 +1,7 @@
 defmodule Tint.XYZTest do
   use ExUnit.Case, async: true
 
-  alias Tint.CIELAB
+  alias Tint.Lab
   alias Tint.XYZ
 
   describe "new/3" do
@@ -14,19 +14,19 @@ defmodule Tint.XYZTest do
     end
   end
 
-  describe "Convertible.CIELAB.to_lab/1" do
-    test "convert to CIELAB" do
+  describe "Convertible.Lab.to_lab/1" do
+    test "convert to Lab" do
       conversions = [
         # #000000
-        {XYZ.new(0, 0, 0), CIELAB.new(0, 0, 0)},
+        {XYZ.new(0, 0, 0), Lab.new(0, 0, 0)},
         # #FFFFFF
-        {XYZ.new(95.05, 100, 108.9), CIELAB.new(100, 0.0019, -0.0098)},
+        {XYZ.new(95.05, 100, 108.9), Lab.new(100, 0.0019, -0.0098)},
         # ##FF0000
-        {XYZ.new(41.24, 21.26, 1.93), CIELAB.new(53.2329, 80.1068, 67.2202)}
+        {XYZ.new(41.24, 21.26, 1.93), Lab.new(53.2329, 80.1068, 67.2202)}
       ]
 
       Enum.each(conversions, fn {xyz, lab} ->
-        assert CIELAB.Convertible.to_lab(xyz) == lab
+        assert Lab.Convertible.to_lab(xyz) == lab
       end)
     end
   end

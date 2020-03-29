@@ -4,33 +4,26 @@ defmodule Tint do
   colorspaces.
   """
 
-  alias Tint.{CIELAB, CMYK, DIN99, HSV, RGB, XYZ}
+  alias Tint.{CMYK, DIN99, HSV, Lab, RGB, XYZ}
 
   @typedoc """
   A type representing a color.
   """
   @type color ::
-          CIELAB.t()
-          | CMYK.t()
+          CMYK.t()
           | DIN99.t()
           | HSV.t()
+          | Lab.t()
           | RGB.t()
           | XYZ.t()
-
-  @doc """
-  Converts the given color to CIELAB colorspace.
-  """
-  @doc since: "0.4.0"
-  @spec to_lab(color) :: CIELAB.t()
-  defdelegate to_lab(color), to: CIELAB.Convertible
 
   @doc """
   Converts the given color to CMYK colorspace.
 
   ## Example
 
-      iex> Tint.to_cmyk(Tint.RGB.new(40, 66, 67))
-      #Tint.CMYK<40.2%,1.4%,0%,73.7%>
+  iex> Tint.to_cmyk(Tint.RGB.new(40, 66, 67))
+  #Tint.CMYK<40.2%,1.4%,0%,73.7%>
   """
   @doc since: "0.3.0"
   @spec to_cmyk(color) :: CMYK.t()
@@ -48,19 +41,26 @@ defmodule Tint do
 
   ## Example
 
-      iex> Tint.to_hsv(Tint.RGB.new(255, 127, 30))
-      #Tint.HSV<25.8°,88.2%,100%>
+  iex> Tint.to_hsv(Tint.RGB.new(255, 127, 30))
+  #Tint.HSV<25.8°,88.2%,100%>
   """
   @spec to_hsv(color) :: HSV.t()
   defdelegate to_hsv(color), to: HSV.Convertible
+
+  @doc """
+  Converts the given color to CIELAB colorspace.
+  """
+  @doc since: "0.4.0"
+  @spec to_lab(color) :: Lab.t()
+  defdelegate to_lab(color), to: Lab.Convertible
 
   @doc """
   Converts the given color to RGB colorspace.
 
   ## Example
 
-      iex> Tint.to_rgb(Tint.HSV.new(25.8, 0.882, 1))
-      #Tint.RGB<255,127,30>
+  iex> Tint.to_rgb(Tint.HSV.new(25.8, 0.882, 1))
+  #Tint.RGB<255,127,30>
   """
   @spec to_rgb(color) :: RGB.t()
   defdelegate to_rgb(color), to: RGB.Convertible

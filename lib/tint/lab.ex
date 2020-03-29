@@ -1,4 +1,4 @@
-defmodule Tint.CIELAB do
+defmodule Tint.Lab do
   @moduledoc """
   A color in the CIELAB colorspace.
   """
@@ -71,7 +71,7 @@ defmodule Tint.CIELAB do
 
     def inspect(color, _opts) do
       concat([
-        "#Tint.CIELAB<",
+        "#Tint.Lab<",
         format_value(color.lightness),
         ",",
         format_value(color.a),
