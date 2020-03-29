@@ -20,9 +20,9 @@ defmodule Tint.XYZTest do
         # #000000
         {XYZ.new(0, 0, 0), CIELAB.new(0, 0, 0)},
         # #FFFFFF
-        {XYZ.new(95.05, 100, 108.9), CIELAB.new(100, 0.002, -0.010)},
+        {XYZ.new(95.05, 100, 108.9), CIELAB.new(100, 0.0019, -0.0098)},
         # ##FF0000
-        {XYZ.new(41.24, 21.26, 1.93), CIELAB.new(53.233, 80.107, 67.220)}
+        {XYZ.new(41.24, 21.26, 1.93), CIELAB.new(53.2329, 80.1068, 67.2202)}
       ]
 
       Enum.each(conversions, fn {xyz, lab} ->
@@ -31,6 +31,7 @@ defmodule Tint.XYZTest do
     end
   end
 
+  # TODO:
   # describe "Convertible.RGB.to_rgb/1" do
   #   test "convert to RGB" do
   #     conversions = [

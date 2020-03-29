@@ -109,15 +109,15 @@ defmodule Tint.SigilTest do
   describe "CIELAB color" do
     test "success" do
       assert ~K(50.1234, 10.7643, 10.4322)l == %CIELAB{
-               l: Decimal.new("50.123"),
-               a: Decimal.new("10.764"),
-               b: Decimal.new("10.432")
+               lightness: Decimal.new("50.1234"),
+               a: Decimal.new("10.7643"),
+               b: Decimal.new("10.4322")
              }
 
       assert ~K(50.1234,10.7643,10.4322)l == %CIELAB{
-               l: Decimal.new("50.123"),
-               a: Decimal.new("10.764"),
-               b: Decimal.new("10.432")
+               lightness: Decimal.new("50.1234"),
+               a: Decimal.new("10.7643"),
+               b: Decimal.new("10.4322")
              }
     end
 
@@ -137,9 +137,33 @@ defmodule Tint.SigilTest do
   end
 
   describe "DIN99 color" do
-    test "success"
+    test "success" do
+      assert ~K(50.1234, 10.7643, 10.4322)d == %DIN99{
+               lightness: Decimal.new("50.1234"),
+               a: Decimal.new("10.7643"),
+               b: Decimal.new("10.4322")
+             }
 
-    test "raise when invalid number of args"
+      assert ~K(50.1234,10.7643,10.4322)d == %DIN99{
+               lightness: Decimal.new("50.1234"),
+               a: Decimal.new("10.7643"),
+               b: Decimal.new("10.4322")
+             }
+    end
+
+    test "raise when invalid number of args" do
+      assert_raise ArgumentError,
+                   "Invalid number of args: 4 (expected 3)",
+                   fn ->
+                     ~K(50.1234,10.7643,10.4322,12)d
+                   end
+
+      assert_raise ArgumentError,
+                   "Invalid number of args: 2 (expected 3)",
+                   fn ->
+                     ~K(50.1234,10.76436)d
+                   end
+    end
   end
 
   describe "XYZ color" do

@@ -342,8 +342,8 @@ defmodule Tint.RGBTest do
     test "convert to CIELAB" do
       conversions = [
         {RGB.new(0, 0, 0), CIELAB.new(0, 0, 0)},
-        {RGB.new(255, 255, 255), CIELAB.new(100, "0.002", "-0.010")},
-        {RGB.new(255, 0, 0), CIELAB.new("53.233", "80.107", "67.220")}
+        {RGB.new(255, 255, 255), CIELAB.new(100, "0.0019", "-0.0098")},
+        {RGB.new(255, 0, 0), CIELAB.new("53.2329", "80.1068", "67.2202")}
       ]
 
       Enum.each(conversions, fn {rgb, lab} ->
@@ -383,8 +383,8 @@ defmodule Tint.RGBTest do
     test "convert to DIN99" do
       conversions = [
         {RGB.new(0, 0, 0), DIN99.new(0, 0, 0)},
-        {RGB.new(255, 255, 255), DIN99.new("100.001", "0.001", "0.007")},
-        {RGB.new(255, 0, 0), DIN99.new("64.398", "-36.332", "-10.936")}
+        {RGB.new(255, 255, 255), DIN99.new("100.0013", "0.001", "0.007")},
+        {RGB.new(255, 0, 0), DIN99.new("64.3983", "-36.3321", "-10.9365")}
       ]
 
       Enum.each(conversions, fn {rgb, din99} ->

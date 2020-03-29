@@ -15,7 +15,9 @@ defmodule Tint.Distance.CIEDE2000Test do
       for {lab_tuple_a, lab_tuple_b, distance} <- @test_data,
           color = CIELAB.from_tuple(lab_tuple_a),
           other_color = CIELAB.from_tuple(lab_tuple_b) do
-        assert_in_delta CIEDE2000.ciede2000(color, other_color), distance, 0.5
+        assert_in_delta CIEDE2000.ciede2000_distance(color, other_color),
+                        distance,
+                        0.5
       end
     end
   end

@@ -84,7 +84,9 @@ defmodule Tint.HSVTest do
 
   describe "to_tuple/1" do
     test "get tuple" do
-      assert HSV.to_tuple(HSV.new(332.763, 0.943, 0.4)) == {332.7, 0.943, 0.4}
+      assert HSV.to_tuple(HSV.new(332.763, 0.943, 0.4)) ==
+               {Decimal.new("332.7"), Decimal.new("0.943"),
+                Decimal.new("0.400")}
     end
   end
 
