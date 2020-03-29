@@ -7,10 +7,15 @@ defmodule Tint.Distance.CIEDE2000 do
   alias Tint.CIELAB
   alias Tint.Math
 
+  @deg_6_in_rad Math.deg_to_rad(6)
+  @deg_25_in_rad Math.deg_to_rad(25)
+  @deg_30_in_rad Math.deg_to_rad(30)
+  @deg_63_in_rad Math.deg_to_rad(63)
+  @deg_275_in_rad Math.deg_to_rad(275)
   @pow_25_7 Math.pow(25, 7)
 
-  @spec ciede2000(CIELAB.t(), CIELAB.t()) :: float
-  def ciede2000(color, other_color) do
+  @spec ciede2000_distance(CIELAB.t(), CIELAB.t(), Keyword.t()) :: float
+  def ciede2000_distance(color, other_color, opts \\ []) do
     # 2)
     c_star_1 = calc_c_star_i(color.a, color.b)
     c_star_2 = calc_c_star_i(other_color.a, other_color.b)
@@ -68,7 +73,16 @@ defmodule Tint.Distance.CIEDE2000 do
     # IO.inspect(sc, label: "SC")
     # IO.inspect(sh, label: "SH")
     # IO.inspect(rt, label: "RT")
-    calc_delta_e00(delta_l_apo, delta_c_apo, delta_cap_h_apo, rt, sl, sc, sh)
+    calc_delta_e00(
+      delta_l_apo,
+      delta_c_apo,
+      delta_cap_h_apo,
+      rt,
+      sl,
+      sc,
+      sh,
+      opts[:weights]
+    )
   end
 
   defp calc_c_star_i(a, b) do
@@ -166,7 +180,7 @@ defmodule Tint.Distance.CIEDE2000 do
     |> Decimal.sub(
       Decimal.mult(
         "0.17",
-        Math.cos(Decimal.sub(h_apo_dash_rad, Math.deg_to_rad(30)))
+        Math.cos(Decimal.sub(h_apo_dash_rad, @deg_30_in_rad))
       )
     )
     |> Decimal.add(
@@ -178,7 +192,7 @@ defmodule Tint.Distance.CIEDE2000 do
         Math.cos(
           Decimal.add(
             Decimal.mult(3, h_apo_dash_rad),
-            Math.deg_to_rad(6)
+            @deg_6_in_rad
           )
         )
       )
@@ -189,7 +203,7 @@ defmodule Tint.Distance.CIEDE2000 do
         Math.cos(
           Decimal.sub(
             Decimal.mult(4, h_apo_dash_rad),
-            Math.deg_to_rad(63)
+            @deg_63_in_rad
           )
         )
       )
@@ -198,14 +212,14 @@ defmodule Tint.Distance.CIEDE2000 do
 
   defp calc_delta_theta(h_apo_dash) do
     Decimal.mult(
-      Math.deg_to_rad(30),
+      @deg_30_in_rad,
       Math.exp(
         Decimal.mult(
           -1,
           Math.pow(
             Decimal.div(
-              Decimal.sub(Math.deg_to_rad(h_apo_dash), Math.deg_to_rad(275)),
-              Math.deg_to_rad(25)
+              Decimal.sub(Math.deg_to_rad(h_apo_dash), @deg_275_in_rad),
+              @deg_25_in_rad
             ),
             2
           )
@@ -254,9 +268,19 @@ defmodule Tint.Distance.CIEDE2000 do
     |> Decimal.mult(rc)
   end
 
-  defp calc_delta_e00(delta_l_apo, delta_c_apo, delta_h_apo, rt, sl, sc, sh) do
+  defp calc_delta_e00(
+         delta_l_apo,
+         delta_c_apo,
+         delta_h_apo,
+         rt,
+         sl,
+         sc,
+         sh,
+         weights
+       ) do
     # The factors kL, kC, and kH are usually unity.
-    kl = kc = kh = 1
+    {kl, kc, kh} = weights || {1, 1, 1}
+
     sc_div = Decimal.mult(kc, sc)
     sh_div = Decimal.mult(kh, sh)
 

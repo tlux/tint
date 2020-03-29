@@ -1,4 +1,4 @@
-alias Tint.{CIELAB, RGB}
+alias Tint.{CIELAB, HSV, RGB}
 
 known_colors =
   Enum.map(
@@ -138,20 +138,54 @@ palette =
     &RGB.from_hex!/1
   )
 
+color_cluster = fn color ->
+  hsv_color = Tint.to_hsv(color)
+
+  cluster_table = [
+    red: {0, 35},
+    yellow: {35, 64},
+    green: {64, 181},
+    blue: {181, 272},
+    magenta: {272, 345},
+    red: {345, 360}
+  ]
+
+  cond do
+    Decimal.lt?(hsv_color.saturation, "0.15") ->
+      :gray
+
+    Decimal.lt?(hsv_color.value, "0.2") ->
+      :gray
+
+    true ->
+      Enum.find_value(cluster_table, fn {name, {min_hue, max_hue}} ->
+        if HSV.hue_between?(hsv_color, min_hue, max_hue), do: name
+      end)
+  end
+end
+
+clustered_palettes =
+  Enum.reduce(palette, %{}, fn color, palettes ->
+    Map.update(palettes, color_cluster.(color), [color], &[color | &1])
+  end)
+
 file = File.open!("color_table.html", [:write, :binary])
 
 add_color_row = fn color ->
   hex_code = RGB.to_hex(color)
   lab_color = Tint.to_lab(color)
 
+  cluster = color_cluster.(color)
+  clustered_palette = clustered_palettes[cluster]
+
   quant_hex_codes_with_distance =
-    palette
+    clustered_palette
     |> Enum.map(fn palette_color ->
       {RGB.to_hex(palette_color),
        CIELAB.delta_e_ciede2000(lab_color, Tint.to_lab(palette_color))}
     end)
     |> Enum.sort_by(&elem(&1, 1))
-    |> Enum.take(3)
+    |> Enum.take(1)
 
   IO.write(file, """
     <tr>

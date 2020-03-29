@@ -3,11 +3,6 @@ defmodule Tint.Math do
 
   @pi Decimal.from_float(:math.pi())
 
-  @spec arctan(Decimal.decimal()) :: Decimal.t()
-  def arctan(value) do
-    decimal_as_float(value, &:math.atan/1)
-  end
-
   @spec atan2(Decimal.decimal(), Decimal.decimal()) :: Decimal.t()
   def atan2(num1, num2) do
     num2 = num2 |> Decimal.new() |> Decimal.to_float()

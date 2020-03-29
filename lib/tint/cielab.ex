@@ -47,10 +47,13 @@ defmodule Tint.CIELAB do
     {color.lightness, color.a, color.b}
   end
 
-  @spec delta_e_ciede2000(t, Convertible.t()) :: float
-  def delta_e_ciede2000(%__MODULE__{} = color, other_color) do
-    other_color = Convertible.to_lab(other_color)
-    Distance.CIEDE2000.ciede2000(color, other_color)
+  @spec ciede2000_distance(t, Convertible.t()) :: float
+  def ciede2000_distance(%__MODULE__{} = color, other_color, opts \\ []) do
+    Distance.CIEDE2000.ciede2000_distance(
+      color,
+      Convertible.to_lab(other_color),
+      opts
+    )
   end
 
   @spec nearest(t, [Convertible.t()], (t, t -> number)) ::
@@ -58,7 +61,7 @@ defmodule Tint.CIELAB do
   def nearest(
         %__MODULE__{} = color,
         palette,
-        distance_algorithm \\ &delta_e_ciede2000/2
+        distance_algorithm \\ &ciede2000_distance/2
       ) do
     Distance.nearest(color, palette, &Convertible.to_lab/1, distance_algorithm)
   end

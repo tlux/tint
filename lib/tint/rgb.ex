@@ -182,9 +182,11 @@ defmodule Tint.RGB do
   @doc since: "0.2.0"
   @spec euclidean_distance(t, Convertible.t()) :: float
   def euclidean_distance(%__MODULE__{} = color, other_color, opts \\ []) do
-    other_color = other_color |> Convertible.to_rgb() |> to_tuple()
-    weights = Keyword.get(opts, :weights, {1, 1, 1})
-    Distance.euclidean_distance(to_tuple(color), other_color, weights)
+    Distance.Euclidean.euclidean_distance(
+      color,
+      Convertible.to_rgb(other_color),
+      opts
+    )
   end
 
   @doc """
@@ -194,14 +196,7 @@ defmodule Tint.RGB do
   @doc since: "0.2.0"
   @spec human_euclidean_distance(t, Convertible.t()) :: float
   def human_euclidean_distance(%__MODULE__{} = color, other_color) do
-    weights =
-      if color.red < 128 do
-        {2, 4, 3}
-      else
-        {3, 4, 2}
-      end
-
-    euclidean_distance(color, other_color, weights: weights)
+    Distance.Euclidean.human_euclidean_distance(color, other_color)
   end
 
   @doc """
