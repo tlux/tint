@@ -20,6 +20,7 @@ defmodule Tint.MixProject do
       dialyzer: [plt_add_apps: [:ex_unit, :mix]],
       description: description(),
       package: package(),
+      aliases: aliases(),
 
       # Docs
       name: "Tint",
@@ -39,9 +40,19 @@ defmodule Tint.MixProject do
     ]
   end
 
+  defp aliases do
+    [
+      test: "test --no-start"
+    ]
+  end
+
   def application do
     [
-      extra_applications: []
+      extra_applications: [],
+      mod: {Tint.Application, []},
+      registered: [
+        Tint.DistanceCache
+      ]
     ]
   end
 

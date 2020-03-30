@@ -3,6 +3,8 @@ defmodule Tint.Distance do
   Main module providing color distance calculations.
   """
 
+  alias Tint.DistanceCache
+
   @type distance_fun :: (Tint.color(), Tint.color() -> number)
   @type distance_calculator :: module | {module, Keyword.t()} | distance_fun
 
@@ -22,11 +24,15 @@ defmodule Tint.Distance do
   def distance(color, other_color, distance_calculator)
 
   def distance(color, other_color, fun) when is_function(fun) do
-    fun.(color, other_color)
+    DistanceCache.get_or_calc({color, other_color, fun}, fn ->
+      fun.(color, other_color)
+    end)
   end
 
   def distance(color, other_color, {mod, opts}) do
-    mod.distance(color, other_color, opts)
+    DistanceCache.get_or_calc({color, other_color, mod, opts}, fn ->
+      mod.distance(color, other_color, opts)
+    end)
   end
 
   def distance(color, other_color, mod) do
