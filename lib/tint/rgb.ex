@@ -34,9 +34,9 @@ defmodule Tint.RGB do
   @spec new(Decimal.t() | number, Decimal.t() | number, Decimal.t() | number) ::
           t
   def new(red, green, blue) do
-    with {:ok, red} <- cast_component(red),
-         {:ok, green} <- cast_component(green),
-         {:ok, blue} <- cast_component(blue) do
+    with {:ok, red} <- cast_byte_channel(red),
+         {:ok, green} <- cast_byte_channel(green),
+         {:ok, blue} <- cast_byte_channel(blue) do
       %__MODULE__{red: red, green: green, blue: blue}
     else
       {:error, error} -> raise error
@@ -247,13 +247,38 @@ defmodule Tint.RGB do
 
   @doc """
   Determines whether the given color is a grayscale color which basically means
-  that the red, green and blue components of the color have the same value.
+  that the red, green and blue channels of the color have the same value.
   """
   @doc since: "0.4.0"
   @spec grayscale?(t) :: boolean
   def grayscale?(color)
   def grayscale?(%__MODULE__{red: value, green: value, blue: value}), do: true
   def grayscale?(%__MODULE__{}), do: false
+
+  @doc """
+  Determines whether the given color is grayish based on the distance of the
+  red, green an blue channels of the color.
+
+  Additionally, you have to specify a tolerance that defines how far the min and
+  the max channels may be apart from each other. A tolerance of 0 means that the
+  color has to be an exact grayscale color. A tolerance of 255 means that any
+  color is regarded gray.
+  """
+  @spec grayish?(t, non_neg_integer) :: boolean
+  def grayish?(color, tolerance)
+
+  def grayish?(color, 0), do: grayscale?(color)
+
+  def grayish?(color, tolerance) do
+    case cast_byte_channel(tolerance) do
+      {:ok, tolerance} ->
+        {min, max} = Enum.min_max([color.red, color.green, color.blue])
+        max - min <= tolerance
+
+      {:error, error} ->
+        raise error
+    end
+  end
 
   defimpl Inspect do
     import Inspect.Algebra

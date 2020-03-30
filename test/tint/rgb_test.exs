@@ -229,6 +229,42 @@ defmodule Tint.RGBTest do
     end
   end
 
+  describe "grayish?/2" do
+    test "is true for grayscale colors" do
+      assert RGB.grayish?(~K[#000000], 20) == true
+      assert RGB.grayish?(~K[#666666], 20) == true
+      assert RGB.grayish?(~K[#FFFFFF], 20) == true
+    end
+
+    test "is true for non-grayscale colors within tolerance" do
+      assert RGB.grayish?(RGB.new(12, 12, 12), 20) == true
+      assert RGB.grayish?(RGB.new(12, 32, 16), 20) == true
+      assert RGB.grayish?(RGB.new(12, 16, 32), 20) == true
+      assert RGB.grayish?(RGB.new(32, 12, 16), 20) == true
+    end
+
+    test "is false for non-grayscale colors out of tolerance" do
+      assert RGB.grayish?(~K[#FF0000], 20) == false
+      assert RGB.grayish?(~K[#000FFF], 20) == false
+      assert RGB.grayish?(~K[#99FF00], 20) == false
+      assert RGB.grayish?(~K[#FFFF00], 20) == false
+      assert RGB.grayish?(RGB.new(12, 32, 16), 10) == false
+      assert RGB.grayish?(RGB.new(12, 33, 16), 20) == false
+      assert RGB.grayish?(RGB.new(12, 16, 33), 20) == false
+      assert RGB.grayish?(RGB.new(33, 12, 16), 20) == false
+    end
+
+    test "raise when tolerance is out of range" do
+      assert_raise OutOfRangeError, "Value -1 is out of range [0,255]", fn ->
+        RGB.grayish?(RGB.new(33, 12, 16), -1)
+      end
+
+      assert_raise OutOfRangeError, "Value 256 is out of range [0,255]", fn ->
+        RGB.grayish?(RGB.new(33, 12, 16), 256)
+      end
+    end
+  end
+
   describe "human_euclidean_distance/2" do
     test "delegate to Distance.Euclidean" do
       color = ~K[#FFFF00]
@@ -324,7 +360,7 @@ defmodule Tint.RGBTest do
     end
   end
 
-  describe "to_tuple" do
+  describe "to_tuple/1" do
     test "get tuple" do
       assert RGB.to_tuple(RGB.new(123, 45, 67)) == {123, 45, 67}
     end

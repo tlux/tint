@@ -5,49 +5,49 @@ defmodule Tint.UtilsTest do
   alias Tint.Utils
   alias Tint.Utils.Interval
 
-  describe "cast_component/1" do
+  describe "cast_byte_channel/1" do
     test "with decimal" do
-      assert Utils.cast_component(Decimal.new(0)) == {:ok, 0}
-      assert Utils.cast_component(Decimal.new(1)) == {:ok, 1}
-      assert Utils.cast_component(Decimal.new(3)) == {:ok, 3}
-      assert Utils.cast_component(Decimal.new("5.23")) == {:ok, 5}
-      assert Utils.cast_component(Decimal.new("5.67")) == {:ok, 5}
-      assert Utils.cast_component(Decimal.new(255)) == {:ok, 255}
+      assert Utils.cast_byte_channel(Decimal.new(0)) == {:ok, 0}
+      assert Utils.cast_byte_channel(Decimal.new(1)) == {:ok, 1}
+      assert Utils.cast_byte_channel(Decimal.new(3)) == {:ok, 3}
+      assert Utils.cast_byte_channel(Decimal.new("5.23")) == {:ok, 5}
+      assert Utils.cast_byte_channel(Decimal.new("5.67")) == {:ok, 5}
+      assert Utils.cast_byte_channel(Decimal.new(255)) == {:ok, 255}
     end
 
     test "with float" do
-      assert Utils.cast_component(0.0) == {:ok, 0}
-      assert Utils.cast_component(1.0) == {:ok, 1}
-      assert Utils.cast_component(3.0) == {:ok, 3}
-      assert Utils.cast_component(5.23) == {:ok, 5}
-      assert Utils.cast_component(5.67) == {:ok, 5}
-      assert Utils.cast_component(255.0) == {:ok, 255}
+      assert Utils.cast_byte_channel(0.0) == {:ok, 0}
+      assert Utils.cast_byte_channel(1.0) == {:ok, 1}
+      assert Utils.cast_byte_channel(3.0) == {:ok, 3}
+      assert Utils.cast_byte_channel(5.23) == {:ok, 5}
+      assert Utils.cast_byte_channel(5.67) == {:ok, 5}
+      assert Utils.cast_byte_channel(255.0) == {:ok, 255}
     end
 
     test "with integer" do
-      assert Utils.cast_component(0) == {:ok, 0}
-      assert Utils.cast_component(1) == {:ok, 1}
-      assert Utils.cast_component(255) == {:ok, 255}
-      assert Utils.cast_component(3) == {:ok, 3}
+      assert Utils.cast_byte_channel(0) == {:ok, 0}
+      assert Utils.cast_byte_channel(1) == {:ok, 1}
+      assert Utils.cast_byte_channel(255) == {:ok, 255}
+      assert Utils.cast_byte_channel(3) == {:ok, 3}
     end
 
     test "with string" do
-      assert Utils.cast_component("0") == {:ok, 0}
-      assert Utils.cast_component("1") == {:ok, 1}
-      assert Utils.cast_component("3.0") == {:ok, 3}
-      assert Utils.cast_component("5.23") == {:ok, 5}
-      assert Utils.cast_component("5.67") == {:ok, 5}
-      assert Utils.cast_component("255.0") == {:ok, 255}
+      assert Utils.cast_byte_channel("0") == {:ok, 0}
+      assert Utils.cast_byte_channel("1") == {:ok, 1}
+      assert Utils.cast_byte_channel("3.0") == {:ok, 3}
+      assert Utils.cast_byte_channel("5.23") == {:ok, 5}
+      assert Utils.cast_byte_channel("5.67") == {:ok, 5}
+      assert Utils.cast_byte_channel("255.0") == {:ok, 255}
     end
 
     test "out of range error" do
       interval = Interval.new(0, 255)
 
-      assert Utils.cast_component(-1) ==
+      assert Utils.cast_byte_channel(-1) ==
                {:error,
                 %OutOfRangeError{orig_value: -1, value: -1, interval: interval}}
 
-      assert Utils.cast_component(256) ==
+      assert Utils.cast_byte_channel(256) ==
                {:error,
                 %OutOfRangeError{
                   orig_value: 256,
@@ -55,7 +55,7 @@ defmodule Tint.UtilsTest do
                   interval: interval
                 }}
 
-      assert Utils.cast_component(256.3) ==
+      assert Utils.cast_byte_channel(256.3) ==
                {:error,
                 %OutOfRangeError{
                   orig_value: 256.3,
@@ -63,7 +63,7 @@ defmodule Tint.UtilsTest do
                   interval: interval
                 }}
 
-      assert Utils.cast_component("256.3") ==
+      assert Utils.cast_byte_channel("256.3") ==
                {:error,
                 %OutOfRangeError{
                   orig_value: "256.3",
@@ -74,11 +74,11 @@ defmodule Tint.UtilsTest do
 
     test "invalid value" do
       assert_raise ArgumentError, fn ->
-        Utils.cast_component("invalid")
+        Utils.cast_byte_channel("invalid")
       end
 
       assert_raise FunctionClauseError, fn ->
-        Utils.cast_component(:invalid)
+        Utils.cast_byte_channel(:invalid)
       end
     end
   end
