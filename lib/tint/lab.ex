@@ -2,7 +2,7 @@ defmodule Tint.Lab do
   @moduledoc """
   A color in the CIELAB colorspace.
   """
-  @moduledoc since: "0.4.0"
+  @moduledoc since: "1.0.0"
 
   defstruct [:lightness, :a, :b]
 

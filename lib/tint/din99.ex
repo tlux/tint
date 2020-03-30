@@ -2,7 +2,7 @@ defmodule Tint.DIN99 do
   @moduledoc """
   A color in the DIN99 colorspace.
   """
-  @moduledoc since: "0.4.0"
+  @moduledoc since: "1.0.0"
 
   defstruct [:lightness, :a, :b]
 

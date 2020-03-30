@@ -2,7 +2,7 @@ defmodule Tint.XYZ do
   @moduledoc """
   A color in the XYZ (CIE 1931) colorspace.
   """
-  @moduledoc since: "0.4.0"
+  @moduledoc since: "1.0.0"
 
   defstruct [:x, :y, :z]
 

@@ -184,26 +184,9 @@ defmodule Tint.RGB do
 
   @doc """
   Finds the nearest color for the specified color using the given color palette
-  and an optional distance algorithm. Please use `nearest_color/2` or
-  `nearest_color/3` in the future.
-  """
-  @doc since: "0.2.0"
-  @deprecated "Use nearest_color/2 or nearest_color/3 instead."
-  @spec nearest(Tint.color(), [Tint.color()], Distance.distance_calculator()) ::
-          nil | Tint.color()
-  def nearest(
-        color,
-        palette,
-        distance_calculator \\ Distance.Euclidean
-      ) do
-    nearest_color(color, palette, distance_calculator)
-  end
-
-  @doc """
-  Finds the nearest color for the specified color using the given color palette
   and an optional distance algorithm.
   """
-  @doc since: "0.4.0"
+  @doc since: "1.0.0"
   @spec nearest_color(
           Tint.color(),
           [Tint.color()],
@@ -221,7 +204,7 @@ defmodule Tint.RGB do
   Finds the n nearest colors for the specified color using the given color
   palette and an optional distance algorithm.
   """
-  @doc since: "0.4.0"
+  @doc since: "1.0.0"
   @spec nearest_colors(
           Tint.color(),
           [Tint.color()],
@@ -241,7 +224,7 @@ defmodule Tint.RGB do
   Determines whether the given color is a grayscale color which basically means
   that the red, green and blue channels of the color have the same value.
   """
-  @doc since: "0.4.0"
+  @doc since: "1.0.0"
   @spec grayscale?(t) :: boolean
   def grayscale?(color)
   def grayscale?(%__MODULE__{red: value, green: value, blue: value}), do: true

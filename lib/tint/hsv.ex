@@ -63,7 +63,7 @@ defmodule Tint.HSV do
   Determines whether the given color is a grayscale color which basically means
   that saturation or the value is 0.
   """
-  @doc since: "0.4.0"
+  @doc since: "1.0.0"
   @spec grayscale?(t) :: boolean
   def grayscale?(%__MODULE__{} = color) do
     Decimal.eq?(color.saturation, 0) || Decimal.eq?(color.value, 0)
@@ -73,7 +73,7 @@ defmodule Tint.HSV do
   Checks whether the hue of the given color is in the specified bounds. This
   can be used to cluster colors by their chromaticity.
   """
-  @doc since: "0.4.0"
+  @doc since: "1.0.0"
   @spec hue_between?(
           t,
           min :: float | Decimal.decimal(),

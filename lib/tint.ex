@@ -32,7 +32,7 @@ defmodule Tint do
   @doc """
   Converts the given color to DIN99 colorspace.
   """
-  @doc since: "0.4.0"
+  @doc since: "1.0.0"
   @spec to_din99(color) :: DIN99.t()
   defdelegate to_din99(color), to: DIN99.Convertible
 
@@ -50,7 +50,7 @@ defmodule Tint do
   @doc """
   Converts the given color to CIELAB colorspace.
   """
-  @doc since: "0.4.0"
+  @doc since: "1.0.0"
   @spec to_lab(color) :: Lab.t()
   defdelegate to_lab(color), to: Lab.Convertible
 
@@ -68,7 +68,7 @@ defmodule Tint do
   @doc """
   Converts the given color to CIE XYZ colorspace.
   """
-  @doc since: "0.4.0"
+  @doc since: "1.0.0"
   @spec to_xyz(color) :: XYZ.t()
   defdelegate to_xyz(color), to: XYZ.Convertible
 end

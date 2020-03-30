@@ -268,27 +268,6 @@ defmodule Tint.RGBTest do
     end
   end
 
-  describe "nearest/2" do
-    test "delegate to nearest_color/3 with euclidean distance algorithm" do
-      color = ~K[#FF0000]
-      palette = [~K[#FCFF00], ~K[#CCFF00], ~K[#CC0000]]
-
-      assert RGB.nearest(color, palette) ==
-               RGB.nearest_color(color, palette, Euclidean)
-    end
-  end
-
-  describe "nearest/3" do
-    test "delegate to nearest_color/3 with euclidean distance algorithm" do
-      color = ~K[#FF0000]
-      palette = [~K[#FCFF00], ~K[#CCFF00], ~K[#CC0000]]
-      fun = &Euclidean.distance(&1, &2, [])
-
-      assert RGB.nearest(color, palette, fun) ==
-               RGB.nearest_color(color, palette, fun)
-    end
-  end
-
   describe "nearest_color/2" do
     test "delegate to nearest_color/3 with euclidean distance algorithm" do
       color = ~K[#FF0000]
