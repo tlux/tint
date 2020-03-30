@@ -169,28 +169,27 @@ defmodule Tint.RGB do
   # Distance
 
   @doc """
-  Calculates the distance of two colors using the
-  [Euclidean distance](https://en.wikipedia.org/wiki/Euclidean_distance)
-  algorithm.
+  Calculates the Euclidean distance of two colors.
 
   ## Options
 
   * `:weights` - A tuple defining the weights for the red, green and blue color
-    components. Defaults to `{1, 1, 1}`.
+    channels. Defaults to `{1, 1, 1}`.
   """
   @doc since: "0.2.0"
-  @spec euclidean_distance(t, Tint.color()) :: float
-  def euclidean_distance(%__MODULE__{} = color, other_color, opts \\ []) do
+  @spec euclidean_distance(Tint.color(), Tint.color(), Keyword.t()) :: float
+  def euclidean_distance(color, other_color, opts \\ []) do
     Distance.distance(color, other_color, {Distance.Euclidean, opts})
   end
 
   @doc """
   Finds the nearest color for the specified color using the given color palette
-  and an optional distance algorithm.
+  and an optional distance algorithm. Please use `nearest_color/2` or
+  `nearest_color/3` in the future.
   """
   @doc since: "0.2.0"
   @deprecated "Use nearest_color/2 or nearest_color/3 instead."
-  @spec nearest(t, [Tint.color()], Distance.distance_calculator()) ::
+  @spec nearest(Tint.color(), [Tint.color()], Distance.distance_calculator()) ::
           nil | Tint.color()
   def nearest(
         %__MODULE__{} = color,
@@ -205,10 +204,13 @@ defmodule Tint.RGB do
   and an optional distance algorithm.
   """
   @doc since: "0.4.0"
-  @spec nearest_color(t, [Tint.color()], Distance.distance_calculator()) ::
-          nil | Tint.color()
+  @spec nearest_color(
+          Tint.color(),
+          [Tint.color()],
+          Distance.distance_calculator()
+        ) :: nil | Tint.color()
   def nearest_color(
-        %__MODULE__{} = color,
+        color,
         palette,
         distance_calculator \\ Distance.Euclidean
       ) do
@@ -221,13 +223,13 @@ defmodule Tint.RGB do
   """
   @doc since: "0.4.0"
   @spec nearest_colors(
-          t,
+          Tint.color(),
           [Tint.color()],
           non_neg_integer,
           Distance.distance_calculator()
         ) :: [Tint.color()]
   def nearest_colors(
-        %__MODULE__{} = color,
+        color,
         palette,
         n,
         distance_calculator \\ Distance.Euclidean

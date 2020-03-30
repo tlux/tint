@@ -40,7 +40,7 @@ end
 
 ```elixir
 iex> Tint.RGB.new(255, 0, 0)
-#Tint.RGB<255,0,0>
+#Tint.RGB<255,0,0 (#FF0000)>
 ```
 
 or
@@ -48,7 +48,7 @@ or
 ```elixir
 iex> import Tint.Sigil
 ...> ~K[255, 0, 0]r
-#Tint.RGB<255,0,0>
+#Tint.RGB<255,0,0 (#FF0000)>
 ```
 
 #### CMYK
@@ -138,7 +138,7 @@ Currently, only RGB can be converted to any other colorspace.
 
 ```elixir
 iex> Tint.RGB.from_hex("#FF0000")
-{:ok, #Tint.RGB<255,0,0>}
+{:ok, #Tint.RGB<255,0,0 (#FF0000)>}
 ```
 
 ```elixir
@@ -156,29 +156,31 @@ Alternatively, you can use the sigil as a shortcut:
 ```elixir
 iex> import Tint.Sigil
 ...> ~K[#FF0000]
-#Tint.RGB<255,0,0>
+#Tint.RGB<255,0,0 (#FF0000)>
 ```
 
 ### Color Distance
 
 There are a couple of functions to calculate the distance between two colors.
 
-#### Euclidean Distance (ΔE)
+#### Euclidean Distance
 
-The Delta E algorithm operates on the RGB colorspace. Given colors are converted
-before calculation if needed. Delta E is very fast but may not be very precise.
-If you want maximum precision use the CIEDE2000 algorithm.
+The
+[Euclidean distance](https://en.wikipedia.org/wiki/Color_difference#Euclidean)
+can be calculated on RGB colors. Calculating the Euclidean distance is very fast
+but may not be very precise. If you want maximum precision use the CIEDE2000
+algorithm.
 
 ```elixir
-iex> Tint.Distance.Euclidean.euclidean_distance(~K[#FFFFFF], ~K[#000000])
+iex> Tint.RGB.euclidean_distance(~K[#FFFFFF], ~K[#000000])
 441.6729559300637
 ```
 
-There is an alternative implementation using weights that are optimized for
-human color perception:
+You can also define weights for the individual red, green and blue color
+channels:
 
 ```elixir
-iex> Tint.Distance.Euclidean.human_euclidean_distance(~K[#FFFFFF], ~K[#000000])
+iex> Tint.RGB.euclidean_distance(~K[#FFFFFF], ~K[#000000], weights: {2, 4, 3})
 765.0
 ```
 
@@ -186,27 +188,25 @@ To find the nearest color from a given palette:
 
 ```elixir
 iex> Tint.RGB.nearest_color(~K[#CC0000], [~K[#009900], ~K[#FF0000]])
-#Tint.RGB<255,0,0>
+#Tint.RGB<255,0,0 (#FF0000)>
 ```
 
 #### CIEDE2000
 
 [CIEDE2000](https://en.wikipedia.org/wiki/Color_difference#CIEDE2000) is an
-algorithm that operates on the CIELAB colorspace. Given colors are converted
-before calculation if needed. It is very slow compared to Delta E but it is
-optimized to human color perception.
+algorithm that operates on the CIELAB colorspace. It is very slow compared to
+the Euclidean distance algorithm but it is optimized to human color perception.
 
 ```elixir
-iex> Tint.Distance.CIEDE2000.ciede2000_distance(~K[#FF0000], ~K[#000000])
+iex> Tint.Lab.ciede2000_distance(~K[#FF0000], ~K[#000000])
 50.3905024704449
 ```
 
 To find the nearest color from a given palette:
 
 ```elixir
-iex> color = Tint.to_lab(~K[#CC0000])
-...> Tint.Lab.nearest_color(color, [~K[#009900], ~K[#FF0000]])
-#Tint.RGB<255,0,0>
+iex> Tint.Lab.nearest_color(~K[#FF0000], [~K[#009900], ~K[#CC0000]])
+#Tint.RGB<204,0,0 (#CC0000)>
 ```
 
 ## Docs

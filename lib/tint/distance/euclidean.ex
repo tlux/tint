@@ -1,7 +1,7 @@
 defmodule Tint.Distance.Euclidean do
   @moduledoc """
-  A module that implements the Euclidean distance algorithm (Delta E) for RGB
-  colors.
+  A module that implements the Euclidean distance algorithm for RGB
+  colors. (https://en.wikipedia.org/wiki/Color_difference#Euclidean)
   """
 
   @behaviour Tint.Distance

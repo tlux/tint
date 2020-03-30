@@ -19,7 +19,7 @@ defmodule Tint.Distance do
 
   @doc """
   Calculate the distance of two colors using the given distance calculator.
-  Caches the results if the distance cache is running.
+  Caches the results if `Tint.DistanceCache` is running.
   """
   @spec distance(Tint.color(), Tint.color(), distance_calculator) :: float
   def distance(color, other_color, distance_calculator)

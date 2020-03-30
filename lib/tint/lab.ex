@@ -33,6 +33,7 @@ defmodule Tint.Lab do
     |> Decimal.round(4)
   end
 
+  # TODO: Add missing docs
   @spec from_tuple(
           {lightness :: float | Decimal.decimal(),
            a :: float | Decimal.decimal(), b :: float | Decimal.decimal()}
@@ -41,6 +42,7 @@ defmodule Tint.Lab do
     new(lightness, a, b)
   end
 
+  # TODO: Add missing docs
   @spec to_tuple(t) :: {Decimal.t(), Decimal.t(), Decimal.t()}
   def to_tuple(%__MODULE__{} = color) do
     {color.lightness, color.a, color.b}
@@ -50,19 +52,27 @@ defmodule Tint.Lab do
   Calculates the distance of two colors using the CIEDE2000 algorithm. See
   `Tint.Distance.CIEDE2000` for more details.
   """
-  @spec ciede2000_distance(t, Tint.color(), Keyword.t()) :: float
-  def ciede2000_distance(%__MODULE__{} = color, other_color, opts \\ []) do
+  @spec ciede2000_distance(Tint.color(), Tint.color(), Keyword.t()) :: float
+  def ciede2000_distance(color, other_color, opts \\ []) do
     Distance.distance(color, other_color, {Distance.CIEDE2000, opts})
   end
 
   @doc """
   Gets the nearest color from the given palette using the CIEDE2000 color
   distance algorithm.
+
+  ## Options
+
+  * `:weights` - A tuple defining the weights for the LCh color channels.
+    Defaults to `{1, 1, 1}`.
   """
-  @spec nearest_color(t, [Tint.color()], Distance.distance_calculator()) ::
-          nil | Tint.color()
+  @spec nearest_color(
+          Tint.color(),
+          [Tint.color()],
+          Distance.distance_calculator()
+        ) :: nil | Tint.color()
   def nearest_color(
-        %__MODULE__{} = color,
+        color,
         palette,
         distance_calculator \\ Distance.CIEDE2000
       ) do
@@ -74,13 +84,13 @@ defmodule Tint.Lab do
   distance algorithm.
   """
   @spec nearest_colors(
-          t,
+          Tint.color(),
           [Tint.color()],
           non_neg_integer,
           Distance.distance_calculator()
         ) :: [Tint.color()]
   def nearest_colors(
-        %__MODULE__{} = color,
+        color,
         palette,
         n,
         distance_calculator \\ Distance.CIEDE2000
