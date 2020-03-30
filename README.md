@@ -27,7 +27,7 @@ The package can be installed by adding `tint` to your list of dependencies in
 ```elixir
 def deps do
   [
-    {:tint, "~> 0.4"}
+    {:tint, "1.0.0-rc.0"}
   ]
 end
 ```
