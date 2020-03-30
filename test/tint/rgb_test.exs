@@ -6,7 +6,6 @@ defmodule Tint.RGBTest do
   alias Tint.CMYK
   alias Tint.DIN99
   alias Tint.Distance.Euclidean
-  alias Tint.Distance.HumanEuclidean
   alias Tint.HSV
   alias Tint.Lab
   alias Tint.OutOfRangeError
@@ -231,6 +230,9 @@ defmodule Tint.RGBTest do
 
   describe "grayish?/2" do
     test "is true for grayscale colors" do
+      assert RGB.grayish?(~K[#000000], 0) == true
+      assert RGB.grayish?(~K[#666666], 0) == true
+      assert RGB.grayish?(~K[#FFFFFF], 0) == true
       assert RGB.grayish?(~K[#000000], 20) == true
       assert RGB.grayish?(~K[#666666], 20) == true
       assert RGB.grayish?(~K[#FFFFFF], 20) == true
@@ -244,6 +246,7 @@ defmodule Tint.RGBTest do
     end
 
     test "is false for non-grayscale colors out of tolerance" do
+      assert RGB.grayish?(~K[#FF0000], 0) == false
       assert RGB.grayish?(~K[#FF0000], 20) == false
       assert RGB.grayish?(~K[#000FFF], 20) == false
       assert RGB.grayish?(~K[#99FF00], 20) == false
@@ -265,38 +268,43 @@ defmodule Tint.RGBTest do
     end
   end
 
-  describe "human_euclidean_distance/2" do
-    test "delegate to Distance.Euclidean" do
-      color = ~K[#FFFF00]
-      other_color = ~K[#FF0000]
+  describe "nearest/2" do
+    test "delegate to nearest_color/3 with euclidean distance algorithm" do
+      color = ~K[#FF0000]
+      palette = [~K[#FCFF00], ~K[#CCFF00], ~K[#CC0000]]
 
-      assert RGB.human_euclidean_distance(color, other_color) ==
-               HumanEuclidean.distance(color, other_color, [])
+      assert RGB.nearest(color, palette) ==
+               RGB.nearest_color(color, palette, Euclidean)
+    end
+  end
+
+  describe "nearest/3" do
+    test "delegate to nearest_color/3 with euclidean distance algorithm" do
+      color = ~K[#FF0000]
+      palette = [~K[#FCFF00], ~K[#CCFF00], ~K[#CC0000]]
+      fun = &Euclidean.distance(&1, &2, [])
+
+      assert RGB.nearest(color, palette, fun) ==
+               RGB.nearest_color(color, palette, fun)
     end
   end
 
   describe "nearest_color/2" do
-    test "delegate to nearest/3 with human euclidean distance algorithm" do
+    test "delegate to nearest_color/3 with euclidean distance algorithm" do
       color = ~K[#FF0000]
       palette = [~K[#FCFF00], ~K[#CCFF00], ~K[#CC0000]]
 
       assert RGB.nearest_color(color, []) ==
-               RGB.nearest_color(color, [], HumanEuclidean)
+               RGB.nearest_color(color, [], Euclidean)
 
       assert RGB.nearest_color(color, palette) ==
-               RGB.nearest_color(
-                 color,
-                 palette,
-                 HumanEuclidean
-               )
+               RGB.nearest_color(color, palette, Euclidean)
     end
   end
 
   describe "nearest_color/3" do
     test "is nil when palette is empty" do
-      color = ~K[#FF0000]
-
-      assert RGB.nearest_color(color, [], HumanEuclidean) == nil
+      assert RGB.nearest_color(~K[#FF0000], [], Euclidean) == nil
     end
 
     test "get nearest color" do
@@ -310,44 +318,58 @@ defmodule Tint.RGBTest do
         ~K[#333333]
       ]
 
-      assert RGB.nearest_color(~K[#000000], palette, HumanEuclidean) ==
-               ~K[#333333]
-
-      assert RGB.nearest_color(~K[#004CA8], palette, HumanEuclidean) ==
-               ~K[#000FFF]
-
-      assert RGB.nearest_color(~K[#0497D6], palette, HumanEuclidean) ==
-               ~K[#00CCFF]
-
-      assert RGB.nearest_color(~K[#094F6E], palette, HumanEuclidean) ==
-               ~K[#333333]
-
-      assert RGB.nearest_color(~K[#10A110], palette, HumanEuclidean) ==
-               ~K[#00FF00]
-
-      assert RGB.nearest_color(~K[#666666], palette, HumanEuclidean) ==
-               ~K[#333333]
-
-      assert RGB.nearest_color(~K[#FF0000], palette, HumanEuclidean) ==
-               ~K[#CC0000]
-
-      assert RGB.nearest_color(~K[#FFCC00], palette, HumanEuclidean) ==
-               ~K[#FF9900]
-
-      assert RGB.nearest_color(~K[#FFEC70], palette, HumanEuclidean) ==
-               ~K[#FCFF00]
-
-      assert RGB.nearest_color(~K[#FFFFFF], palette, HumanEuclidean) ==
-               ~K[#FCFF00]
+      assert RGB.nearest_color(~K[#000000], palette, Euclidean) == ~K[#333333]
+      assert RGB.nearest_color(~K[#004CA8], palette, Euclidean) == ~K[#000FFF]
+      assert RGB.nearest_color(~K[#0497D6], palette, Euclidean) == ~K[#00CCFF]
+      assert RGB.nearest_color(~K[#094F6E], palette, Euclidean) == ~K[#333333]
+      assert RGB.nearest_color(~K[#10A110], palette, Euclidean) == ~K[#00FF00]
+      assert RGB.nearest_color(~K[#666666], palette, Euclidean) == ~K[#333333]
+      assert RGB.nearest_color(~K[#FF0000], palette, Euclidean) == ~K[#CC0000]
+      assert RGB.nearest_color(~K[#FFCC00], palette, Euclidean) == ~K[#FF9900]
+      assert RGB.nearest_color(~K[#FFEC70], palette, Euclidean) == ~K[#FCFF00]
+      assert RGB.nearest_color(~K[#FFFFFF], palette, Euclidean) == ~K[#FCFF00]
     end
   end
 
   describe "nearest_colors/3" do
-    # TODO
+    test "delegate to nearest_colors/4 with euclidean distance algorithm" do
+      color = ~K[#FF0000]
+      palette = [~K[#FCFF00], ~K[#CCFF00], ~K[#CC0000]]
+
+      assert RGB.nearest_colors(color, [], 2) ==
+               RGB.nearest_colors(color, [], 2, Euclidean)
+
+      assert RGB.nearest_colors(color, palette, 2) ==
+               RGB.nearest_colors(color, palette, 2, Euclidean)
+    end
   end
 
   describe "nearest_colors/4" do
-    # TODO
+    test "is empty list when palette is empty" do
+      assert RGB.nearest_colors(~K[#FF0000], [], 2, Euclidean) == []
+    end
+
+    test "get nearest color" do
+      palette = [
+        ~K[#FCFF00],
+        ~K[#CC0000],
+        ~K[#FF9900],
+        ~K[#000FFF],
+        ~K[#333333]
+      ]
+
+      assert RGB.nearest_colors(~K[#000000], palette, 2, Euclidean) ==
+               [~K[#333333], ~K[#CC0000]]
+
+      assert RGB.nearest_colors(~K[#004CA8], palette, 2, Euclidean) ==
+               [~K[#000FFF], ~K[#333333]]
+
+      assert RGB.nearest_colors(~K[#FF0000], palette, 3, Euclidean) ==
+               [~K[#CC0000], ~K[#FF9900], ~K[#333333]]
+
+      assert RGB.nearest_colors(~K[#FFCC00], palette, 2, Euclidean) ==
+               [~K[#FF9900], ~K[#FCFF00]]
+    end
   end
 
   describe "to_hex/1" do
@@ -366,9 +388,10 @@ defmodule Tint.RGBTest do
     end
   end
 
-  describe "Inspect.inspect/2" do
+  describe "Kernel.inspect/1" do
     test "inspect" do
-      assert inspect(RGB.new(255, 127, 30)) == "#Tint.RGB<255,127,30>"
+      assert inspect(RGB.new(255, 127, 30)) ==
+               ~s[#Tint.RGB<255,127,30 (#FF7F1E)>]
     end
   end
 

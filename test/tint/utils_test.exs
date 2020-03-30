@@ -93,7 +93,7 @@ defmodule Tint.UtilsTest do
                {:ok, Decimal.new("5.2")}
 
       assert Utils.cast_degrees(Decimal.new("5.67")) ==
-               {:ok, Decimal.new("5.6")}
+               {:ok, Decimal.new("5.7")}
 
       assert Utils.cast_degrees(Decimal.new(359)) == {:ok, Decimal.new("359.0")}
     end
@@ -103,7 +103,7 @@ defmodule Tint.UtilsTest do
       assert Utils.cast_degrees(1.0) == {:ok, Decimal.new("1.0")}
       assert Utils.cast_degrees(3.0) == {:ok, Decimal.new("3.0")}
       assert Utils.cast_degrees(5.23) == {:ok, Decimal.new("5.2")}
-      assert Utils.cast_degrees(5.67) == {:ok, Decimal.new("5.6")}
+      assert Utils.cast_degrees(5.67) == {:ok, Decimal.new("5.7")}
       assert Utils.cast_degrees(359.0) == {:ok, Decimal.new("359.0")}
     end
 
@@ -119,7 +119,7 @@ defmodule Tint.UtilsTest do
       assert Utils.cast_degrees("1") == {:ok, Decimal.new("1.0")}
       assert Utils.cast_degrees("3.0") == {:ok, Decimal.new("3.0")}
       assert Utils.cast_degrees("5.23") == {:ok, Decimal.new("5.2")}
-      assert Utils.cast_degrees("5.67") == {:ok, Decimal.new("5.6")}
+      assert Utils.cast_degrees("5.67") == {:ok, Decimal.new("5.7")}
       assert Utils.cast_degrees("359.0") == {:ok, Decimal.new("359.0")}
     end
 

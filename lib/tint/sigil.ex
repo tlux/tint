@@ -23,17 +23,37 @@ defmodule Tint.Sigil do
   does:
 
       iex> ~K[#FFCC00]
-      #Tint.RGB<255,204,0>
+      #Tint.RGB<255,204,0 (#FFCC00)>
 
   Or using the red, green and blue components using the `r` modifier.
 
       iex> ~K[255,204,0]r
-      #Tint.RGB<255,204,0>
+      #Tint.RGB<255,204,0 (#FFCC00)>
 
   HSV colors are also supported using the `h` modifier.
 
       iex> ~K[48,1,1]h
       #Tint.HSV<48°,100%,100%>
+
+  CMYK colors are supported using the `c` modifier.
+
+      iex> ~K[0.06, 0.32, 0.8846, 0.23]c
+      #Tint.CMYK<6%,32%,88.4%,23%>
+
+  CIELAB colors are supported using the `l` modifier.
+
+      iex> ~K[50.1234,10.7643,10.4322]l
+      #Tint.Lab<50.1234,10.7643,10.4322>
+
+  DIN99 colors are supported using the `d` modifier.
+
+      iex> ~K[50.1234,10.7643,10.4322]d
+      #Tint.DIN99<50.1234,10.7643,10.4322>
+
+  XYZ colors are supported using the `x` modifier.
+
+      iex> ~K[50.9505,1,1.09]x
+      #Tint.XYZ<50.9505,1,1.09>
   """
   @spec sigil_K(String.t(), [char]) :: Tint.color()
   def sigil_K(str, []) do

@@ -47,22 +47,45 @@ defmodule Tint.Lab do
   end
 
   @doc """
-  Implements the CIEDE2000 color distance algorithm as described here:
-  http://www2.ece.rochester.edu/~gsharma/ciede2000/ciede2000noteCRNA.pdf
+  Calculates the distance of two colors using the CIEDE2000 algorithm. See
+  `Tint.Distance.CIEDE2000` for more details.
   """
   @spec ciede2000_distance(t, Tint.color(), Keyword.t()) :: float
   def ciede2000_distance(%__MODULE__{} = color, other_color, opts \\ []) do
     Distance.distance(color, other_color, {Distance.CIEDE2000, opts})
   end
 
-  @spec nearest_color(t, [Tint.color()]) :: nil | Tint.color()
-  def nearest_color(%__MODULE__{} = color, palette) do
-    Distance.nearest_color(color, palette, Distance.CIEDE2000)
+  @doc """
+  Gets the nearest color from the given palette using the CIEDE2000 color
+  distance algorithm.
+  """
+  @spec nearest_color(t, [Tint.color()], Distance.distance_calculator()) ::
+          nil | Tint.color()
+  def nearest_color(
+        %__MODULE__{} = color,
+        palette,
+        distance_calculator \\ Distance.CIEDE2000
+      ) do
+    Distance.nearest_color(color, palette, distance_calculator)
   end
 
-  @spec nearest_colors(t, [Tint.color()], non_neg_integer) :: [Tint.color()]
-  def nearest_colors(%__MODULE__{} = color, palette, n) do
-    Distance.nearest_colors(color, palette, n, Distance.CIEDE2000)
+  @doc """
+  Gets the n nearest colors from the given palette using the CIEDE2000 color
+  distance algorithm.
+  """
+  @spec nearest_colors(
+          t,
+          [Tint.color()],
+          non_neg_integer,
+          Distance.distance_calculator()
+        ) :: [Tint.color()]
+  def nearest_colors(
+        %__MODULE__{} = color,
+        palette,
+        n,
+        distance_calculator \\ Distance.CIEDE2000
+      ) do
+    Distance.nearest_colors(color, palette, n, distance_calculator)
   end
 
   defimpl Inspect do

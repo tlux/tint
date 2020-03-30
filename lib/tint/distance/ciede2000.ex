@@ -1,5 +1,8 @@
 defmodule Tint.Distance.CIEDE2000 do
-  @moduledoc false
+  @moduledoc """
+  A module that implements the CIEDE2000 color distance algorithm.
+  (http://www2.ece.rochester.edu/~gsharma/ciede2000/ciede2000noteCRNA.pdf)
+  """
 
   @behaviour Tint.Distance
 
@@ -62,18 +65,6 @@ defmodule Tint.Distance.CIEDE2000 do
     # 21)
     rt = calc_rt(delta_theta, rc)
     # 22)
-    # IO.inspect([Lab.to_tuple(color), Lab.to_tuple(other_color)])
-    # IO.inspect([a_apo_1, a_apo_2], label: "a'i")
-    # IO.inspect([c_apo_1, c_apo_2], label: "c'i")
-    # IO.inspect([h_apo_1, h_apo_2], label: "h'i")
-    # IO.inspect(h_apo_dash, label: "h'-")
-    # IO.inspect(g, label: "G")
-    # IO.inspect(t, label: "T")
-    # IO.inspect(delta_theta, label: "delta theta")
-    # IO.inspect(sl, label: "SL")
-    # IO.inspect(sc, label: "SC")
-    # IO.inspect(sh, label: "SH")
-    # IO.inspect(rt, label: "RT")
     calc_delta_e00(
       delta_l_apo,
       delta_c_apo,
@@ -281,6 +272,9 @@ defmodule Tint.Distance.CIEDE2000 do
        ) do
     # The factors kL, kC, and kH are usually unity.
     {kl, kc, kh} = weights || {1, 1, 1}
+    kl = Decimal.cast(kl)
+    kc = Decimal.cast(kc)
+    kh = Decimal.cast(kh)
 
     sc_div = Decimal.mult(kc, sc)
     sh_div = Decimal.mult(kh, sh)

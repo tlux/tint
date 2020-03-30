@@ -5,13 +5,13 @@ defmodule Tint.DistanceCacheTest do
 
   describe "get_or_put/3" do
     test "store and get new value" do
-      start_supervised!({DistanceCache, size: 1000})
+      start_supervised!(DistanceCache)
 
       assert DistanceCache.get_or_put("foo", fn -> 1.234 end) == 1.234
       assert DistanceCache.get_or_put("bar", fn -> 6.66 end) == 6.66
 
       assert :sys.get_state(DistanceCache) == %{
-               size: 1000,
+               size: 100,
                results: %{"foo" => 1.234, "bar" => 6.66},
                keys: :queue.from_list(["foo", "bar"]),
                count: 2
@@ -19,13 +19,13 @@ defmodule Tint.DistanceCacheTest do
     end
 
     test "get cached value" do
-      start_supervised!({DistanceCache, size: 1000})
+      start_supervised!(DistanceCache)
 
       assert DistanceCache.get_or_put("bar", fn -> 1.234 end) == 1.234
       assert DistanceCache.get_or_put("bar", fn -> 6.66 end) == 1.234
 
       assert :sys.get_state(DistanceCache) == %{
-               size: 1000,
+               size: 100,
                results: %{"bar" => 1.234},
                keys: :queue.from_list(["bar"]),
                count: 1

@@ -1,6 +1,7 @@
 {
   "skip_files": [
-    "deps"
+    "lib/tint/application.ex",
+    "test/support"
   ],
   "terminal_options": {
     "file_column_width": 80

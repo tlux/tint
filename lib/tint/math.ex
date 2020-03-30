@@ -71,12 +71,6 @@ defmodule Tint.Math do
     Decimal.mult(value, Decimal.div(@pi, 180))
   end
 
-  @spec rem(Decimal.decimal(), Decimal.decimal()) :: Decimal.t()
-  def rem(numerator, denominator) do
-    {_, result} = Decimal.div_rem(numerator, denominator)
-    result
-  end
-
   @spec sin(Decimal.decimal()) :: Decimal.t()
   def sin(value) do
     decimal_as_float(value, &:math.sin/1)

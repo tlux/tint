@@ -30,10 +30,17 @@ defmodule Tint.MixProject do
         extras: ["README.md"],
         groups_for_modules: [
           Colorspaces: [
-            Tint.Lab,
             Tint.CMYK,
+            Tint.DIN99,
             Tint.HSV,
-            Tint.RGB
+            Tint.Lab,
+            Tint.RGB,
+            Tint.XYZ
+          ],
+          "Color Distance": [
+            Tint.Distance,
+            Tint.Distance.CIEDE2000,
+            Tint.Distance.Euclidean
           ]
         ]
       ]

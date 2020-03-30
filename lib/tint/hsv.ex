@@ -80,8 +80,13 @@ defmodule Tint.HSV do
           max :: float | Decimal.decimal()
         ) :: boolean
   def hue_between?(%__MODULE__{} = color, min, max) do
-    Decimal.cmp(color.hue, Decimal.cast(min)) in [:gt, :eq] &&
-      Decimal.lt?(color.hue, Decimal.cast(max))
+    with {:ok, min} <- cast_inclusive_degrees(min),
+         {:ok, max} <- cast_inclusive_degrees(max) do
+      Decimal.cmp(color.hue, Decimal.cast(min)) in [:gt, :eq] &&
+        Decimal.lt?(color.hue, Decimal.cast(max))
+    else
+      {:error, error} -> raise error
+    end
   end
 
   defimpl Inspect do

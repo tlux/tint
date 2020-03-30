@@ -1,3 +1,3 @@
 use Mix.Config
 
-config :tint, distance_cache_size: 0
+config :tint, distance_cache_size: 100

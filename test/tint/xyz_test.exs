@@ -14,7 +14,13 @@ defmodule Tint.XYZTest do
     end
   end
 
-  describe "Convertible.Lab.to_lab/1" do
+  describe "Inspect.inspect/1" do
+    test "inspect" do
+      assert inspect(XYZ.new(0.9505, 1, 1.09)) == "#Tint.XYZ<0.9505,1,1.09>"
+    end
+  end
+
+  describe "Lab.Convertible.to_lab/1" do
     test "convert to Lab" do
       conversions = [
         # #000000
@@ -31,18 +37,11 @@ defmodule Tint.XYZTest do
     end
   end
 
-  # TODO:
-  # describe "Convertible.RGB.to_rgb/1" do
-  #   test "convert to RGB" do
-  #     conversions = [
-  #       {XYZ.new(0, 0, 0), RGB.new(0, 0, 0)},
-  #       {XYZ.new(42.282, 74.129, 46.262), RGB.new(0, 255, 162)},
-  #       {XYZ.new(95.05, 100, 108.9), RGB.new(255, 255, 255)}
-  #     ]
+  describe "XYZ.Convertible.to_xyz/1" do
+    test "convert to DIN99" do
+      color = XYZ.new(95.05, 100, 108.9)
 
-  #     Enum.each(conversions, fn {xyz, rgb} ->
-  #       assert RGB.Convertible.to_rgb(xyz) == rgb
-  #     end)
-  #   end
-  # end
+      assert XYZ.Convertible.to_xyz(color) == color
+    end
+  end
 end
