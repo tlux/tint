@@ -169,15 +169,15 @@ defmodule Tint.SigilTest do
   describe "XYZ color" do
     test "success" do
       assert ~K(0.9505, 1, 1.09)x == %XYZ{
-               x: Decimal.new("0.951"),
-               y: Decimal.new("1.000"),
-               z: Decimal.new("1.090")
+               x: Decimal.new("0.9505"),
+               y: Decimal.new("1.0000"),
+               z: Decimal.new("1.0900")
              }
 
       assert ~K(0.9505,1,1.09)x == %XYZ{
-               x: Decimal.new("0.951"),
-               y: Decimal.new("1.000"),
-               z: Decimal.new("1.090")
+               x: Decimal.new("0.9505"),
+               y: Decimal.new("1.0000"),
+               z: Decimal.new("1.0900")
              }
     end
 

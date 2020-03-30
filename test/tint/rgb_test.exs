@@ -438,7 +438,7 @@ defmodule Tint.RGBTest do
     test "convert to XYZ" do
       conversions = [
         {RGB.new(0, 0, 0), XYZ.new(0, 0, 0)},
-        {RGB.new(0, 255, 162), XYZ.new(42.282, 74.129, 46.262)},
+        {RGB.new(0, 255, 162), XYZ.new(42.2816, 74.1286, 46.2622)},
         {RGB.new(255, 255, 255), XYZ.new(95.05, 100, 108.9)}
       ]
 

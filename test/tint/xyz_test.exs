@@ -7,9 +7,9 @@ defmodule Tint.XYZTest do
   describe "new/3" do
     test "build XYZ color" do
       assert XYZ.new(0.9505, 1, 1.09) == %XYZ{
-               x: Decimal.new("0.951"),
-               y: Decimal.new("1.000"),
-               z: Decimal.new("1.090")
+               x: Decimal.new("0.9505"),
+               y: Decimal.new("1.0000"),
+               z: Decimal.new("1.0900")
              }
     end
   end

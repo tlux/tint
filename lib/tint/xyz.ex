@@ -20,7 +20,7 @@ defmodule Tint.XYZ do
   defp cast_value(value) do
     value
     |> Decimal.cast()
-    |> Decimal.round(3)
+    |> Decimal.round(4)
   end
 
   defimpl Inspect do
