@@ -3,9 +3,7 @@ defmodule Tint.Sigil do
   A module providing a sigil to build colors.
   """
 
-  alias Tint.CMYK
-  alias Tint.HSV
-  alias Tint.RGB
+  alias Tint.{CMYK, DIN99, HSV, Lab, RGB, XYZ}
 
   @separator ","
 
@@ -25,17 +23,37 @@ defmodule Tint.Sigil do
   does:
 
       iex> ~K[#FFCC00]
-      #Tint.RGB<255,204,0>
+      #Tint.RGB<255,204,0 (#FFCC00)>
 
   Or using the red, green and blue components using the `r` modifier.
 
       iex> ~K[255,204,0]r
-      #Tint.RGB<255,204,0>
+      #Tint.RGB<255,204,0 (#FFCC00)>
 
   HSV colors are also supported using the `h` modifier.
 
       iex> ~K[48,1,1]h
       #Tint.HSV<48°,100%,100%>
+
+  CMYK colors are supported using the `c` modifier.
+
+      iex> ~K[0.06, 0.32, 0.8846, 0.23]c
+      #Tint.CMYK<6%,32%,88.4%,23%>
+
+  CIELAB colors are supported using the `l` modifier.
+
+      iex> ~K[50.1234,10.7643,10.4322]l
+      #Tint.Lab<50.1234,10.7643,10.4322>
+
+  DIN99 colors are supported using the `d` modifier.
+
+      iex> ~K[50.1234,10.7643,10.4322]d
+      #Tint.DIN99<50.1234,10.7643,10.4322>
+
+  XYZ colors are supported using the `x` modifier.
+
+      iex> ~K[50.9505,1,1.09]x
+      #Tint.XYZ<50.9505,1,1.09>
   """
   @spec sigil_K(String.t(), [char]) :: Tint.color()
   def sigil_K(str, []) do
@@ -52,6 +70,18 @@ defmodule Tint.Sigil do
 
   def sigil_K(str, [?c]) do
     apply(CMYK, :new, extract_args(str, 4))
+  end
+
+  def sigil_K(str, [?l]) do
+    apply(Lab, :new, extract_args(str, 3))
+  end
+
+  def sigil_K(str, [?d]) do
+    apply(DIN99, :new, extract_args(str, 3))
+  end
+
+  def sigil_K(str, [?x]) do
+    apply(XYZ, :new, extract_args(str, 3))
   end
 
   defp extract_args(str, expected_count) do

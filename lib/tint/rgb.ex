@@ -5,7 +5,7 @@ defmodule Tint.RGB do
 
   import Tint.Utils
 
-  alias Tint.RGB.Convertible
+  alias Tint.Distance
   alias Tint.RGB.HexCode
 
   defstruct [:red, :green, :blue]
@@ -23,10 +23,10 @@ defmodule Tint.RGB do
   ## Examples
 
       iex> Tint.RGB.new(0, 0, 0)
-      #Tint.RGB<0,0,0>
+      #Tint.RGB<0,0,0 (#000000)>
 
       iex> Tint.RGB.new(255, 127, 30)
-      #Tint.RGB<255,127,30>
+      #Tint.RGB<255,127,30 (#FF7F1E)>
 
       iex> Tint.RGB.new(256, -1, 0)
       ** (Tint.OutOfRangeError) Value 256 is out of range [0,255]
@@ -34,38 +34,13 @@ defmodule Tint.RGB do
   @spec new(Decimal.t() | number, Decimal.t() | number, Decimal.t() | number) ::
           t
   def new(red, green, blue) do
-    with {:ok, red} <- cast_component(red),
-         {:ok, green} <- cast_component(green),
-         {:ok, blue} <- cast_component(blue) do
+    with {:ok, red} <- cast_byte_channel(red),
+         {:ok, green} <- cast_byte_channel(green),
+         {:ok, blue} <- cast_byte_channel(blue) do
       %__MODULE__{red: red, green: green, blue: blue}
     else
       {:error, error} -> raise error
     end
-  end
-
-  @doc """
-  Calculates the distance of two colors using the
-  [Euclidean distance](https://en.wikipedia.org/wiki/Euclidean_distance)
-  algorithm.
-
-  ## Options
-
-  * `:weights` - A tuple defining the weights for the red, green and blue color
-    components. Defaults to `{1, 1, 1}`.
-  """
-  @doc since: "0.2.0"
-  @spec euclidean_distance(t, Convertible.t()) :: float
-  def euclidean_distance(%__MODULE__{} = color, other_color, opts \\ []) do
-    other_color = Convertible.to_rgb(other_color)
-
-    {red_weight, green_weight, blue_weight} =
-      Keyword.get(opts, :weights, {1, 1, 1})
-
-    :math.sqrt(
-      red_weight * :math.pow(color.red - other_color.red, 2) +
-        green_weight * :math.pow(color.green - other_color.green, 2) +
-        blue_weight * :math.pow(color.blue - other_color.blue, 2)
-    )
   end
 
   @doc """
@@ -91,7 +66,7 @@ defmodule Tint.RGB do
   ## Examples
 
       iex> Tint.RGB.from_hex!("#FF7F1E")
-      #Tint.RGB<255,127,30>
+      #Tint.RGB<255,127,30 (#FF7F1E)>
 
       iex> Tint.RGB.from_hex!("invalid")
       ** (ArgumentError) Invalid hex code: invalid
@@ -110,7 +85,7 @@ defmodule Tint.RGB do
   ## Example
 
       iex> Tint.RGB.from_ratios(1, 0.5, 0)
-      #Tint.RGB<255,128,0>
+      #Tint.RGB<255,128,0 (#FF8000)>
   """
   @spec from_ratios(
           Decimal.t() | number,
@@ -145,51 +120,13 @@ defmodule Tint.RGB do
   ## Example
 
       iex> Tint.RGB.from_tuple({255, 127, 30})
-      #Tint.RGB<255,127,30>
+      #Tint.RGB<255,127,30 (#FF7F1E)>
   """
   @spec from_tuple(
           {Decimal.t() | number, Decimal.t() | number, Decimal.t() | number}
         ) :: t
   def from_tuple({red, green, blue}) do
     new(red, green, blue)
-  end
-
-  @doc """
-  A version of the Euclidean distance algorithm that uses weights that are
-  optimized for human color perception.
-  """
-  @doc since: "0.2.0"
-  @spec human_euclidean_distance(t, Convertible.t()) :: float
-  def human_euclidean_distance(%__MODULE__{} = color, other_color) do
-    weights =
-      if color.red < 128 do
-        {2, 4, 3}
-      else
-        {3, 4, 2}
-      end
-
-    euclidean_distance(color, other_color, weights: weights)
-  end
-
-  @doc """
-  Finds the nearest color for the specified color using the given color palette
-  and an optional distance algorithm.
-  """
-  @doc since: "0.2.0"
-  @spec nearest(t(), [Convertible.t()], (t, t -> number)) ::
-          nil | Convertible.t()
-  def nearest(
-        %__MODULE__{} = color,
-        palette,
-        distance_algorithm \\ &human_euclidean_distance/2
-      ) do
-    Enum.min_by(
-      palette,
-      fn other_color ->
-        distance_algorithm.(color, Convertible.to_rgb(other_color))
-      end,
-      fn -> nil end
-    )
   end
 
   @doc """
@@ -217,7 +154,7 @@ defmodule Tint.RGB do
   defp calc_ratio(value), do: Decimal.div(value, 255)
 
   @doc """
-  Converts RGB color into a tuple containing the red, green and blue parts.
+  Converts a RGB color into a tuple containing the red, green and blue channels.
 
   ## Example
 
@@ -229,118 +166,112 @@ defmodule Tint.RGB do
     {color.red, color.green, color.blue}
   end
 
+  # Distance
+
+  @doc """
+  Calculates the Euclidean distance of two colors.
+
+  ## Options
+
+  * `:weights` - A tuple defining the weights for the red, green and blue color
+    channels. Defaults to `{1, 1, 1}`.
+  """
+  @doc since: "0.2.0"
+  @spec euclidean_distance(Tint.color(), Tint.color(), Keyword.t()) :: float
+  def euclidean_distance(color, other_color, opts \\ []) do
+    Distance.distance(color, other_color, {Distance.Euclidean, opts})
+  end
+
+  @doc """
+  Finds the nearest color for the specified color using the given color palette
+  and an optional distance algorithm.
+  """
+  @doc since: "1.0.0"
+  @spec nearest_color(
+          Tint.color(),
+          [Tint.color()],
+          Distance.distance_calculator()
+        ) :: nil | Tint.color()
+  def nearest_color(
+        color,
+        palette,
+        distance_calculator \\ Distance.Euclidean
+      ) do
+    Distance.nearest_color(color, palette, distance_calculator)
+  end
+
+  @doc """
+  Finds the n nearest colors for the specified color using the given color
+  palette and an optional distance algorithm.
+  """
+  @doc since: "1.0.0"
+  @spec nearest_colors(
+          Tint.color(),
+          [Tint.color()],
+          non_neg_integer,
+          Distance.distance_calculator()
+        ) :: [Tint.color()]
+  def nearest_colors(
+        color,
+        palette,
+        n,
+        distance_calculator \\ Distance.Euclidean
+      ) do
+    Distance.nearest_colors(color, palette, n, distance_calculator)
+  end
+
+  @doc """
+  Determines whether the given color is a grayscale color which basically means
+  that the red, green and blue channels of the color have the same value.
+  """
+  @doc since: "1.0.0"
+  @spec grayscale?(t) :: boolean
+  def grayscale?(color)
+  def grayscale?(%__MODULE__{red: value, green: value, blue: value}), do: true
+  def grayscale?(%__MODULE__{}), do: false
+
+  @doc """
+  Determines whether the given color is grayish based on the distance of the
+  red, green an blue channels of the color.
+
+  Additionally, you have to specify a tolerance that defines how far the min and
+  the max channels may be apart from each other. A tolerance of 0 means that the
+  color has to be an exact grayscale color. A tolerance of 255 means that any
+  color is regarded gray.
+  """
+  @spec grayish?(t, non_neg_integer) :: boolean
+  def grayish?(color, tolerance)
+
+  def grayish?(color, 0), do: grayscale?(color)
+
+  def grayish?(color, tolerance) do
+    case cast_byte_channel(tolerance) do
+      {:ok, tolerance} ->
+        {min, max} = Enum.min_max([color.red, color.green, color.blue])
+        max - min <= tolerance
+
+      {:error, error} ->
+        raise error
+    end
+  end
+
   defimpl Inspect do
     import Inspect.Algebra
 
-    def inspect(rgb, opts) do
+    alias Tint.RGB
+
+    def inspect(color, opts) do
       concat([
         "#Tint.RGB<",
-        to_doc(rgb.red, opts),
+        to_doc(color.red, opts),
         ",",
-        to_doc(rgb.green, opts),
+        to_doc(color.green, opts),
         ",",
-        to_doc(rgb.blue, opts),
-        ">"
+        to_doc(color.blue, opts),
+        " (",
+        RGB.to_hex(color),
+        ")>"
       ])
     end
-  end
-
-  defimpl Tint.CMYK.Convertible do
-    alias Tint.CMYK
-    alias Tint.RGB
-
-    def to_cmyk(%{red: 0, green: 0, blue: 0}) do
-      CMYK.new(0, 0, 0, 1)
-    end
-
-    def to_cmyk(color) do
-      {red_ratio, green_ratio, blue_ratio} = RGB.to_ratios(color)
-
-      max_ratio =
-        Enum.reduce([red_ratio, green_ratio, blue_ratio], &Decimal.max/2)
-
-      key = Decimal.sub(1, max_ratio)
-      cyan = calc_value(key, red_ratio)
-      magenta = calc_value(key, green_ratio)
-      yellow = calc_value(key, blue_ratio)
-
-      CMYK.new(cyan, magenta, yellow, key)
-    end
-
-    defp calc_value(key, ratio) do
-      dividend = 1 |> Decimal.sub(ratio) |> Decimal.sub(key)
-      divisor = Decimal.sub(1, key)
-      Decimal.div(dividend, divisor)
-    end
-  end
-
-  defimpl Tint.HSV.Convertible do
-    alias Tint.HSV
-    alias Tint.RGB
-
-    def to_hsv(color) do
-      rgb_ratios = RGB.to_ratios(color)
-      rgb_ratio_list = Tuple.to_list(rgb_ratios)
-      min_ratio = Enum.reduce(rgb_ratio_list, &Decimal.min(&1, &2))
-      max_ratio = Enum.reduce(rgb_ratio_list, &Decimal.max(&1, &2))
-      ratio_delta = Decimal.sub(max_ratio, min_ratio)
-
-      hue = calc_hue(ratio_delta, max_ratio, rgb_ratios)
-      saturation = calc_saturation(ratio_delta, max_ratio)
-
-      HSV.new(hue, saturation, max_ratio)
-    end
-
-    defp calc_hue(ratio_delta, max_ratio, rgb_ratios) do
-      hue = do_calc_hue(ratio_delta, max_ratio, rgb_ratios)
-
-      if Decimal.lt?(hue, 0) do
-        Decimal.add(hue, 360)
-      else
-        hue
-      end
-    end
-
-    defp do_calc_hue(ratio_delta, max_ratio, {
-           red_ratio,
-           green_ratio,
-           blue_ratio
-         }) do
-      cond do
-        Decimal.eq?(ratio_delta, 0) ->
-          Decimal.new(0)
-
-        Decimal.eq?(red_ratio, max_ratio) ->
-          calc_hue_component(green_ratio, blue_ratio, ratio_delta, 0)
-
-        Decimal.eq?(green_ratio, max_ratio) ->
-          calc_hue_component(blue_ratio, red_ratio, ratio_delta, 2)
-
-        Decimal.eq?(blue_ratio, max_ratio) ->
-          calc_hue_component(red_ratio, green_ratio, ratio_delta, 4)
-      end
-    end
-
-    defp calc_hue_component(first_ratio, second_ratio, ratio_delta, offset) do
-      Decimal.mult(
-        60,
-        Decimal.add(
-          Decimal.div(Decimal.sub(first_ratio, second_ratio), ratio_delta),
-          offset
-        )
-      )
-    end
-
-    defp calc_saturation(ratio_delta, max_ratio) do
-      if Decimal.eq?(ratio_delta, 0) do
-        Decimal.new(0)
-      else
-        Decimal.div(ratio_delta, max_ratio)
-      end
-    end
-  end
-
-  defimpl Tint.RGB.Convertible do
-    def to_rgb(color), do: color
   end
 end

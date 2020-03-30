@@ -4,8 +4,8 @@ defmodule Tint.MixProject do
   def project do
     [
       app: :tint,
-      version: "0.3.1",
-      elixir: "~> 1.7",
+      version: "1.0.0-rc.0",
+      elixir: "~> 1.8",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -20,6 +20,7 @@ defmodule Tint.MixProject do
       dialyzer: [plt_add_apps: [:ex_unit, :mix]],
       description: description(),
       package: package(),
+      aliases: aliases(),
 
       # Docs
       name: "Tint",
@@ -30,22 +31,35 @@ defmodule Tint.MixProject do
         groups_for_modules: [
           Colorspaces: [
             Tint.CMYK,
+            Tint.DIN99,
             Tint.HSV,
-            Tint.RGB
+            Tint.Lab,
+            Tint.RGB,
+            Tint.XYZ
           ],
-          "Conversion Protocols": [
-            Tint.CMYK.Convertible,
-            Tint.HSV.Convertible,
-            Tint.RGB.Convertible
+          "Color Distance": [
+            Tint.Distance,
+            Tint.Distance.CIEDE2000,
+            Tint.Distance.Euclidean
           ]
         ]
       ]
     ]
   end
 
+  defp aliases do
+    [
+      test: "test --no-start"
+    ]
+  end
+
   def application do
     [
-      extra_applications: []
+      extra_applications: [],
+      mod: {Tint.Application, []},
+      registered: [
+        Tint.DistanceCache
+      ]
     ]
   end
 
@@ -56,6 +70,7 @@ defmodule Tint.MixProject do
 
   defp deps do
     [
+      {:benchee, "~> 1.0", only: :dev},
       {:credo, "~> 1.0.5", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0.0-rc.6", only: [:dev, :test], runtime: false},
       {:decimal, "~> 1.0"},

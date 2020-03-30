@@ -2,20 +2,23 @@ defmodule Tint.HSVTest do
   use ExUnit.Case, async: true
 
   alias Tint.CMYK
+  alias Tint.DIN99
   alias Tint.HSV
+  alias Tint.Lab
   alias Tint.OutOfRangeError
   alias Tint.RGB
+  alias Tint.XYZ
 
   describe "new/1" do
     test "build HSV color" do
       assert HSV.new(332.763, 0.94356, 0.4) == %HSV{
-               hue: Decimal.new("332.7"),
+               hue: Decimal.new("332.8"),
                saturation: Decimal.new("0.943"),
                value: Decimal.new("0.400")
              }
 
       assert HSV.new("332.763", "0.94356", "0.4343") == %HSV{
-               hue: Decimal.new("332.7"),
+               hue: Decimal.new("332.8"),
                saturation: Decimal.new("0.943"),
                value: Decimal.new("0.434")
              }
@@ -68,7 +71,7 @@ defmodule Tint.HSVTest do
 
   describe "from_tuple/1" do
     test "convert tuple to HSV struct" do
-      assert HSV.from_tuple({332.763, 0.943, 0.4}) == HSV.new(332.7, 0.943, 0.4)
+      assert HSV.from_tuple({332.763, 0.943, 0.4}) == HSV.new(332.8, 0.943, 0.4)
     end
 
     test "raise when invalid arg given" do
@@ -84,14 +87,61 @@ defmodule Tint.HSVTest do
 
   describe "to_tuple/1" do
     test "get tuple" do
-      assert HSV.to_tuple(HSV.new(332.763, 0.943, 0.4)) == {332.7, 0.943, 0.4}
+      assert HSV.to_tuple(HSV.new(332.763, 0.943, 0.4)) ==
+               {Decimal.new("332.8"), Decimal.new("0.943"),
+                Decimal.new("0.400")}
     end
   end
 
-  describe "Inspect.inspect/2" do
+  describe "grayscale?/1" do
+    test "true when color is grayscale color" do
+      assert HSV.grayscale?(HSV.new(0, 1, 0)) == true
+      assert HSV.grayscale?(HSV.new(0, 0, 0)) == true
+      assert HSV.grayscale?(HSV.new(0, 0, 0.5)) == true
+      assert HSV.grayscale?(HSV.new(0, 0, 1)) == true
+    end
+
+    test "false when color is no grayscale color" do
+      assert HSV.grayscale?(HSV.new(0, 1, 1)) == false
+      assert HSV.grayscale?(HSV.new(45, 0.5, 1)) == false
+      assert HSV.grayscale?(HSV.new(60, 0.25, 1)) == false
+      assert HSV.grayscale?(HSV.new(90, 0.25, 1)) == false
+      assert HSV.grayscale?(HSV.new(180, 0.25, 0.5)) == false
+    end
+  end
+
+  describe "hue_between?/3" do
+    @color HSV.new(332.7, 0.943, 0.4)
+
+    test "is true when hue in range" do
+      assert HSV.hue_between?(@color, 0, 359) == true
+      assert HSV.hue_between?(@color, 332, 340) == true
+      assert HSV.hue_between?(@color, 332.7, 340) == true
+    end
+
+    test "is false when hue not in range" do
+      assert HSV.hue_between?(@color, 0, 332) == false
+      assert HSV.hue_between?(@color, 0, 332.7) == false
+      assert HSV.hue_between?(@color, 333, 350) == false
+    end
+
+    test "raise when min out of range" do
+      assert_raise OutOfRangeError, "Value -12 is out of range [0,360]", fn ->
+        HSV.hue_between?(@color, -12, 120)
+      end
+    end
+
+    test "raise when max out of range" do
+      assert_raise OutOfRangeError, "Value 361 is out of range [0,360]", fn ->
+        HSV.hue_between?(@color, 12, 361)
+      end
+    end
+  end
+
+  describe "Kernel.inspect/1" do
     test "inspect" do
       assert inspect(HSV.new(332.763, 0.943, 0.4)) ==
-               "#Tint.HSV<332.7°,94.3%,40%>"
+               "#Tint.HSV<332.8°,94.3%,40%>"
 
       assert inspect(HSV.new(332, 0.9, 0.4235)) == "#Tint.HSV<332°,90%,42.3%>"
     end
@@ -124,6 +174,15 @@ defmodule Tint.HSVTest do
     end
   end
 
+  describe "DIN99.Convertible.to_din99/1" do
+    test "convert to DIN99" do
+      color = HSV.new(332.763, 0.94356, 0.4)
+
+      assert DIN99.Convertible.to_din99(color) ==
+               DIN99.new(29.9041, -22.9248, 4.1468)
+    end
+  end
+
   describe "HSV.Convertible.to_hsv/1" do
     test "convert to HSV" do
       colors = [
@@ -145,6 +204,14 @@ defmodule Tint.HSVTest do
       Enum.each(colors, fn color ->
         assert HSV.Convertible.to_hsv(color) == color
       end)
+    end
+  end
+
+  describe "Lab.Convertible.to_lab/1" do
+    test "convert to Lab" do
+      color = HSV.new(332.763, 0.94356, 0.4)
+
+      assert Lab.Convertible.to_lab(color) == Lab.new(20.7385, 41.8182, 1.6384)
     end
   end
 
@@ -172,6 +239,14 @@ defmodule Tint.HSVTest do
       Enum.each(conversions, fn {hsv, rgb} ->
         assert RGB.Convertible.to_rgb(hsv) == rgb
       end)
+    end
+  end
+
+  describe "XYZ.Convertible.to_xyz/1" do
+    test "convert to Lab" do
+      color = HSV.new(332.763, 0.94356, 0.4)
+
+      assert XYZ.Convertible.to_xyz(color) == XYZ.new(6.099, 3.1768, 3.1975)
     end
   end
 end

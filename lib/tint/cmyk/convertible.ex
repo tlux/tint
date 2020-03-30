@@ -1,13 +1,8 @@
 defprotocol Tint.CMYK.Convertible do
-  @moduledoc """
-  A protocol that can be implemented by color structs to support CMYK colorspace
-  conversion.
-  """
-  @moduledoc since: "0.3.0"
+  @moduledoc false
 
-  @doc """
-  Converts the specified color to the CMYK colorspace.
-  """
+  @fallback_to_any true
+
   @spec to_cmyk(Tint.color()) :: Tint.CMYK.t()
   def to_cmyk(color)
 end

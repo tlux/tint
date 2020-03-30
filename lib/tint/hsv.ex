@@ -5,8 +5,6 @@ defmodule Tint.HSV do
 
   import Tint.Utils
 
-  alias Tint.Utils.Interval
-
   defstruct [:hue, :saturation, :value]
 
   @type t :: %__MODULE__{
@@ -24,8 +22,11 @@ defmodule Tint.HSV do
       iex> Tint.HSV.new(25.8, 0.882, 1)
       #Tint.HSV<25.8°,88.2%,100%>
   """
-  @spec new(Decimal.t() | number, Decimal.t() | number, Decimal.t() | number) ::
-          t
+  @spec new(
+          float | Decimal.decimal(),
+          float | Decimal.decimal(),
+          float | Decimal.decimal()
+        ) :: t
   def new(hue, saturation, value) do
     with {:ok, hue} <- cast_degrees(hue),
          {:ok, saturation} <- cast_ratio(saturation),
@@ -41,7 +42,9 @@ defmodule Tint.HSV do
   struct.
   """
   @spec from_tuple(
-          {Decimal.t() | number, Decimal.t() | number, Decimal.t() | number}
+          {hue :: float | Decimal.decimal(),
+           saturation :: float | Decimal.decimal(),
+           value :: float | Decimal.decimal()}
         ) :: t
   def from_tuple({hue, saturation, value}) do
     new(hue, saturation, value)
@@ -51,10 +54,39 @@ defmodule Tint.HSV do
   Converts HSV color into a tuple containing the hue, saturation and value
   parts.
   """
-  @spec to_tuple(t) :: {float, float, float}
+  @spec to_tuple(t) :: {Decimal.t(), Decimal.t(), Decimal.t()}
   def to_tuple(%__MODULE__{} = color) do
-    {Decimal.to_float(color.hue), Decimal.to_float(color.saturation),
-     Decimal.to_float(color.value)}
+    {color.hue, color.saturation, color.value}
+  end
+
+  @doc """
+  Determines whether the given color is a grayscale color which basically means
+  that saturation or the value is 0.
+  """
+  @doc since: "1.0.0"
+  @spec grayscale?(t) :: boolean
+  def grayscale?(%__MODULE__{} = color) do
+    Decimal.eq?(color.saturation, 0) || Decimal.eq?(color.value, 0)
+  end
+
+  @doc """
+  Checks whether the hue of the given color is in the specified bounds. This
+  can be used to cluster colors by their chromaticity.
+  """
+  @doc since: "1.0.0"
+  @spec hue_between?(
+          t,
+          min :: float | Decimal.decimal(),
+          max :: float | Decimal.decimal()
+        ) :: boolean
+  def hue_between?(%__MODULE__{} = color, min, max) do
+    with {:ok, min} <- cast_inclusive_degrees(min),
+         {:ok, max} <- cast_inclusive_degrees(max) do
+      Decimal.cmp(color.hue, Decimal.cast(min)) in [:gt, :eq] &&
+        Decimal.lt?(color.hue, Decimal.cast(max))
+    else
+      {:error, error} -> raise error
+    end
   end
 
   defimpl Inspect do
@@ -71,64 +103,6 @@ defmodule Tint.HSV do
         format_percentage(color.value),
         ">"
       ])
-    end
-  end
-
-  defimpl Tint.CMYK.Convertible do
-    def to_cmyk(color) do
-      color
-      |> Tint.to_rgb()
-      |> Tint.to_cmyk()
-    end
-  end
-
-  defimpl Tint.HSV.Convertible do
-    def to_hsv(color), do: color
-  end
-
-  defimpl Tint.RGB.Convertible do
-    alias Tint.RGB
-    alias Tint.Utils.Interval
-
-    def to_rgb(color) do
-      c = Decimal.mult(color.saturation, color.value)
-      x = Decimal.mult(c, calc_x_part(color.hue))
-      m = Decimal.sub(color.value, c)
-
-      {red_ratio, green_ratio, blue_ratio} = calc_ratios(color.hue, c, x)
-      red = calc_value(red_ratio, m)
-      green = calc_value(green_ratio, m)
-      blue = calc_value(blue_ratio, m)
-
-      RGB.new(red, green, blue)
-    end
-
-    defp calc_value(ratio, m) do
-      Decimal.round(Decimal.mult(Decimal.add(ratio, m), 255))
-    end
-
-    defp calc_ratios(hue, c, x) do
-      cond do
-        in_interval?(hue, 0, 60) -> {c, x, 0}
-        in_interval?(hue, 60, 120) -> {x, c, 0}
-        in_interval?(hue, 120, 180) -> {0, c, x}
-        in_interval?(hue, 180, 240) -> {0, x, c}
-        in_interval?(hue, 240, 300) -> {x, 0, c}
-        in_interval?(hue, 300, 360) -> {c, 0, x}
-      end
-    end
-
-    defp in_interval?(value, min, max) do
-      min
-      |> Interval.new(max, exclude_max: true)
-      |> Interval.member?(value)
-    end
-
-    defp calc_x_part(hue) do
-      Decimal.sub(
-        1,
-        Decimal.abs(Decimal.sub(Decimal.rem(Decimal.div(hue, 60), 2), 1))
-      )
     end
   end
 end

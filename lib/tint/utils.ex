@@ -4,25 +4,39 @@ defmodule Tint.Utils do
   alias Tint.OutOfRangeError
   alias Tint.Utils.Interval
 
-  @component_interval Interval.new(0, 255)
+  @byte_channel_interval Interval.new(0, 255)
   @degree_interval Interval.new(0, 360, exclude_max: true)
+  @inclusive_degree_interval Interval.new(0, 360)
   @ratio_interval Interval.new(0, 1)
 
-  @spec cast_component(Decimal.t() | number) ::
+  @spec cast_byte_channel(Decimal.t() | number) ::
           {:ok, non_neg_integer} | {:error, OutOfRangeError.t()}
-  def cast_component(value) do
+  def cast_byte_channel(value) do
     value
     |> cast_value(:integer)
-    |> check_interval(@component_interval, value)
+    |> check_interval(@byte_channel_interval, value)
   end
 
   @spec cast_degrees(Decimal.t() | number) ::
           {:ok, Decimal.t()} | {:error, OutOfRangeError.t()}
   def cast_degrees(value) do
     value
-    |> cast_value(:decimal)
-    |> Decimal.round(1, :floor)
+    |> do_cast_degrees()
     |> check_interval(@degree_interval, value)
+  end
+
+  @spec cast_inclusive_degrees(Decimal.t() | number) ::
+          {:ok, Decimal.t()} | {:error, OutOfRangeError.t()}
+  def cast_inclusive_degrees(value) do
+    value
+    |> do_cast_degrees()
+    |> check_interval(@inclusive_degree_interval, value)
+  end
+
+  defp do_cast_degrees(value) do
+    value
+    |> cast_value(:decimal)
+    |> Decimal.round(1)
   end
 
   @spec cast_ratio(Decimal.t() | number) ::

@@ -90,11 +90,12 @@ defmodule Tint.CMYKTest do
   describe "to_tuple/1" do
     test "get tuple" do
       assert CMYK.to_tuple(CMYK.new(0.06, 0.32, 0.8846, 0.23)) ==
-               {0.06, 0.32, 0.884, 0.23}
+               {Decimal.new("0.060"), Decimal.new("0.320"),
+                Decimal.new("0.884"), Decimal.new("0.230")}
     end
   end
 
-  describe "Inspect.inspect/2" do
+  describe "Kernel.inspect/1" do
     test "inspect" do
       assert inspect(CMYK.new(0.06, 0.32, 0.8846, 0.23)) ==
                "#Tint.CMYK<6%,32%,88.4%,23%>"
