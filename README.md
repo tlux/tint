@@ -17,7 +17,7 @@ Currently supports the following color models:
 
 ## Prerequisites
 
-* Elixir 1.7 or greater
+* Elixir 1.8 or greater
 
 ## Installation
 
