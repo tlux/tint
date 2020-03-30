@@ -90,6 +90,23 @@ defmodule Tint.HSVTest do
     end
   end
 
+  describe "grayscale?/1" do
+    test "true when color is grayscale color" do
+      assert HSV.grayscale?(HSV.new(0, 1, 0)) == true
+      assert HSV.grayscale?(HSV.new(0, 0, 0)) == true
+      assert HSV.grayscale?(HSV.new(0, 0, 0.5)) == true
+      assert HSV.grayscale?(HSV.new(0, 0, 1)) == true
+    end
+
+    test "false when color is no grayscale color" do
+      assert HSV.grayscale?(HSV.new(0, 1, 1)) == false
+      assert HSV.grayscale?(HSV.new(45, 0.5, 1)) == false
+      assert HSV.grayscale?(HSV.new(60, 0.25, 1)) == false
+      assert HSV.grayscale?(HSV.new(90, 0.25, 1)) == false
+      assert HSV.grayscale?(HSV.new(180, 0.25, 0.5)) == false
+    end
+  end
+
   describe "Inspect.inspect/2" do
     test "inspect" do
       assert inspect(HSV.new(332.763, 0.943, 0.4)) ==

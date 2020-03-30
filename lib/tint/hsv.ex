@@ -61,12 +61,12 @@ defmodule Tint.HSV do
 
   @doc """
   Determines whether the given color is a grayscale color which basically means
-  that the saturation is 0.
+  that saturation or the value is 0.
   """
   @doc since: "0.4.0"
   @spec grayscale?(t) :: boolean
   def grayscale?(%__MODULE__{} = color) do
-    Decimal.eq?(color.saturation, 0)
+    Decimal.eq?(color.saturation, 0) || Decimal.eq?(color.value, 0)
   end
 
   @doc """
