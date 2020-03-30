@@ -5,7 +5,6 @@ defmodule Tint.RGBTest do
 
   alias Tint.CMYK
   alias Tint.DIN99
-  alias Tint.DistanceCache
   alias Tint.Distance.Euclidean
   alias Tint.Distance.HumanEuclidean
   alias Tint.HSV
@@ -78,8 +77,6 @@ defmodule Tint.RGBTest do
 
   describe "euclidean_distance/2" do
     test "delegate to Distance.Euclidean" do
-      start_supervised!(DistanceCache)
-
       color = ~K[#FFFF00]
       other_color = ~K[#FF0000]
 
@@ -90,8 +87,6 @@ defmodule Tint.RGBTest do
 
   describe "euclidean_distance/3" do
     test "delegate to Distance.Euclidean" do
-      start_supervised!(DistanceCache)
-
       color = ~K[#FFFF00]
       other_color = ~K[#FF0000]
       opts = [weights: {2, 3, 4}]
@@ -236,8 +231,6 @@ defmodule Tint.RGBTest do
 
   describe "human_euclidean_distance/2" do
     test "delegate to Distance.Euclidean" do
-      start_supervised!(DistanceCache)
-
       color = ~K[#FFFF00]
       other_color = ~K[#FF0000]
 
@@ -248,8 +241,6 @@ defmodule Tint.RGBTest do
 
   describe "nearest_color/2" do
     test "delegate to nearest/3 with human euclidean distance algorithm" do
-      start_supervised!(DistanceCache)
-
       color = ~K[#FF0000]
       palette = [~K[#FCFF00], ~K[#CCFF00], ~K[#CC0000]]
 
@@ -266,16 +257,10 @@ defmodule Tint.RGBTest do
   end
 
   describe "nearest_color/3" do
-    setup do
-      start_supervised!(DistanceCache)
-      :ok
-    end
-
     test "is nil when palette is empty" do
       color = ~K[#FF0000]
 
-      assert RGB.nearest_color(color, [], HumanEuclidean) ==
-               nil
+      assert RGB.nearest_color(color, [], HumanEuclidean) == nil
     end
 
     test "get nearest color" do

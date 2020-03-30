@@ -19,24 +19,33 @@ defmodule Tint.Distance do
 
   @doc """
   Calculate the distance of two colors using the given distance calculator.
+  Caches the results if the distance cache is running.
   """
   @spec distance(Tint.color(), Tint.color(), distance_calculator) :: float
   def distance(color, other_color, distance_calculator)
 
   def distance(color, other_color, fun) when is_function(fun) do
-    DistanceCache.get_or_calc({color, other_color, fun}, fn ->
+    maybe_cache({color, other_color, fun}, fn ->
       fun.(color, other_color)
     end)
   end
 
   def distance(color, other_color, {mod, opts}) do
-    DistanceCache.get_or_calc({color, other_color, mod, opts}, fn ->
+    maybe_cache({color, other_color, mod, opts}, fn ->
       mod.distance(color, other_color, opts)
     end)
   end
 
   def distance(color, other_color, mod) do
     distance(color, other_color, {mod, []})
+  end
+
+  defp maybe_cache(key, calc_fun) do
+    if GenServer.whereis(DistanceCache) do
+      DistanceCache.get_or_put(key, calc_fun)
+    else
+      calc_fun.()
+    end
   end
 
   @doc """

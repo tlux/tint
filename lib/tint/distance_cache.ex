@@ -3,7 +3,7 @@ defmodule Tint.DistanceCache do
 
   use Agent
 
-  @default_size 1000
+  @default_size 3000
 
   @spec start_link(Keyword.t()) :: Agent.on_start()
   def start_link(opts \\ []) do
@@ -13,13 +13,15 @@ defmodule Tint.DistanceCache do
         @default_size
 
     Agent.start(
-      fn -> %{size: size, results: %{}, keys: :queue.new()} end,
+      fn ->
+        %{size: size, results: %{}, keys: :queue.new(), count: 0}
+      end,
       name: __MODULE__
     )
   end
 
-  @spec get_or_calc(term, (() -> number)) :: number
-  def get_or_calc(key, calc_fun) do
+  @spec get_or_put(term, (() -> number)) :: number
+  def get_or_put(key, calc_fun) do
     Agent.get_and_update(__MODULE__, fn
       %{size: 0} = state ->
         {calc_fun.(), state}
@@ -39,7 +41,7 @@ defmodule Tint.DistanceCache do
   defp put_result_in_state(state, key, result) do
     results = Map.put(state.results, key, result)
 
-    if :queue.len(state.keys) == state.size do
+    if state.count == state.size do
       {{:value, removed_key}, keys} = :queue.out(state.keys)
 
       %{
@@ -48,7 +50,12 @@ defmodule Tint.DistanceCache do
           keys: :queue.in(key, keys)
       }
     else
-      %{state | results: results, keys: :queue.in(key, state.keys)}
+      %{
+        state
+        | count: state.count + 1,
+          results: results,
+          keys: :queue.in(key, state.keys)
+      }
     end
   end
 end
