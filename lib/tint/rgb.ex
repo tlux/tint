@@ -154,7 +154,7 @@ defmodule Tint.RGB do
   defp calc_ratio(value), do: Decimal.div(value, 255)
 
   @doc """
-  Converts RGB color into a tuple containing the red, green and blue parts.
+  Converts a RGB color into a tuple containing the red, green and blue channels.
 
   ## Example
 
@@ -192,7 +192,7 @@ defmodule Tint.RGB do
   @spec nearest(Tint.color(), [Tint.color()], Distance.distance_calculator()) ::
           nil | Tint.color()
   def nearest(
-        %__MODULE__{} = color,
+        color,
         palette,
         distance_calculator \\ Distance.Euclidean
       ) do

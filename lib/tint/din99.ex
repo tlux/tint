@@ -12,6 +12,9 @@ defmodule Tint.DIN99 do
           b: Decimal.t()
         }
 
+  @doc """
+  Builds a new DIN99 color using the lightness, a and b color channels.
+  """
   @spec new(
           float | Decimal.decimal(),
           float | Decimal.decimal(),
@@ -31,6 +34,9 @@ defmodule Tint.DIN99 do
     |> Decimal.round(4)
   end
 
+  @doc """
+  Converts a tuple containing lightness, a and b into `Tint.DIN99` struct.
+  """
   @spec from_tuple(
           {lightness :: float | Decimal.decimal(),
            a :: float | Decimal.decimal(), b :: float | Decimal.decimal()}
@@ -39,6 +45,10 @@ defmodule Tint.DIN99 do
     new(lightness, a, b)
   end
 
+  @doc """
+  Converts a DIN99 color into a tuple containing the lightness, a and b
+  channels.
+  """
   @spec to_tuple(t) :: {Decimal.t(), Decimal.t(), Decimal.t()}
   def to_tuple(%__MODULE__{} = color) do
     {color.lightness, color.a, color.b}

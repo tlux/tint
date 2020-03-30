@@ -1,6 +1,6 @@
 defmodule Tint.XYZ do
   @moduledoc """
-  A color in the CIE XYZ colorspace.
+  A color in the XYZ (CIE 1931) colorspace.
   """
   @moduledoc since: "0.4.0"
 
@@ -8,6 +8,9 @@ defmodule Tint.XYZ do
 
   @type t :: %__MODULE__{x: Decimal.t(), y: Decimal.t(), z: Decimal.t()}
 
+  @doc """
+  Builds a new XYZ color using the lightness, a and b color channels.
+  """
   @spec new(
           float | Decimal.decimal(),
           float | Decimal.decimal(),
