@@ -66,6 +66,9 @@ iex> Tint.RGB.from_hex("FF0000")
 iex> Tint.RGB.from_hex!("F00")
 #Tint.RGB<255,0,0 (#FF0000)>
 
+iex> Tint.RGB.from_hex("invalid")
+:error
+
 iex> Tint.RGB.from_hex!("invalid")
 ** (ArgumentError) Invalid hex code: invalid
 ```
