@@ -12,14 +12,14 @@ defmodule Tint.OutOfRangeErrorTest do
              }) == "Value 2.3 is out of range [3,4]"
 
       assert Exception.message(%OutOfRangeError{
-               value: Decimal.new("1.5"),
-               interval: Interval.new(6, 10, exclude_max: true)
-             }) == "Value 1.5 is out of range [6,10)"
-
-      assert Exception.message(%OutOfRangeError{
                value: 2,
                interval: Interval.new(0, 1, exclude_min: true)
              }) == "Value 2 is out of range (0,1]"
+
+      assert Exception.message(%OutOfRangeError{
+               value: 2.3,
+               interval: Interval.new(0, 1, exclude_min: true)
+             }) == "Value 2.3 is out of range (0,1]"
     end
   end
 end
