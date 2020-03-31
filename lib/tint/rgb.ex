@@ -201,14 +201,14 @@ defmodule Tint.RGB do
   @spec nearest_color(
           Tint.color(),
           [Tint.color()],
-          Distance.distance_calculator()
+          Distance.distance_algorithm()
         ) :: nil | Tint.color()
   def nearest_color(
         color,
         palette,
-        distance_calculator \\ Distance.Euclidean
+        distance_algorithm \\ Distance.Euclidean
       ) do
-    Distance.nearest_color(color, palette, distance_calculator)
+    Distance.nearest_color(color, palette, distance_algorithm)
   end
 
   @doc """
@@ -220,15 +220,15 @@ defmodule Tint.RGB do
           Tint.color(),
           [Tint.color()],
           non_neg_integer,
-          Distance.distance_calculator()
+          Distance.distance_algorithm()
         ) :: [Tint.color()]
   def nearest_colors(
         color,
         palette,
         n,
-        distance_calculator \\ Distance.Euclidean
+        distance_algorithm \\ Distance.Euclidean
       ) do
-    Distance.nearest_colors(color, palette, n, distance_calculator)
+    Distance.nearest_colors(color, palette, n, distance_algorithm)
   end
 
   @doc """
