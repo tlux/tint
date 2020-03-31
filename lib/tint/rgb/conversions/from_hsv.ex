@@ -1,22 +1,23 @@
 defimpl Tint.RGB.Convertible, for: Tint.HSV do
   alias Tint.RGB
   alias Tint.Utils.Interval
+  alias Tint.Utils.Math
 
   def to_rgb(color) do
-    c = Decimal.mult(color.saturation, color.value)
-    x = Decimal.mult(c, calc_x_part(color.hue))
-    m = Decimal.sub(color.value, c)
+    c = color.saturation * color.value
+    x = c * calc_x_part(color.hue)
+    m = color.value - c
 
     {red_ratio, green_ratio, blue_ratio} = calc_ratios(color.hue, c, x)
     red = calc_value(red_ratio, m)
     green = calc_value(green_ratio, m)
     blue = calc_value(blue_ratio, m)
 
-    RGB.new(red, green, blue)
+    %RGB{red: red, green: green, blue: blue}
   end
 
   defp calc_value(ratio, m) do
-    Decimal.round(Decimal.mult(Decimal.add(ratio, m), 255))
+    round((ratio + m) * 255)
   end
 
   defp calc_ratios(hue, c, x) do
@@ -37,9 +38,6 @@ defimpl Tint.RGB.Convertible, for: Tint.HSV do
   end
 
   defp calc_x_part(hue) do
-    Decimal.sub(
-      1,
-      Decimal.abs(Decimal.sub(Decimal.rem(Decimal.div(hue, 60), 2), 1))
-    )
+    1 - abs(Math.rem(hue / 60, 2) - 1)
   end
 end

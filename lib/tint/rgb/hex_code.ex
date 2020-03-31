@@ -2,6 +2,7 @@ defmodule Tint.RGB.HexCode do
   @moduledoc false
 
   alias Tint.RGB
+  alias Tint.Utils.Interval
 
   @prefix "#"
 
@@ -36,8 +37,10 @@ defmodule Tint.RGB.HexCode do
   end
 
   defp parse_value(str) do
-    case Integer.parse(str, 16) do
-      {value, ""} when value in 0..255 -> {:ok, value}
+    with {value, ""} <- Integer.parse(str, 16),
+         true <- Interval.member?(RGB.__channel_interval__(), value) do
+      {:ok, value}
+    else
       _ -> :error
     end
   end

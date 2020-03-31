@@ -8,7 +8,7 @@ color_in_lab = Tint.to_lab(color)
 other_color_in_lab = Tint.to_lab(other_color)
 
 Benchee.run(%{
-  "RGB Delta E" => fn ->
+  "Euclidean" => fn ->
     Distance.Euclidean.distance(color, other_color, [])
   end,
   "CIEDE2000" => fn ->

@@ -1,48 +1,30 @@
 defimpl Tint.Lab.Convertible, for: Tint.XYZ do
   alias Tint.Lab
-  alias Tint.Math
+  alias Tint.Utils.Math
 
-  @small_value_threshold Decimal.div(216, 24_389)
-  @xn Decimal.new("95.0489")
-  @yn Decimal.new(100)
-  @zn Decimal.new("108.8840")
+  @ratio_1 216 / 24_389.0
+  @ratio_2 24_389 / 27.0
+  @xn 95.0489
+  @yn 100.0
+  @zn 108.8840
 
   def to_lab(color) do
-    l =
-      116
-      |> Decimal.mult(inner_fun(Decimal.div(color.y, @yn)))
-      |> Decimal.sub(16)
-
-    a =
-      Decimal.mult(
-        500,
-        Decimal.sub(
-          inner_fun(Decimal.div(color.x, @xn)),
-          inner_fun(Decimal.div(color.y, @yn))
-        )
-      )
-
-    b =
-      Decimal.mult(
-        200,
-        Decimal.sub(
-          inner_fun(Decimal.div(color.y, @yn)),
-          inner_fun(Decimal.div(color.z, @zn))
-        )
-      )
-
-    Lab.new(l, a, b)
+    yr = inner_fun(color.y / @yn)
+    lightness = round_channel(116 * yr - 16)
+    a = round_channel(500 * (inner_fun(color.x / @xn) - yr))
+    b = round_channel(200 * (yr - inner_fun(color.z / @zn)))
+    %Lab{lightness: lightness, a: a, b: b}
   end
 
   defp inner_fun(value) do
-    if Decimal.lt?(value, @small_value_threshold) do
-      1
-      |> Decimal.div(116)
-      |> Decimal.mult(
-        Decimal.add(Decimal.mult(Decimal.div(24_389, 27), value), 16)
-      )
+    if value < @ratio_1 do
+      1 / 116.0 * (@ratio_2 * value + 16)
     else
       Math.nth_root(value, 3)
     end
+  end
+
+  defp round_channel(channel) do
+    Float.round(channel, 4)
   end
 end

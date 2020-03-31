@@ -4,16 +4,15 @@ defmodule Tint.OutOfRangeError do
   are out of the permitted range of values.
   """
 
-  defexception [:orig_value, :value, :interval]
+  defexception [:value, :interval]
 
   @type t :: %__MODULE__{
-          orig_value: any,
-          value: Decimal.t() | number,
+          value: any,
           interval: Tint.Utils.Interval.t()
         }
 
   @impl true
   def message(exception) do
-    "Value #{exception.orig_value} is out of range #{exception.interval}"
+    "Value #{exception.value} is out of range #{exception.interval}"
   end
 end

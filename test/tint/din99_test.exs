@@ -6,19 +6,17 @@ defmodule Tint.DIN99Test do
   describe "new/3" do
     test "build DIN99 color" do
       assert DIN99.new(50.1234, 10.7643, 10.4322) == %DIN99{
-               lightness: Decimal.new("50.1234"),
-               a: Decimal.new("10.7643"),
-               b: Decimal.new("10.4322")
+               lightness: 50.1234,
+               a: 10.7643,
+               b: 10.4322
              }
     end
   end
 
   describe "from_tuple/1" do
     test "convert tuple to DIN99 struct" do
-      assert DIN99.from_tuple(
-               {Decimal.new("50.1234"), Decimal.new("10.7643"),
-                Decimal.new("10.4322")}
-             ) == DIN99.new(50.1234, 10.7643, 10.4322)
+      assert DIN99.from_tuple({50.1234, 10.7643, 10.4322}) ==
+               DIN99.new(50.1234, 10.7643, 10.4322)
     end
 
     test "raise when invalid arg given" do
@@ -35,8 +33,7 @@ defmodule Tint.DIN99Test do
   describe "to_tuple/1" do
     test "get tuple" do
       assert DIN99.to_tuple(DIN99.new(50.1234, 10.7643, 10.4322)) ==
-               {Decimal.new("50.1234"), Decimal.new("10.7643"),
-                Decimal.new("10.4322")}
+               {50.1234, 10.7643, 10.4322}
     end
   end
 

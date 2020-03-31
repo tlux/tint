@@ -11,22 +11,22 @@ defmodule Tint.HSVTest do
 
   describe "new/1" do
     test "build HSV color" do
+      assert HSV.new(332, 1, 0) == %HSV{
+               hue: 332.0,
+               saturation: 1.0,
+               value: 0.0
+             }
+
       assert HSV.new(332.763, 0.94356, 0.4) == %HSV{
-               hue: Decimal.new("332.8"),
-               saturation: Decimal.new("0.943"),
-               value: Decimal.new("0.400")
+               hue: 332.763,
+               saturation: 0.94356,
+               value: 0.4
              }
 
       assert HSV.new("332.763", "0.94356", "0.4343") == %HSV{
-               hue: Decimal.new("332.8"),
-               saturation: Decimal.new("0.943"),
-               value: Decimal.new("0.434")
-             }
-
-      assert HSV.new(332, Decimal.new("0.9"), "0.4343") == %HSV{
-               hue: Decimal.new("332.0"),
-               saturation: Decimal.new("0.900"),
-               value: Decimal.new("0.434")
+               hue: 332.763,
+               saturation: 0.94356,
+               value: 0.4343
              }
     end
 
@@ -71,7 +71,8 @@ defmodule Tint.HSVTest do
 
   describe "from_tuple/1" do
     test "convert tuple to HSV struct" do
-      assert HSV.from_tuple({332.763, 0.943, 0.4}) == HSV.new(332.8, 0.943, 0.4)
+      assert HSV.from_tuple({332.763, 0.943, 0.4}) ==
+               HSV.new(332.763, 0.943, 0.4)
     end
 
     test "raise when invalid arg given" do
@@ -88,8 +89,7 @@ defmodule Tint.HSVTest do
   describe "to_tuple/1" do
     test "get tuple" do
       assert HSV.to_tuple(HSV.new(332.763, 0.943, 0.4)) ==
-               {Decimal.new("332.8"), Decimal.new("0.943"),
-                Decimal.new("0.400")}
+               {332.763, 0.943, 0.4}
     end
   end
 
@@ -115,6 +115,7 @@ defmodule Tint.HSVTest do
 
     test "is true when hue in range" do
       assert HSV.hue_between?(@color, 0, 359) == true
+      assert HSV.hue_between?(@color, 0, 360) == true
       assert HSV.hue_between?(@color, 332, 340) == true
       assert HSV.hue_between?(@color, 332.7, 340) == true
     end
@@ -125,15 +126,9 @@ defmodule Tint.HSVTest do
       assert HSV.hue_between?(@color, 333, 350) == false
     end
 
-    test "raise when min out of range" do
-      assert_raise OutOfRangeError, "Value -12 is out of range [0,360]", fn ->
-        HSV.hue_between?(@color, -12, 120)
-      end
-    end
-
-    test "raise when max out of range" do
-      assert_raise OutOfRangeError, "Value 361 is out of range [0,360]", fn ->
-        HSV.hue_between?(@color, 12, 361)
+    test "raise min greater than max" do
+      assert_raise FunctionClauseError, fn ->
+        HSV.hue_between?(@color, 120, 50)
       end
     end
   end
@@ -141,9 +136,7 @@ defmodule Tint.HSVTest do
   describe "Kernel.inspect/1" do
     test "inspect" do
       assert inspect(HSV.new(332.763, 0.943, 0.4)) ==
-               "#Tint.HSV<332.8°,94.3%,40%>"
-
-      assert inspect(HSV.new(332, 0.9, 0.4235)) == "#Tint.HSV<332°,90%,42.3%>"
+               "#Tint.HSV<332.763°,94.3%,40.0%>"
     end
   end
 
@@ -158,7 +151,7 @@ defmodule Tint.HSVTest do
         {HSV.new(60, 1, 1), CMYK.new(0, 0, 1, 0)},
         {HSV.new(180, 1, 1), CMYK.new(1, 0, 0, 0)},
         {HSV.new(300, 1, 1), CMYK.new(0, 1, 0, 0)},
-        {HSV.new(0, 0, 0.749), CMYK.new(0, 0, 0, "0.25")},
+        {HSV.new(0, 0, 0.749), CMYK.new(0, 0, 0, "0.251")},
         {HSV.new(0, 0, 0.501), CMYK.new(0, 0, 0, "0.498")},
         {HSV.new(0, 1, 0.501), CMYK.new(0, 1, 1, "0.498")},
         {HSV.new(60, 1, 0.501), CMYK.new(0, 0, 1, "0.498")},

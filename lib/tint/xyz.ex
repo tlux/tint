@@ -4,26 +4,22 @@ defmodule Tint.XYZ do
   """
   @moduledoc since: "1.0.0"
 
+  import Tint.Utils.Cast
+
   defstruct [:x, :y, :z]
 
-  @type t :: %__MODULE__{x: Decimal.t(), y: Decimal.t(), z: Decimal.t()}
+  @type t :: %__MODULE__{x: float, y: float, z: float}
 
   @doc """
   Builds a new XYZ color using the lightness, a and b color channels.
   """
-  @spec new(
-          float | Decimal.decimal(),
-          float | Decimal.decimal(),
-          float | Decimal.decimal()
-        ) :: t
+  @spec new(number | String.t(), number | String.t(), number | String.t()) :: t
   def new(x, y, z) do
-    %__MODULE__{x: cast_value(x), y: cast_value(y), z: cast_value(z)}
-  end
-
-  defp cast_value(value) do
-    value
-    |> Decimal.cast()
-    |> Decimal.round(4)
+    %__MODULE__{
+      x: cast_value!(x, :float),
+      y: cast_value!(y, :float),
+      z: cast_value!(z, :float)
+    }
   end
 
   defimpl Inspect do

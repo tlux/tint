@@ -10,18 +10,25 @@ defmodule Tint.CMYKTest do
 
   describe "new/4" do
     test "build CMYK color" do
-      assert CMYK.new(0.06, 0.32, 0.8846, 0.23) == %CMYK{
-               cyan: Decimal.new("0.060"),
-               magenta: Decimal.new("0.320"),
-               yellow: Decimal.new("0.884"),
-               key: Decimal.new("0.230")
+      assert CMYK.new(1, 0, 0, 1) == %CMYK{
+               cyan: 1.0,
+               magenta: 0.0,
+               yellow: 0.0,
+               key: 1.0
              }
 
-      assert CMYK.new(1, 0, "0.8846", Decimal.new("0.23")) == %CMYK{
-               cyan: Decimal.new("1.000"),
-               magenta: Decimal.new("0.000"),
-               yellow: Decimal.new("0.884"),
-               key: Decimal.new("0.230")
+      assert CMYK.new(0.06, 0.32, 0.8846, 0.23) == %CMYK{
+               cyan: 0.06,
+               magenta: 0.32,
+               yellow: 0.8846,
+               key: 0.23
+             }
+
+      assert CMYK.new("0.06", "0.32", "0.8846", "0.23") == %CMYK{
+               cyan: 0.06,
+               magenta: 0.32,
+               yellow: 0.8846,
+               key: 0.23
              }
     end
 
@@ -68,11 +75,11 @@ defmodule Tint.CMYKTest do
 
   describe "from_tuple/1" do
     test "convert tuple to CMYK struct" do
-      assert CMYK.from_tuple({1, 0, "0.8846", Decimal.new("0.23")}) == %CMYK{
-               cyan: Decimal.new("1.000"),
-               magenta: Decimal.new("0.000"),
-               yellow: Decimal.new("0.884"),
-               key: Decimal.new("0.230")
+      assert CMYK.from_tuple({1, 0, "0.8846", 0.23}) == %CMYK{
+               cyan: 1.0,
+               magenta: 0.0,
+               yellow: 0.8846,
+               key: 0.23
              }
     end
 
@@ -90,15 +97,14 @@ defmodule Tint.CMYKTest do
   describe "to_tuple/1" do
     test "get tuple" do
       assert CMYK.to_tuple(CMYK.new(0.06, 0.32, 0.8846, 0.23)) ==
-               {Decimal.new("0.060"), Decimal.new("0.320"),
-                Decimal.new("0.884"), Decimal.new("0.230")}
+               {0.060, 0.320, 0.8846, 0.230}
     end
   end
 
   describe "Kernel.inspect/1" do
     test "inspect" do
       assert inspect(CMYK.new(0.06, 0.32, 0.8846, 0.23)) ==
-               "#Tint.CMYK<6%,32%,88.4%,23%>"
+               "#Tint.CMYK<6.0%,32.0%,88.46%,23.0%>"
     end
   end
 
@@ -129,13 +135,13 @@ defmodule Tint.CMYKTest do
         {CMYK.new(1, 0, 0, 0), HSV.new(180, 1, 1)},
         {CMYK.new(0, 1, 0, 0), HSV.new(300, 1, 1)},
         {CMYK.new(0, 0, 0, "0.25"), HSV.new(0, 0, 0.749)},
-        {CMYK.new(0, 0, 0, "0.498"), HSV.new(0, 0, 0.501)},
-        {CMYK.new(0, 1, 1, "0.498"), HSV.new(0, 1, 0.501)},
-        {CMYK.new(0, 0, 1, "0.498"), HSV.new(60, 1, 0.501)},
-        {CMYK.new(1, 0, 1, "0.498"), HSV.new(120, 1, 0.501)},
-        {CMYK.new(0, 1, 0, "0.498"), HSV.new(300, 1, 0.501)},
-        {CMYK.new(1, 0, 0, "0.498"), HSV.new(180, 1, 0.501)},
-        {CMYK.new(1, 1, 0, "0.498"), HSV.new(240, 1, 0.501)}
+        {CMYK.new(0, 0, 0, "0.498"), HSV.new(0, 0, 0.502)},
+        {CMYK.new(0, 1, 1, "0.498"), HSV.new(0, 1, 0.502)},
+        {CMYK.new(0, 0, 1, "0.498"), HSV.new(60, 1, 0.502)},
+        {CMYK.new(1, 0, 1, "0.498"), HSV.new(120, 1, 0.502)},
+        {CMYK.new(0, 1, 0, "0.498"), HSV.new(300, 1, 0.502)},
+        {CMYK.new(1, 0, 0, "0.498"), HSV.new(180, 1, 0.502)},
+        {CMYK.new(1, 1, 0, "0.498"), HSV.new(240, 1, 0.502)}
       ]
 
       Enum.each(conversions, fn {cmyk, hsv} ->
