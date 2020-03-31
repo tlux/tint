@@ -51,6 +51,35 @@ iex> import Tint.Sigil
 #Tint.RGB<255,0,0 (#FF0000)>
 ```
 
+Using hex codes:
+
+```elixir
+iex> Tint.RGB.from_hex("#FF0000")
+{:ok, #Tint.RGB<255,0,0 (#FF0000)>}
+
+iex> Tint.RGB.from_hex!("#FF0000")
+#Tint.RGB<255,0,0 (#FF0000)>
+
+iex> Tint.RGB.from_hex!("invalid")
+** (ArgumentError) Invalid hex code: invalid
+```
+
+or
+
+```elixir
+iex> import Tint.Sigil
+...> ~K[#FF0000]
+#Tint.RGB<255,0,0 (#FF0000)>
+```
+
+To convert RGB colors back to hex codes:
+
+```elixir
+iex> color = Tint.RGB.new(255, 0, 0)
+...> Tint.RGB.to_hex(color)
+"#FF0000"
+```
+
 #### CMYK
 
 ```elixir
@@ -113,8 +142,6 @@ iex> import Tint.Sigil
 
 ### Conversion
 
-#### Between Colorspaces
-
 ```elixir
 iex> rgb = Tint.RGB.new(255, 0, 0)
 ...> Tint.to_hsv(rgb)
@@ -133,31 +160,6 @@ Tint.to_xyz(color)
 ```
 
 Currently, only RGB can be converted to any other colorspace.
-
-#### Hex Code
-
-```elixir
-iex> Tint.RGB.from_hex("#FF0000")
-{:ok, #Tint.RGB<255,0,0 (#FF0000)>}
-```
-
-```elixir
-iex> Tint.RGB.from_hex("invalid hex code")
-:error
-```
-
-```elixir
-iex> Tint.RGB.to_hex(Tint.RGB.new(255, 0, 0))
-"#FF0000"
-```
-
-Alternatively, you can use the sigil as a shortcut:
-
-```elixir
-iex> import Tint.Sigil
-...> ~K[#FF0000]
-#Tint.RGB<255,0,0 (#FF0000)>
-```
 
 ### Color Distance
 
