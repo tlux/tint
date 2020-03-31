@@ -4,7 +4,7 @@ defmodule Tint.MixProject do
   def project do
     [
       app: :tint,
-      version: "1.0.0-rc.0",
+      version: "1.0.0-rc.1",
       elixir: "~> 1.8",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -74,8 +74,7 @@ defmodule Tint.MixProject do
       {:credo, "~> 1.0.5", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0.0-rc.6", only: [:dev, :test], runtime: false},
       {:excoveralls, "~> 0.10", only: :test},
-      {:ex_doc, "~> 0.20.2", only: :dev, runtime: false},
-      {:inch_ex, "~> 2.0", only: :docs}
+      {:ex_doc, "~> 0.20.2", only: :dev, runtime: false}
     ]
   end
 
