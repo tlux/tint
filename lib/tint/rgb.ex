@@ -59,6 +59,9 @@ defmodule Tint.RGB do
       iex> Tint.RGB.from_hex("#FF7F1E")
       {:ok, %Tint.RGB{red: 255, green: 127, blue: 30}}
 
+      iex> Tint.RGB.from_hex("F00")
+      {:ok, %Tint.RGB{red: 255, green: 0, blue: 0}}
+
       iex> Tint.RGB.from_hex("invalid")
       :error
   """

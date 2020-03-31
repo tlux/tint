@@ -57,7 +57,13 @@ Using hex codes:
 iex> Tint.RGB.from_hex("#FF0000")
 {:ok, #Tint.RGB<255,0,0 (#FF0000)>}
 
-iex> Tint.RGB.from_hex!("#FF0000")
+iex> Tint.RGB.from_hex("#F00")
+{:ok, #Tint.RGB<255,0,0 (#FF0000)>}
+
+iex> Tint.RGB.from_hex("FF0000")
+{:ok, #Tint.RGB<255,0,0 (#FF0000)>}
+
+iex> Tint.RGB.from_hex!("F00")
 #Tint.RGB<255,0,0 (#FF0000)>
 
 iex> Tint.RGB.from_hex!("invalid")
