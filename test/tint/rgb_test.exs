@@ -107,10 +107,12 @@ defmodule Tint.RGBTest do
       assert RGB.from_hex("#fc0") == {:ok, RGB.new(255, 204, 0)}
       assert RGB.from_hex("#8a0843") == {:ok, RGB.new(138, 8, 67)}
       assert RGB.from_hex("#B5C8F0") == {:ok, RGB.new(181, 200, 240)}
+      assert RGB.from_hex("FFcc00") == {:ok, RGB.new(255, 204, 0)}
+      assert RGB.from_hex("fc0") == {:ok, RGB.new(255, 204, 0)}
     end
 
     test "parse error" do
-      assert RGB.from_hex("000000") == :error
+      assert RGB.from_hex("FFFF") == :error
       assert RGB.from_hex("#FFFFF") == :error
       assert RGB.from_hex("#FFFFFG") == :error
       assert RGB.from_hex("#fffffg") == :error
@@ -130,12 +132,14 @@ defmodule Tint.RGBTest do
       assert RGB.from_hex!("#fc0") == RGB.new(255, 204, 0)
       assert RGB.from_hex!("#8a0843") == RGB.new(138, 8, 67)
       assert RGB.from_hex!("#B5C8F0") == RGB.new(181, 200, 240)
+      assert RGB.from_hex!("FFcc00") == RGB.new(255, 204, 0)
+      assert RGB.from_hex!("fc0") == RGB.new(255, 204, 0)
     end
 
     test "parse error" do
       Enum.each(
         [
-          "000000",
+          "FFFF",
           "#FFFFF",
           "#FFFFFG",
           "#fffffg",

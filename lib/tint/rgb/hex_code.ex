@@ -9,16 +9,18 @@ defmodule Tint.RGB.HexCode do
   @spec parse(String.t()) :: {:ok, RGB.t()} | :error
   def parse(code)
 
+  def parse(<<@prefix, code::binary-size(6)>>), do: parse(code)
+
+  def parse(<<@prefix, code::binary-size(3)>>), do: parse(code)
+
   def parse(
-        <<@prefix, red::binary-size(2), green::binary-size(2),
-          blue::binary-size(2)>>
+        <<red::binary-size(2), green::binary-size(2), blue::binary-size(2)>>
       ) do
     do_parse(red, green, blue)
   end
 
   def parse(
-        <<@prefix, red::binary-size(1), green::binary-size(1),
-          blue::binary-size(1)>>
+        <<red::binary-size(1), green::binary-size(1), blue::binary-size(1)>>
       ) do
     red = String.duplicate(red, 2)
     green = String.duplicate(green, 2)

@@ -16,6 +16,9 @@ defmodule Tint.SigilTest do
   describe "hex code" do
     test "success" do
       assert ~K[#FFCC00] == RGB.from_hex!("#FFCC00")
+      assert ~K[FFCC00] == RGB.from_hex!("#FFCC00")
+      assert ~K[ffcc00] == RGB.from_hex!("#FFCC00")
+      assert ~K[Fc0] == RGB.from_hex!("#FFCC00")
     end
 
     test "error" do
