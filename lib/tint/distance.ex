@@ -1,6 +1,7 @@
 defmodule Tint.Distance do
   @moduledoc """
-  Main module providing color distance calculations.
+  A module providing functions for color distance calculations and a behavior
+  to implement custom distance algorithms.
   """
 
   alias Tint.DistanceCache
