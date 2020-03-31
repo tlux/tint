@@ -23,7 +23,7 @@ defmodule Tint do
   ## Example
 
   iex> Tint.to_cmyk(Tint.RGB.new(40, 66, 67))
-  #Tint.CMYK<40.2%,1.4%,0%,73.7%>
+  #Tint.CMYK<40.3%,1.49%,0.0%,73.73%>
   """
   @doc since: "0.3.0"
   @spec to_cmyk(color) :: CMYK.t()
@@ -42,7 +42,7 @@ defmodule Tint do
   ## Example
 
   iex> Tint.to_hsv(Tint.RGB.new(255, 127, 30))
-  #Tint.HSV<25.9°,88.2%,100%>
+  #Tint.HSV<25.9°,88.24%,100.0%>
   """
   @spec to_hsv(color) :: HSV.t()
   defdelegate to_hsv(color), to: HSV.Convertible

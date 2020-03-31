@@ -1,27 +1,13 @@
 defmodule Tint.Utils.Formatter do
   @moduledoc false
 
-  @spec format_value(Decimal.t()) :: String.t()
+  @spec format_value(number) :: String.t()
   def format_value(value) do
-    value
-    |> Decimal.reduce()
-    |> Decimal.to_string(:normal)
+    to_string(value)
   end
 
-  @spec format_degrees(Decimal.t()) :: String.t()
-  def format_degrees(value) do
-    value
-    |> Decimal.reduce()
-    |> Decimal.to_string(:normal)
-    |> Kernel.<>("°")
-  end
-
-  @spec format_percentage(Decimal.t()) :: String.t()
+  @spec format_percentage(number) :: String.t()
   def format_percentage(value) do
-    value
-    |> Decimal.mult(100)
-    |> Decimal.reduce()
-    |> Decimal.to_string(:normal)
-    |> Kernel.<>("%")
+    format_value(Float.round(value * 100, 2)) <> "%"
   end
 end

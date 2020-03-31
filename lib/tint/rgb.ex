@@ -3,10 +3,11 @@ defmodule Tint.RGB do
   A color in the RGB (red, green, blue) colorspace.
   """
 
-  import Tint.Utils
+  import Tint.Utils.Cast
 
   alias Tint.Distance
   alias Tint.RGB.HexCode
+  alias Tint.Utils.Interval
 
   defstruct [:red, :green, :blue]
 
@@ -15,6 +16,12 @@ defmodule Tint.RGB do
           green: non_neg_integer,
           blue: non_neg_integer
         }
+
+  @channel_interval Interval.new(0, 255)
+
+  @doc false
+  @spec __channel_interval__() :: Interval.t()
+  def __channel_interval__, do: @channel_interval
 
   @doc """
   Builds a new RGB color from red, green and blue color parts. Please always
@@ -31,16 +38,17 @@ defmodule Tint.RGB do
       iex> Tint.RGB.new(256, -1, 0)
       ** (Tint.OutOfRangeError) Value 256 is out of range [0,255]
   """
-  @spec new(Decimal.t() | number, Decimal.t() | number, Decimal.t() | number) ::
-          t
+  @spec new(number | String.t(), number | String.t(), number | String.t()) :: t
   def new(red, green, blue) do
-    with {:ok, red} <- cast_byte_channel(red),
-         {:ok, green} <- cast_byte_channel(green),
-         {:ok, blue} <- cast_byte_channel(blue) do
-      %__MODULE__{red: red, green: green, blue: blue}
-    else
-      {:error, error} -> raise error
-    end
+    %__MODULE__{
+      red: cast_channel!(red),
+      green: cast_channel!(green),
+      blue: cast_channel!(blue)
+    }
+  end
+
+  defp cast_channel!(channel) do
+    cast_value_with_interval!(channel, :integer, @channel_interval)
   end
 
   @doc """
@@ -88,29 +96,26 @@ defmodule Tint.RGB do
       #Tint.RGB<255,128,0 (#FF8000)>
   """
   @spec from_ratios(
-          Decimal.t() | number,
-          Decimal.t() | number,
-          Decimal.t() | number
+          number | String.t(),
+          number | String.t(),
+          number | String.t()
         ) :: t
   def from_ratios(red_ratio, green_ratio, blue_ratio) do
-    with {:ok, red_ratio} <- cast_ratio(red_ratio),
-         {:ok, green_ratio} <- cast_ratio(green_ratio),
-         {:ok, blue_ratio} <- cast_ratio(blue_ratio) do
-      %__MODULE__{
-        red: ratio_to_value(red_ratio),
-        green: ratio_to_value(green_ratio),
-        blue: ratio_to_value(blue_ratio)
-      }
-    else
-      {:error, error} -> raise error
-    end
+    %__MODULE__{
+      red: cast_ratio_to_channel!(red_ratio),
+      green: cast_ratio_to_channel!(green_ratio),
+      blue: cast_ratio_to_channel!(blue_ratio)
+    }
   end
 
-  defp ratio_to_value(ratio) do
+  defp cast_ratio_to_channel!(ratio) do
     ratio
-    |> Decimal.mult(255)
-    |> Decimal.round()
-    |> Decimal.to_integer()
+    |> cast_ratio!()
+    |> ratio_to_channel()
+  end
+
+  defp ratio_to_channel(ratio) do
+    round(ratio * @channel_interval.max)
   end
 
   @doc """
@@ -123,7 +128,7 @@ defmodule Tint.RGB do
       #Tint.RGB<255,127,30 (#FF7F1E)>
   """
   @spec from_tuple(
-          {Decimal.t() | number, Decimal.t() | number, Decimal.t() | number}
+          {number | String.t(), number | String.t(), number | String.t()}
         ) :: t
   def from_tuple({red, green, blue}) do
     new(red, green, blue)
@@ -146,12 +151,15 @@ defmodule Tint.RGB do
   Builds a tuple containing the ratios of the red, green and blue components of
   a given color.
   """
-  @spec to_ratios(t) :: {Decimal.t(), Decimal.t(), Decimal.t()}
+  @spec to_ratios(t) :: {float, float, float}
   def to_ratios(%__MODULE__{} = color) do
-    {calc_ratio(color.red), calc_ratio(color.green), calc_ratio(color.blue)}
+    {channel_to_ratio(color.red), channel_to_ratio(color.green),
+     channel_to_ratio(color.blue)}
   end
 
-  defp calc_ratio(value), do: Decimal.div(value, 255)
+  defp channel_to_ratio(channel) do
+    channel / @channel_interval.max
+  end
 
   @doc """
   Converts a RGB color into a tuple containing the red, green and blue channels.
@@ -245,14 +253,9 @@ defmodule Tint.RGB do
   def grayish?(color, 0), do: grayscale?(color)
 
   def grayish?(color, tolerance) do
-    case cast_byte_channel(tolerance) do
-      {:ok, tolerance} ->
-        {min, max} = Enum.min_max([color.red, color.green, color.blue])
-        max - min <= tolerance
-
-      {:error, error} ->
-        raise error
-    end
+    tolerance = cast_channel!(tolerance)
+    {min, max} = Enum.min_max([color.red, color.green, color.blue])
+    max - min <= tolerance
   end
 
   defimpl Inspect do

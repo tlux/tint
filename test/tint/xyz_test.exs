@@ -6,17 +6,13 @@ defmodule Tint.XYZTest do
 
   describe "new/3" do
     test "build XYZ color" do
-      assert XYZ.new(0.9505, 1, 1.09) == %XYZ{
-               x: Decimal.new("0.9505"),
-               y: Decimal.new("1.0000"),
-               z: Decimal.new("1.0900")
-             }
+      assert XYZ.new(0.9505, 1, 1.09) == %XYZ{x: 0.9505, y: 1.0, z: 1.09}
     end
   end
 
   describe "Inspect.inspect/1" do
     test "inspect" do
-      assert inspect(XYZ.new(0.9505, 1, 1.09)) == "#Tint.XYZ<0.9505,1,1.09>"
+      assert inspect(XYZ.new(0.9505, 1, 1.09)) == "#Tint.XYZ<0.9505,1.0,1.09>"
     end
   end
 

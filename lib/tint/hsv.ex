@@ -3,15 +3,20 @@ defmodule Tint.HSV do
   A color in the HSV (hue, saturation, value) colorspace.
   """
 
-  import Tint.Utils
+  import Tint.Utils.Cast
+
+  alias Tint.Utils.Interval
 
   defstruct [:hue, :saturation, :value]
 
   @type t :: %__MODULE__{
-          hue: Decimal.t(),
-          saturation: Decimal.t(),
-          value: Decimal.t()
+          hue: float,
+          saturation: float,
+          value: float
         }
+
+  @hue_interval Interval.new(0, 360)
+  @hue_excl_interval %{@hue_interval | exclude_max: true}
 
   @doc """
   Builds a new HSV color from hue, saturation and value color parts. Please
@@ -22,19 +27,13 @@ defmodule Tint.HSV do
       iex> Tint.HSV.new(25.8, 0.882, 1)
       #Tint.HSV<25.8°,88.2%,100%>
   """
-  @spec new(
-          float | Decimal.decimal(),
-          float | Decimal.decimal(),
-          float | Decimal.decimal()
-        ) :: t
+  @spec new(number | String.t(), number | String.t(), number | String.t()) :: t
   def new(hue, saturation, value) do
-    with {:ok, hue} <- cast_degrees(hue),
-         {:ok, saturation} <- cast_ratio(saturation),
-         {:ok, value} <- cast_ratio(value) do
-      %__MODULE__{hue: hue, saturation: saturation, value: value}
-    else
-      {:error, error} -> raise error
-    end
+    %__MODULE__{
+      hue: cast_value_with_interval!(hue, :float, @hue_excl_interval),
+      saturation: cast_ratio!(saturation),
+      value: cast_ratio!(value)
+    }
   end
 
   @doc """
@@ -42,9 +41,7 @@ defmodule Tint.HSV do
   struct.
   """
   @spec from_tuple(
-          {hue :: float | Decimal.decimal(),
-           saturation :: float | Decimal.decimal(),
-           value :: float | Decimal.decimal()}
+          {number | String.t(), number | String.t(), number | String.t()}
         ) :: t
   def from_tuple({hue, saturation, value}) do
     new(hue, saturation, value)
@@ -54,7 +51,7 @@ defmodule Tint.HSV do
   Converts HSV color into a tuple containing the hue, saturation and value
   parts.
   """
-  @spec to_tuple(t) :: {Decimal.t(), Decimal.t(), Decimal.t()}
+  @spec to_tuple(t) :: {float, float, float}
   def to_tuple(%__MODULE__{} = color) do
     {color.hue, color.saturation, color.value}
   end
@@ -66,7 +63,7 @@ defmodule Tint.HSV do
   @doc since: "1.0.0"
   @spec grayscale?(t) :: boolean
   def grayscale?(%__MODULE__{} = color) do
-    Decimal.eq?(color.saturation, 0) || Decimal.eq?(color.value, 0)
+    color.saturation == 0 || color.value == 0
   end
 
   @doc """
@@ -74,19 +71,9 @@ defmodule Tint.HSV do
   can be used to cluster colors by their chromaticity.
   """
   @doc since: "1.0.0"
-  @spec hue_between?(
-          t,
-          min :: float | Decimal.decimal(),
-          max :: float | Decimal.decimal()
-        ) :: boolean
-  def hue_between?(%__MODULE__{} = color, min, max) do
-    with {:ok, min} <- cast_inclusive_degrees(min),
-         {:ok, max} <- cast_inclusive_degrees(max) do
-      Decimal.cmp(color.hue, Decimal.cast(min)) in [:gt, :eq] &&
-        Decimal.lt?(color.hue, Decimal.cast(max))
-    else
-      {:error, error} -> raise error
-    end
+  @spec hue_between?(t, min :: number, max :: number) :: boolean
+  def hue_between?(%__MODULE__{} = color, min, max) when min <= max do
+    color.hue >= min && color.hue < max
   end
 
   defimpl Inspect do
@@ -103,6 +90,10 @@ defmodule Tint.HSV do
         format_percentage(color.value),
         ">"
       ])
+    end
+
+    defp format_degrees(value) do
+      format_value(value) <> "°"
     end
   end
 end

@@ -73,6 +73,7 @@ defmodule Tint.Utils.IntervalTest do
   describe "String.Chars.to_string/2" do
     test "include min, include max" do
       assert to_string(Interval.new(1, 3)) == "[1,3]"
+      assert to_string(Interval.new(:infinity, :infinity)) == "[Inf,Inf]"
     end
 
     test "include min, exclude max" do

@@ -9,10 +9,22 @@ defmodule Tint.LabTest do
 
   describe "new/3" do
     test "build Lab color" do
+      assert Lab.new(50, 10, 20) == %Lab{
+               lightness: 50.0,
+               a: 10.0,
+               b: 20.0
+             }
+
       assert Lab.new(50.1234, 10.7643, 10.4322) == %Lab{
-               lightness: Decimal.new("50.1234"),
-               a: Decimal.new("10.7643"),
-               b: Decimal.new("10.4322")
+               lightness: 50.1234,
+               a: 10.7643,
+               b: 10.4322
+             }
+
+      assert Lab.new("50.1234", "10.7643", "10.4322") == %Lab{
+               lightness: 50.1234,
+               a: 10.7643,
+               b: 10.4322
              }
     end
   end
@@ -145,10 +157,8 @@ defmodule Tint.LabTest do
 
   describe "from_tuple/1" do
     test "convert tuple to Lab struct" do
-      assert Lab.from_tuple(
-               {Decimal.new("50.1234"), Decimal.new("10.7643"),
-                Decimal.new("10.4322")}
-             ) == Lab.new(50.1234, 10.7643, 10.4322)
+      assert Lab.from_tuple({50.1234, 10.7643, 10.4322}) ==
+               Lab.new(50.1234, 10.7643, 10.4322)
     end
 
     test "raise when invalid arg given" do
@@ -165,8 +175,7 @@ defmodule Tint.LabTest do
   describe "to_tuple/1" do
     test "get tuple" do
       assert Lab.to_tuple(Lab.new(50.1234, 10.7643, 10.4322)) ==
-               {Decimal.new("50.1234"), Decimal.new("10.7643"),
-                Decimal.new("10.4322")}
+               {50.1234, 10.7643, 10.4322}
     end
   end
 

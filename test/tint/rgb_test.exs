@@ -399,7 +399,7 @@ defmodule Tint.RGBTest do
         {RGB.new(255, 255, 0), CMYK.new(0, 0, 1, 0)},
         {RGB.new(0, 255, 255), CMYK.new(1, 0, 0, 0)},
         {RGB.new(255, 0, 255), CMYK.new(0, 1, 0, 0)},
-        {RGB.new(191, 191, 191), CMYK.new(0, 0, 0, "0.25")},
+        {RGB.new(191, 191, 191), CMYK.new(0, 0, 0, "0.251")},
         {RGB.new(128, 128, 128), CMYK.new(0, 0, 0, "0.498")},
         {RGB.new(128, 0, 0), CMYK.new(0, 1, 1, "0.498")},
         {RGB.new(128, 128, 0), CMYK.new(0, 0, 1, "0.498")},
@@ -419,8 +419,8 @@ defmodule Tint.RGBTest do
     test "convert to DIN99" do
       conversions = [
         {RGB.new(0, 0, 0), DIN99.new(0, 0, 0)},
-        {RGB.new(255, 255, 255), DIN99.new("100.0013", "0.001", "0.007")},
-        {RGB.new(255, 0, 0), DIN99.new("64.3983", "-36.3321", "-10.9365")}
+        {RGB.new(255, 255, 255), DIN99.new(100.0013, 0.001, 0.007)},
+        {RGB.new(255, 0, 0), DIN99.new(64.3983, -36.3321, -10.9365)}
       ]
 
       Enum.each(conversions, fn {rgb, din99} ->
@@ -441,13 +441,13 @@ defmodule Tint.RGBTest do
         {RGB.new(0, 255, 255), HSV.new(180, 1, 1)},
         {RGB.new(255, 0, 255), HSV.new(300, 1, 1)},
         {RGB.new(191, 191, 191), HSV.new(0, 0, 0.749)},
-        {RGB.new(128, 128, 128), HSV.new(0, 0, 0.501)},
-        {RGB.new(128, 0, 0), HSV.new(0, 1, 0.501)},
-        {RGB.new(128, 128, 0), HSV.new(60, 1, 0.501)},
-        {RGB.new(0, 128, 0), HSV.new(120, 1, 0.501)},
-        {RGB.new(128, 0, 128), HSV.new(300, 1, 0.501)},
-        {RGB.new(0, 128, 128), HSV.new(180, 1, 0.501)},
-        {RGB.new(0, 0, 128), HSV.new(240, 1, 0.501)}
+        {RGB.new(128, 128, 128), HSV.new(0, 0, 0.502)},
+        {RGB.new(128, 0, 0), HSV.new(0, 1, 0.502)},
+        {RGB.new(128, 128, 0), HSV.new(60, 1, 0.502)},
+        {RGB.new(0, 128, 0), HSV.new(120, 1, 0.502)},
+        {RGB.new(128, 0, 128), HSV.new(300, 1, 0.502)},
+        {RGB.new(0, 128, 128), HSV.new(180, 1, 0.502)},
+        {RGB.new(0, 0, 128), HSV.new(240, 1, 0.502)}
       ]
 
       Enum.each(conversions, fn {rgb, hsv} ->

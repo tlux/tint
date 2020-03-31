@@ -33,12 +33,12 @@ defmodule Tint.Sigil do
   HSV colors are also supported using the `h` modifier.
 
       iex> ~K[48,1,1]h
-      #Tint.HSV<48°,100%,100%>
+      #Tint.HSV<48.0°,100.0%,100.0%>
 
   CMYK colors are supported using the `c` modifier.
 
       iex> ~K[0.06, 0.32, 0.8846, 0.23]c
-      #Tint.CMYK<6%,32%,88.4%,23%>
+      #Tint.CMYK<6.0%,32.0%,88.46%,23.0%>
 
   CIELAB colors are supported using the `l` modifier.
 
@@ -53,7 +53,7 @@ defmodule Tint.Sigil do
   XYZ colors are supported using the `x` modifier.
 
       iex> ~K[50.9505,1,1.09]x
-      #Tint.XYZ<50.9505,1,1.09>
+      #Tint.XYZ<50.9505,1.0,1.09>
   """
   @spec sigil_K(String.t(), [char]) :: Tint.color()
   def sigil_K(str, []) do

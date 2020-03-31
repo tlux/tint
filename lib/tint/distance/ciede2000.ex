@@ -6,14 +6,14 @@ defmodule Tint.Distance.CIEDE2000 do
 
   @behaviour Tint.Distance
 
-  alias Tint.Math
+  alias Tint.Utils.Math
 
   @deg_6_in_rad Math.deg_to_rad(6)
   @deg_25_in_rad Math.deg_to_rad(25)
   @deg_30_in_rad Math.deg_to_rad(30)
   @deg_63_in_rad Math.deg_to_rad(63)
   @deg_275_in_rad Math.deg_to_rad(275)
-  @pow_25_7 Math.pow(25, 7)
+  @pow_25_7 :math.pow(25, 7)
 
   @impl true
   def distance(color, other_color, opts) do
@@ -37,9 +37,9 @@ defmodule Tint.Distance.CIEDE2000 do
     h_apo_1 = calc_h_apo(a_apo_1, color.b)
     h_apo_2 = calc_h_apo(a_apo_2, other_color.b)
     # 8)
-    delta_l_apo = Decimal.sub(other_color.lightness, color.lightness)
+    delta_l_apo = other_color.lightness - color.lightness
     # 9)
-    delta_c_apo = Decimal.sub(c_star_2, c_star_1)
+    delta_c_apo = c_star_2 - c_star_1
     # 10)
     delta_h_apo = calc_delta_h_apo(c_apo_1, c_apo_2, h_apo_1, h_apo_2)
     # 11)
@@ -65,102 +65,88 @@ defmodule Tint.Distance.CIEDE2000 do
     # 21)
     rt = calc_rt(delta_theta, rc)
     # 22)
-    calc_delta_e00(
-      delta_l_apo,
-      delta_c_apo,
-      delta_cap_h_apo,
-      rt,
-      sl,
-      sc,
-      sh,
-      opts[:weights]
-    )
+
+    delta_e =
+      calc_delta_e00(
+        delta_l_apo,
+        delta_c_apo,
+        delta_cap_h_apo,
+        rt,
+        sl,
+        sc,
+        sh,
+        opts[:weights]
+      )
+
+    delta_e
   end
 
   defp calc_c_star_i(a, b) do
-    Decimal.sqrt(Decimal.add(Math.pow(a, 2), Math.pow(b, 2)))
+    :math.sqrt(:math.pow(a, 2) + :math.pow(b, 2))
   end
 
-  defp calc_c_star_dash(c_star_i, c_star_2) do
-    Decimal.div(Decimal.add(c_star_i, c_star_2), 2)
+  defp calc_c_star_dash(c_star_1, c_star_2) do
+    (c_star_1 + c_star_2) / 2
   end
 
   defp calc_g(c_star_dash) do
-    c_star_dash_pow_7 = Math.pow(c_star_dash, 7)
-
-    Decimal.mult(
-      "0.5",
-      Decimal.sub(
-        1,
-        Decimal.sqrt(
-          Decimal.div(
-            c_star_dash_pow_7,
-            Decimal.add(c_star_dash_pow_7, @pow_25_7)
-          )
-        )
-      )
-    )
+    c_star_dash_pow_7 = :math.pow(c_star_dash, 7)
+    0.5 * (1 - :math.sqrt(c_star_dash_pow_7 / (c_star_dash_pow_7 + @pow_25_7)))
   end
 
   defp calc_a_apo(g, a) do
-    Decimal.mult(Decimal.add(1, g), a)
+    (1 + g) * a
   end
 
   defp calc_c_apo(a_apo, b) do
-    Decimal.sqrt(Decimal.add(Math.pow(a_apo, 2), Math.pow(b, 2)))
+    :math.sqrt(:math.pow(a_apo, 2) + :math.pow(b, 2))
   end
 
   defp calc_h_apo(a_apo, b) do
-    if Decimal.eq?(a_apo, 0) && Decimal.eq?(b, 0) do
+    if a_apo == 0 && b == 0 do
       0
     else
       b
-      |> Math.atan2(a_apo)
+      |> :math.atan2(a_apo)
       |> Math.rad_to_deg()
     end
   end
 
   defp calc_delta_h_apo(c_apo_1, c_apo_2, h_apo_1, h_apo_2) do
-    if Decimal.eq?(c_apo_1, 0) && Decimal.eq?(c_apo_2, 0) do
-      Decimal.new(0)
+    if c_apo_1 == 0 && c_apo_2 == 0 do
+      0
     else
-      diff = Decimal.sub(h_apo_2, h_apo_1)
+      diff = h_apo_2 - h_apo_1
 
       cond do
-        Decimal.cmp(Decimal.abs(diff), 180) in [:lt, :eq] -> diff
-        Decimal.gt?(diff, 180) -> Decimal.sub(diff, 360)
-        Decimal.lt?(diff, -180) -> Decimal.add(diff, 360)
+        abs(diff) <= 180 -> diff
+        diff > 180 -> diff - 360
+        diff < -180 -> diff + 360
       end
     end
   end
 
   defp calc_delta_cap_h_apo(c_apo_1, c_apo_2, delta_h_apo) do
-    2
-    |> Decimal.mult(Decimal.sqrt(Decimal.mult(c_apo_1, c_apo_2)))
-    |> Decimal.mult(Math.sin(Decimal.div(Math.deg_to_rad(delta_h_apo), 2)))
+    2 * :math.sqrt(c_apo_1 * c_apo_2) *
+      :math.sin(Math.deg_to_rad(delta_h_apo) / 2)
   end
 
   defp calc_cl_apo_dash(v1, v2) do
-    Decimal.div(Decimal.add(v1, v2), 2)
+    (v1 + v2) / 2
   end
 
   defp calc_h_apo_dash(c_apo_1, c_apo_2, h_apo_1, h_apo_2) do
-    sum = Decimal.add(h_apo_1, h_apo_2)
+    sum = h_apo_1 + h_apo_2
 
-    if Decimal.eq?(c_apo_1, 0) && Decimal.eq?(c_apo_2, 0) do
+    if c_apo_1 == 0 && c_apo_2 == 0 do
       sum
     else
-      abs_diff = Decimal.abs(Decimal.sub(h_apo_1, h_apo_2))
+      abs_diff = abs(h_apo_1 - h_apo_2)
 
       cond do
-        Decimal.cmp(abs_diff, 180) in [:lt, :eq] ->
-          Decimal.div(sum, 2)
-
-        Decimal.lt?(sum, 360) ->
-          Decimal.div(Decimal.add(sum, 360), 2)
-
-        Decimal.cmp(sum, 360) in [:gt, :eq] ->
-          Decimal.div(Decimal.sub(sum, 360), 2)
+        abs_diff <= 180 -> sum / 2
+        sum < 360 -> (sum + 360) / 2
+        sum >= 360 -> (sum - 360) / 2
       end
     end
   end
@@ -168,96 +154,42 @@ defmodule Tint.Distance.CIEDE2000 do
   defp calc_t(h_apo_dash) do
     h_apo_dash_rad = Math.deg_to_rad(h_apo_dash)
 
-    1
-    |> Decimal.sub(
-      Decimal.mult(
-        "0.17",
-        Math.cos(Decimal.sub(h_apo_dash_rad, @deg_30_in_rad))
-      )
-    )
-    |> Decimal.add(
-      Decimal.mult("0.24", Math.cos(Decimal.mult(2, h_apo_dash_rad)))
-    )
-    |> Decimal.add(
-      Decimal.mult(
-        "0.32",
-        Math.cos(
-          Decimal.add(
-            Decimal.mult(3, h_apo_dash_rad),
-            @deg_6_in_rad
-          )
-        )
-      )
-    )
-    |> Decimal.sub(
-      Decimal.mult(
-        "0.2",
-        Math.cos(
-          Decimal.sub(
-            Decimal.mult(4, h_apo_dash_rad),
-            @deg_63_in_rad
-          )
-        )
-      )
-    )
+    1 - 0.17 * :math.cos(h_apo_dash_rad - @deg_30_in_rad) +
+      0.24 * :math.cos(2 * h_apo_dash_rad) +
+      0.32 * :math.cos(3 * h_apo_dash_rad + @deg_6_in_rad) -
+      0.2 * :math.cos(4 * h_apo_dash_rad - @deg_63_in_rad)
   end
 
   defp calc_delta_theta(h_apo_dash) do
-    Decimal.mult(
-      @deg_30_in_rad,
-      Math.exp(
-        Decimal.mult(
-          -1,
-          Math.pow(
-            Decimal.div(
-              Decimal.sub(Math.deg_to_rad(h_apo_dash), @deg_275_in_rad),
-              @deg_25_in_rad
-            ),
-            2
-          )
+    @deg_30_in_rad *
+      :math.exp(
+        -:math.pow(
+          (Math.deg_to_rad(h_apo_dash) - @deg_275_in_rad) / @deg_25_in_rad,
+          2
         )
       )
-    )
   end
 
   defp calc_rc(c_apo_dash) do
-    c_apo_dash_pow_7 = Math.pow(c_apo_dash, 7)
-
-    Decimal.mult(
-      2,
-      Decimal.sqrt(
-        Decimal.div(
-          c_apo_dash_pow_7,
-          Decimal.add(c_apo_dash_pow_7, @pow_25_7)
-        )
-      )
-    )
+    c_apo_dash_pow_7 = :math.pow(c_apo_dash, 7)
+    2 * :math.sqrt(c_apo_dash_pow_7 / (c_apo_dash_pow_7 + @pow_25_7))
   end
 
   defp calc_sl(l_apo_dash) do
-    factor = Math.pow(Decimal.sub(l_apo_dash, 50), 2)
-
-    Decimal.add(
-      1,
-      Decimal.div(
-        Decimal.mult("0.015", factor),
-        Decimal.sqrt(Decimal.add(20, factor))
-      )
-    )
+    v = :math.pow(l_apo_dash - 50, 2)
+    1 + 0.015 * v / :math.sqrt(20 + v)
   end
 
   defp calc_sc(c_apo_dash) do
-    Decimal.add(1, Decimal.mult("0.045", c_apo_dash))
+    1 + 0.045 * c_apo_dash
   end
 
   defp calc_sh(c_apo_dash, t) do
-    Decimal.add(1, Decimal.mult("0.015", Decimal.mult(c_apo_dash, t)))
+    1 + 0.015 * c_apo_dash * t
   end
 
   defp calc_rt(delta_theta, rc) do
-    -1
-    |> Decimal.mult(Math.sin(Decimal.mult(2, delta_theta)))
-    |> Decimal.mult(rc)
+    -:math.sin(2 * delta_theta) * rc
   end
 
   defp calc_delta_e00(
@@ -270,26 +202,18 @@ defmodule Tint.Distance.CIEDE2000 do
          sh,
          weights
        ) do
-    # The factors kL, kC, and kH are usually unity.
+    # The weights kL, kC, and kH are usually unity
     {kl, kc, kh} = weights || {1, 1, 1}
-    kl = Decimal.cast(kl)
-    kc = Decimal.cast(kc)
-    kh = Decimal.cast(kh)
 
-    sc_div = Decimal.mult(kc, sc)
-    sh_div = Decimal.mult(kh, sh)
+    d_l_apo_sl_div = delta_l_apo / (kl * sl)
+    d_c_apo_sc_div = delta_c_apo / (kc * sc)
+    d_h_apo_sh_div = delta_h_apo / (kh * sh)
 
-    inner =
-      rt
-      |> Decimal.mult(Decimal.div(delta_c_apo, sc_div))
-      |> Decimal.mult(Decimal.div(delta_h_apo, sh_div))
-
-    0
-    |> Decimal.add(Math.pow(Decimal.div(delta_l_apo, Decimal.mult(kl, sl)), 2))
-    |> Decimal.add(Math.pow(Decimal.div(delta_c_apo, sc_div), 2))
-    |> Decimal.add(Math.pow(Decimal.div(delta_h_apo, sh_div), 2))
-    |> Decimal.add(inner)
-    |> Decimal.sqrt()
-    |> Decimal.to_float()
+    :math.sqrt(
+      :math.pow(d_l_apo_sl_div, 2) +
+        :math.pow(d_c_apo_sc_div, 2) +
+        :math.pow(d_h_apo_sh_div, 2) +
+        rt * d_c_apo_sc_div * d_h_apo_sh_div
+    )
   end
 end

@@ -3,10 +3,10 @@ defmodule Tint.SigilTest do
 
   import Tint.Sigil
 
-  alias Tint.Lab
   alias Tint.CMYK
   alias Tint.DIN99
   alias Tint.HSV
+  alias Tint.Lab
   alias Tint.OutOfRangeError
   alias Tint.RGB
   alias Tint.XYZ
@@ -109,15 +109,15 @@ defmodule Tint.SigilTest do
   describe "Lab color" do
     test "success" do
       assert ~K(50.1234, 10.7643, 10.4322)l == %Lab{
-               lightness: Decimal.new("50.1234"),
-               a: Decimal.new("10.7643"),
-               b: Decimal.new("10.4322")
+               lightness: 50.1234,
+               a: 10.7643,
+               b: 10.4322
              }
 
       assert ~K(50.1234,10.7643,10.4322)l == %Lab{
-               lightness: Decimal.new("50.1234"),
-               a: Decimal.new("10.7643"),
-               b: Decimal.new("10.4322")
+               lightness: 50.1234,
+               a: 10.7643,
+               b: 10.4322
              }
     end
 
@@ -139,15 +139,15 @@ defmodule Tint.SigilTest do
   describe "DIN99 color" do
     test "success" do
       assert ~K(50.1234, 10.7643, 10.4322)d == %DIN99{
-               lightness: Decimal.new("50.1234"),
-               a: Decimal.new("10.7643"),
-               b: Decimal.new("10.4322")
+               lightness: 50.1234,
+               a: 10.7643,
+               b: 10.4322
              }
 
       assert ~K(50.1234,10.7643,10.4322)d == %DIN99{
-               lightness: Decimal.new("50.1234"),
-               a: Decimal.new("10.7643"),
-               b: Decimal.new("10.4322")
+               lightness: 50.1234,
+               a: 10.7643,
+               b: 10.4322
              }
     end
 
@@ -169,15 +169,15 @@ defmodule Tint.SigilTest do
   describe "XYZ color" do
     test "success" do
       assert ~K(0.9505, 1, 1.09)x == %XYZ{
-               x: Decimal.new("0.9505"),
-               y: Decimal.new("1.0000"),
-               z: Decimal.new("1.0900")
+               x: 0.9505,
+               y: 1.0000,
+               z: 1.0900
              }
 
       assert ~K(0.9505,1,1.09)x == %XYZ{
-               x: Decimal.new("0.9505"),
-               y: Decimal.new("1.0000"),
-               z: Decimal.new("1.0900")
+               x: 0.9505,
+               y: 1.0000,
+               z: 1.0900
              }
     end
 
