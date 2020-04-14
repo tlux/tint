@@ -3,7 +3,7 @@ defimpl Tint.RGB.Convertible, for: Tint.HSV do
   alias Tint.Utils.Interval
   alias Tint.Utils.Math
 
-  def to_rgb(color) do
+  def convert(color) do
     c = color.saturation * color.value
     x = c * calc_x_part(color.hue)
     m = color.value - c

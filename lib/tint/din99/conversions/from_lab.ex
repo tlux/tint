@@ -4,7 +4,7 @@ defimpl Tint.DIN99.Convertible, for: Tint.Lab do
   @cos_16 :math.cos(16)
   @sin_16 :math.sin(16)
 
-  def to_din99(color) do
+  def convert(color) do
     l99 = calc_l99(color)
     {a99, b99} = calc_ab99(color)
     %DIN99{lightness: l99, a: a99, b: b99}

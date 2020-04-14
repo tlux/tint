@@ -3,6 +3,6 @@ defprotocol Tint.HSV.Convertible do
 
   @fallback_to_any true
 
-  @spec to_hsv(Tint.color()) :: Tint.HSV.t()
-  def to_hsv(color)
+  @spec convert(Tint.color()) :: Tint.HSV.t()
+  def convert(color)
 end

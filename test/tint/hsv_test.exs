@@ -140,7 +140,7 @@ defmodule Tint.HSVTest do
     end
   end
 
-  describe "CMYK.Convertible.to_cmyk/1" do
+  describe "CMYK.Convertible.convert/1" do
     test "convert to CMYK" do
       conversions = [
         {HSV.new(0, 0, 0), CMYK.new(0, 0, 0, 1)},
@@ -162,21 +162,21 @@ defmodule Tint.HSVTest do
       ]
 
       Enum.each(conversions, fn {hsv, cmyk} ->
-        assert CMYK.Convertible.to_cmyk(hsv) == cmyk
+        assert CMYK.Convertible.convert(hsv) == cmyk
       end)
     end
   end
 
-  describe "DIN99.Convertible.to_din99/1" do
+  describe "DIN99.Convertible.convert/1" do
     test "convert to DIN99" do
       color = HSV.new(332.763, 0.94356, 0.4)
 
-      assert DIN99.Convertible.to_din99(color) ==
+      assert DIN99.Convertible.convert(color) ==
                DIN99.new(29.9041, -22.9248, 4.1468)
     end
   end
 
-  describe "HSV.Convertible.to_hsv/1" do
+  describe "HSV.Convertible.convert/1" do
     test "convert to HSV" do
       colors = [
         HSV.new(0, 0.0, 0.0),
@@ -195,20 +195,20 @@ defmodule Tint.HSVTest do
       ]
 
       Enum.each(colors, fn color ->
-        assert HSV.Convertible.to_hsv(color) == color
+        assert HSV.Convertible.convert(color) == color
       end)
     end
   end
 
-  describe "Lab.Convertible.to_lab/1" do
+  describe "Lab.Convertible.convert/1" do
     test "convert to Lab" do
       color = HSV.new(332.763, 0.94356, 0.4)
 
-      assert Lab.Convertible.to_lab(color) == Lab.new(20.7385, 41.8182, 1.6384)
+      assert Lab.Convertible.convert(color) == Lab.new(20.7385, 41.8182, 1.6384)
     end
   end
 
-  describe "RGB.Convertible.to_rgb/1" do
+  describe "RGB.Convertible.convert/1" do
     test "convert to RGB" do
       conversions = [
         {HSV.new(0, 0, 0), RGB.new(0, 0, 0)},
@@ -230,16 +230,16 @@ defmodule Tint.HSVTest do
       ]
 
       Enum.each(conversions, fn {hsv, rgb} ->
-        assert RGB.Convertible.to_rgb(hsv) == rgb
+        assert RGB.Convertible.convert(hsv) == rgb
       end)
     end
   end
 
-  describe "XYZ.Convertible.to_xyz/1" do
+  describe "XYZ.Convertible.convert/1" do
     test "convert to Lab" do
       color = HSV.new(332.763, 0.94356, 0.4)
 
-      assert XYZ.Convertible.to_xyz(color) == XYZ.new(6.099, 3.1768, 3.1975)
+      assert XYZ.Convertible.convert(color) == XYZ.new(6.099, 3.1768, 3.1975)
     end
   end
 end

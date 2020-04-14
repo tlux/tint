@@ -1,6 +1,6 @@
 defprotocol Tint.RGB.Convertible do
   @moduledoc false
 
-  @spec to_rgb(Tint.color()) :: Tint.RGB.t()
-  def to_rgb(color)
+  @spec convert(Tint.color()) :: Tint.RGB.t()
+  def convert(color)
 end

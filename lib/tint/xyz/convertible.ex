@@ -3,6 +3,6 @@ defprotocol Tint.XYZ.Convertible do
 
   @fallback_to_any true
 
-  @spec to_xyz(Tint.color()) :: Tint.XYZ.t()
-  def to_xyz(color)
+  @spec convert(Tint.color()) :: Tint.XYZ.t()
+  def convert(color)
 end

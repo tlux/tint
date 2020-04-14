@@ -2,7 +2,7 @@ defimpl Tint.HSV.Convertible, for: Tint.RGB do
   alias Tint.HSV
   alias Tint.RGB
 
-  def to_hsv(color) do
+  def convert(color) do
     rgb_ratios = RGB.to_ratios(color)
     rgb_ratio_list = Tuple.to_list(rgb_ratios)
     min_ratio = Enum.min(rgb_ratio_list)

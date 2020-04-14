@@ -1,3 +1,3 @@
 defimpl Tint.RGB.Convertible, for: Tint.RGB do
-  def to_rgb(color), do: color
+  def convert(color), do: color
 end

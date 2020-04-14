@@ -16,7 +16,7 @@ defmodule Tint.XYZTest do
     end
   end
 
-  describe "Lab.Convertible.to_lab/1" do
+  describe "Lab.Convertible.convert/1" do
     test "convert to Lab" do
       conversions = [
         # #000000
@@ -28,16 +28,16 @@ defmodule Tint.XYZTest do
       ]
 
       Enum.each(conversions, fn {xyz, lab} ->
-        assert Lab.Convertible.to_lab(xyz) == lab
+        assert Lab.Convertible.convert(xyz) == lab
       end)
     end
   end
 
-  describe "XYZ.Convertible.to_xyz/1" do
+  describe "XYZ.Convertible.convert/1" do
     test "convert to DIN99" do
       color = XYZ.new(95.05, 100, 108.9)
 
-      assert XYZ.Convertible.to_xyz(color) == color
+      assert XYZ.Convertible.convert(color) == color
     end
   end
 end

@@ -44,11 +44,11 @@ defmodule Tint.DIN99Test do
     end
   end
 
-  describe "DIN99.Convertible.to_din99/1" do
+  describe "DIN99.Convertible.convert/1" do
     test "convert to DIN99" do
       color = DIN99.new(50.1234, 10.7643, 10.4322)
 
-      assert DIN99.Convertible.to_din99(color) == color
+      assert DIN99.Convertible.convert(color) == color
     end
   end
 end

@@ -2,11 +2,11 @@ defimpl Tint.CMYK.Convertible, for: Tint.RGB do
   alias Tint.CMYK
   alias Tint.RGB
 
-  def to_cmyk(%{red: 0, green: 0, blue: 0}) do
+  def convert(%{red: 0, green: 0, blue: 0}) do
     %CMYK{cyan: 0.0, magenta: 0.0, yellow: 0.0, key: 1.0}
   end
 
-  def to_cmyk(color) do
+  def convert(color) do
     {red_ratio, green_ratio, blue_ratio} = RGB.to_ratios(color)
     max_ratio = Enum.max([red_ratio, green_ratio, blue_ratio])
 

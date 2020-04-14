@@ -8,7 +8,7 @@ defimpl Tint.Lab.Convertible, for: Tint.XYZ do
   @yn 100.0
   @zn 108.8840
 
-  def to_lab(color) do
+  def convert(color) do
     yr = inner_fun(color.y / @yn)
     lightness = round_channel(116 * yr - 16)
     a = round_channel(500 * (inner_fun(color.x / @xn) - yr))

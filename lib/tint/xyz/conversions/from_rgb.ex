@@ -2,7 +2,7 @@ defimpl Tint.XYZ.Convertible, for: Tint.RGB do
   alias Tint.RGB
   alias Tint.XYZ
 
-  def to_xyz(color) do
+  def convert(color) do
     {red_ratio, green_ratio, blue_ratio} = RGB.to_ratios(color)
     red_ratio = fix_ratio(red_ratio)
     green_ratio = fix_ratio(green_ratio)

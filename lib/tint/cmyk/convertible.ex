@@ -3,6 +3,6 @@ defprotocol Tint.CMYK.Convertible do
 
   @fallback_to_any true
 
-  @spec to_cmyk(Tint.color()) :: Tint.CMYK.t()
-  def to_cmyk(color)
+  @spec convert(Tint.color()) :: Tint.CMYK.t()
+  def convert(color)
 end

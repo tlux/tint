@@ -108,7 +108,7 @@ defmodule Tint.CMYKTest do
     end
   end
 
-  describe "CMYK.Convertible.to_cmyk/1" do
+  describe "CMYK.Convertible.convert/1" do
     test "convert to CMYK" do
       colors = [
         CMYK.new(0, 0, 0, 1),
@@ -118,12 +118,12 @@ defmodule Tint.CMYKTest do
       ]
 
       Enum.each(colors, fn color ->
-        assert CMYK.Convertible.to_cmyk(color) == color
+        assert CMYK.Convertible.convert(color) == color
       end)
     end
   end
 
-  describe "HSV.Convertible.to_hsv/1" do
+  describe "HSV.Convertible.convert/1" do
     test "convert to HSV" do
       conversions = [
         {CMYK.new(0, 0, 0, 1), HSV.new(0, 0, 0)},
@@ -145,12 +145,12 @@ defmodule Tint.CMYKTest do
       ]
 
       Enum.each(conversions, fn {cmyk, hsv} ->
-        assert HSV.Convertible.to_hsv(cmyk) == hsv
+        assert HSV.Convertible.convert(cmyk) == hsv
       end)
     end
   end
 
-  describe "RGB.Convertible.to_rgb/1" do
+  describe "RGB.Convertible.convert/1" do
     test "convert to RGB" do
       conversions = [
         {CMYK.new(0, 0, 0, 1), RGB.new(0, 0, 0)},
@@ -172,7 +172,7 @@ defmodule Tint.CMYKTest do
       ]
 
       Enum.each(conversions, fn {cmyk, rgb} ->
-        assert RGB.Convertible.to_rgb(cmyk) == rgb
+        assert RGB.Convertible.convert(cmyk) == rgb
       end)
     end
   end

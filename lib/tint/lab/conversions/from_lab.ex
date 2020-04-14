@@ -1,3 +1,3 @@
 defimpl Tint.Lab.Convertible, for: Tint.Lab do
-  def to_lab(color), do: color
+  def convert(color), do: color
 end

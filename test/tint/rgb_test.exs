@@ -378,7 +378,7 @@ defmodule Tint.RGBTest do
     end
   end
 
-  describe "Lab.Convertible.to_lab/1" do
+  describe "Lab.Convertible.convert/1" do
     test "convert to Lab" do
       conversions = [
         {RGB.new(0, 0, 0), Lab.new(0, 0, 0)},
@@ -387,12 +387,12 @@ defmodule Tint.RGBTest do
       ]
 
       Enum.each(conversions, fn {rgb, lab} ->
-        assert Lab.Convertible.to_lab(rgb) == lab
+        assert Lab.Convertible.convert(rgb) == lab
       end)
     end
   end
 
-  describe "CMYK.Convertible.to_cmyk/1" do
+  describe "CMYK.Convertible.convert/1" do
     test "convert to CMYK" do
       conversions = [
         {RGB.new(0, 0, 0), CMYK.new(0, 0, 0, 1)},
@@ -414,12 +414,12 @@ defmodule Tint.RGBTest do
       ]
 
       Enum.each(conversions, fn {rgb, cmyk} ->
-        assert CMYK.Convertible.to_cmyk(rgb) == cmyk
+        assert CMYK.Convertible.convert(rgb) == cmyk
       end)
     end
   end
 
-  describe "DIN99.Convertible.to_din99/1" do
+  describe "DIN99.Convertible.convert/1" do
     test "convert to DIN99" do
       conversions = [
         {RGB.new(0, 0, 0), DIN99.new(0, 0, 0)},
@@ -428,12 +428,12 @@ defmodule Tint.RGBTest do
       ]
 
       Enum.each(conversions, fn {rgb, din99} ->
-        assert DIN99.Convertible.to_din99(rgb) == din99
+        assert DIN99.Convertible.convert(rgb) == din99
       end)
     end
   end
 
-  describe "HSV.Convertible.to_hsv/1" do
+  describe "HSV.Convertible.convert/1" do
     test "convert to HSV" do
       conversions = [
         {RGB.new(0, 0, 0), HSV.new(0, 0, 0)},
@@ -455,12 +455,12 @@ defmodule Tint.RGBTest do
       ]
 
       Enum.each(conversions, fn {rgb, hsv} ->
-        assert HSV.Convertible.to_hsv(rgb) == hsv
+        assert HSV.Convertible.convert(rgb) == hsv
       end)
     end
   end
 
-  describe "RGB.Convertible.to_rgb/1" do
+  describe "RGB.Convertible.convert/1" do
     test "convert to RGB" do
       colors = [
         RGB.new(0, 0, 0),
@@ -471,12 +471,12 @@ defmodule Tint.RGBTest do
       ]
 
       Enum.each(colors, fn color ->
-        assert RGB.Convertible.to_rgb(color) == color
+        assert RGB.Convertible.convert(color) == color
       end)
     end
   end
 
-  describe "XYZ.Convertible.to_xyz/1" do
+  describe "XYZ.Convertible.convert/1" do
     test "convert to XYZ" do
       conversions = [
         {RGB.new(0, 0, 0), XYZ.new(0, 0, 0)},
@@ -485,7 +485,7 @@ defmodule Tint.RGBTest do
       ]
 
       Enum.each(conversions, fn {rgb, xyz} ->
-        assert XYZ.Convertible.to_xyz(rgb) == xyz
+        assert XYZ.Convertible.convert(rgb) == xyz
       end)
     end
   end

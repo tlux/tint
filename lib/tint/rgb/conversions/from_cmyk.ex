@@ -1,7 +1,7 @@
 defimpl Tint.RGB.Convertible, for: Tint.CMYK do
   alias Tint.RGB
 
-  def to_rgb(color) do
+  def convert(color) do
     red = calc_channel(color.key, color.cyan)
     green = calc_channel(color.key, color.magenta)
     blue = calc_channel(color.key, color.yellow)

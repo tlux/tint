@@ -1,3 +1,3 @@
 defimpl Tint.CMYK.Convertible, for: Tint.CMYK do
-  def to_cmyk(color), do: color
+  def convert(color), do: color
 end

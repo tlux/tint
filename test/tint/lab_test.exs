@@ -186,11 +186,11 @@ defmodule Tint.LabTest do
     end
   end
 
-  describe "Lab.Convertible.to_lab/1" do
+  describe "Lab.Convertible.convert/1" do
     test "convert to Lab" do
       color = Lab.new(50, 10, 10)
 
-      assert Lab.Convertible.to_lab(color) == color
+      assert Lab.Convertible.convert(color) == color
     end
   end
 end
