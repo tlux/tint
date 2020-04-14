@@ -27,7 +27,7 @@ The package can be installed by adding `tint` to your list of dependencies in
 ```elixir
 def deps do
   [
-    {:tint, "1.0.0-rc.1"}
+    {:tint, "~> 1.0"}
   ]
 end
 ```
@@ -166,6 +166,14 @@ Tint.to_hsv(color)
 Tint.to_lab(color)
 Tint.to_rgb(color)
 Tint.to_xyz(color)
+```
+
+Alternatively you can use `convert/2` and `convert!/2`:
+
+```elixir
+Tint.convert(color, :rgb)
+Tint.convert(color, Tint.RGB)
+Tint.convert!(color, :hsv)
 ```
 
 Currently, only RGB can be converted to any other colorspace.
