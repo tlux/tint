@@ -45,14 +45,14 @@ defmodule Tint do
 
   ## Examples
 
-  iex> Tint.convert(Tint.RGB.new(40, 66, 67), :cmyk)
-  {:ok, %Tint.CMYK{cyan: 0.403, magenta: 0.0149, yellow: 0.0, key: 0.7373}}
+      iex> Tint.convert(Tint.RGB.new(40, 66, 67), :cmyk)
+      {:ok, %Tint.CMYK{cyan: 0.403, magenta: 0.0149, yellow: 0.0, key: 0.7373}}
 
-  iex> Tint.convert(Tint.RGB.new(255, 127, 30), Tint.HSV)
-  {:ok, %Tint.HSV{hue: 25.9, saturation: 0.8824, value: 1.0}}
+      iex> Tint.convert(Tint.RGB.new(255, 127, 30), Tint.HSV)
+      {:ok, %Tint.HSV{hue: 25.9, saturation: 0.8824, value: 1.0}}
 
-  iex> Tint.convert(Tint.RGB.new(255, 127, 30), :invalid)
-  :error
+      iex> Tint.convert(Tint.RGB.new(255, 127, 30), :invalid)
+      :error
   """
   @doc since: "1.0.0"
   @spec convert(color, colorspace) :: {:ok, color} | :error
@@ -68,14 +68,14 @@ defmodule Tint do
 
   ## Examples
 
-  iex> Tint.convert!(Tint.RGB.new(40, 66, 67), :cmyk)
-  %Tint.CMYK{cyan: 0.403, magenta: 0.0149, yellow: 0.0, key: 0.7373}
+      iex> Tint.convert!(Tint.RGB.new(40, 66, 67), :cmyk)
+      %Tint.CMYK{cyan: 0.403, magenta: 0.0149, yellow: 0.0, key: 0.7373}
 
-  iex> Tint.convert!(Tint.RGB.new(255, 127, 30), Tint.HSV)
-  %Tint.HSV{hue: 25.9, saturation: 0.8824, value: 1.0}
+      iex> Tint.convert!(Tint.RGB.new(255, 127, 30), Tint.HSV)
+      %Tint.HSV{hue: 25.9, saturation: 0.8824, value: 1.0}
 
-  iex> Tint.convert!(Tint.RGB.new(255, 127, 30), :foo)
-  ** (ArgumentError) Unknown colorspace: :foo
+      iex> Tint.convert!(Tint.RGB.new(255, 127, 30), :foo)
+      ** (ArgumentError) Unknown colorspace: :foo
   """
   @doc since: "1.0.0"
   @spec convert!(color, colorspace) :: color
@@ -94,8 +94,8 @@ defmodule Tint do
 
   ## Example
 
-  iex> Tint.to_cmyk(Tint.RGB.new(40, 66, 67))
-  #Tint.CMYK<40.3%,1.49%,0.0%,73.73%>
+      iex> Tint.to_cmyk(Tint.RGB.new(40, 66, 67))
+      #Tint.CMYK<40.3%,1.49%,0.0%,73.73%>
   """
   @doc since: "0.3.0"
   @spec to_cmyk(color) :: CMYK.t()
@@ -113,8 +113,8 @@ defmodule Tint do
 
   ## Example
 
-  iex> Tint.to_hsv(Tint.RGB.new(255, 127, 30))
-  #Tint.HSV<25.9°,88.24%,100.0%>
+      iex> Tint.to_hsv(Tint.RGB.new(255, 127, 30))
+      #Tint.HSV<25.9°,88.24%,100.0%>
   """
   @spec to_hsv(color) :: HSV.t()
   defdelegate to_hsv(color), to: HSV.Convertible, as: :convert
@@ -131,8 +131,8 @@ defmodule Tint do
 
   ## Example
 
-  iex> Tint.to_rgb(Tint.HSV.new(25.8, 0.882, 1))
-  #Tint.RGB<255,127,30 (#FF7F1E)>
+      iex> Tint.to_rgb(Tint.HSV.new(25.8, 0.882, 1))
+      #Tint.RGB<255,127,30 (#FF7F1E)>
   """
   @spec to_rgb(color) :: RGB.t()
   defdelegate to_rgb(color), to: RGB.Convertible, as: :convert
