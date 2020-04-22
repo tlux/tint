@@ -64,6 +64,7 @@ defmodule Tint.Distance.CIEDE2000 do
     sh = calc_sh(c_apo_dash, t)
     # 21)
     rt = calc_rt(delta_theta, rc)
+
     # 22)
 
     delta_e =
