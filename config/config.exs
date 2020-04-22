@@ -27,13 +27,4 @@ use Mix.Config
 # Configuration from the imported file will override the ones defined
 # here (which is why it is important to import them last).
 
-config :tint, :colorspace_aliases, %{
-  cmyk: Tint.CMYK,
-  din99: Tint.DIN99,
-  hsv: Tint.HSV,
-  lab: Tint.Lab,
-  rgb: Tint.RGB,
-  xyz: Tint.XYZ
-}
-
 import_config "#{Mix.env()}.exs"

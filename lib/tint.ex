@@ -17,12 +17,19 @@ defmodule Tint do
           | RGB.t()
           | XYZ.t()
 
+  @colorspace_aliases %{
+    cmyk: Tint.CMYK,
+    din99: Tint.DIN99,
+    hsv: Tint.HSV,
+    lab: Tint.Lab,
+    rgb: Tint.RGB,
+    xyz: Tint.XYZ
+  }
+
   @typedoc """
   A type representing a colorspace.
   """
   @type colorspace :: atom | module
-
-  @aliases Application.fetch_env!(:tint, :colorspace_aliases)
 
   @doc """
   Gets the converted module for the given colorspace atom or module.
@@ -30,10 +37,11 @@ defmodule Tint do
   @doc since: "1.0.0"
   @spec converter_for(colorspace) :: {:ok, module} | :error
   def converter_for(colorspace) do
-    colorspace_mod = Map.get(@aliases, colorspace, colorspace)
+    colorspace_mod = Map.get(@colorspace_aliases, colorspace, colorspace)
     convertible_mod = Module.concat(colorspace_mod, Convertible)
 
-    if function_exported?(convertible_mod, :convert, 1) do
+    if Code.ensure_loaded?(convertible_mod) &&
+         function_exported?(convertible_mod, :convert, 1) do
       {:ok, convertible_mod}
     else
       :error
