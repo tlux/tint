@@ -8,6 +8,7 @@ An Elixir library allowing calculations with colors and conversions between
 different colorspaces.
 
 Currently supports the following color models:
+
 * [RGB](https://en.wikipedia.org/wiki/RGB_color_space)
 * [CMYK](https://en.wikipedia.org/wiki/CMYK_color_model)
 * [HSV](https://en.wikipedia.org/wiki/HSL_and_HSV)
@@ -27,7 +28,7 @@ The package can be installed by adding `tint` to your list of dependencies in
 ```elixir
 def deps do
   [
-    {:tint, "~> 1.0"}
+    {:tint, "~> 1.1"}
   ]
 end
 ```
