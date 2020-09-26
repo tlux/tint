@@ -177,6 +177,26 @@ defmodule Tint.RGB do
     {color.red, color.green, color.blue}
   end
 
+  # Complementary Color
+
+  @doc """
+  Calculates the complementary of the given RGB color.
+
+  ## Example
+
+      iex> Tint.RGB.complementary_color(%Tint.RGB{red: 255, green: 0, blue: 0})
+      #Tint.RGB<0,255,255 (#00FFFF)>
+  """
+  @doc since: "1.1.0"
+  @spec complementary_color(t) :: t
+  def complementary_color(%__MODULE__{} = color) do
+    channel_size = @channel_interval.max
+    red = channel_size - color.red
+    green = channel_size - color.green
+    blue = channel_size - color.blue
+    new(red, green, blue)
+  end
+
   # Distance
 
   @doc """
