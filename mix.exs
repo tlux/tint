@@ -71,10 +71,10 @@ defmodule Tint.MixProject do
   defp deps do
     [
       {:benchee, "~> 1.0", only: :dev},
-      {:credo, "~> 1.0.5", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0.0-rc.6", only: [:dev, :test], runtime: false},
-      {:excoveralls, "~> 0.10", only: :test},
-      {:ex_doc, "~> 0.20.2", only: :dev, runtime: false}
+      {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
+      {:excoveralls, "~> 0.13", only: :test},
+      {:ex_doc, "~> 0.22", only: :dev, runtime: false}
     ]
   end
 
