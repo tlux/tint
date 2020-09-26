@@ -181,6 +181,11 @@ defmodule Tint.RGB do
 
   @doc """
   Calculates the complementary of the given RGB color.
+
+  ## Example
+
+      iex> Tint.RGB.complementary_color(%Tint.RGB{red: 255, green: 0, blue: 0})
+      #Tint.RGB<0,255,255 (#00FFFF)>
   """
   @doc since: "1.1.0"
   @spec complementary_color(t) :: t

@@ -228,6 +228,13 @@ iex> Tint.Lab.nearest_color(~K[#FF0000], [~K[#009900], ~K[#CC0000]])
 #Tint.RGB<204,0,0 (#CC0000)>
 ```
 
+### Complementary Color
+
+```elixir
+iex> Tint.RGB.complementary_color(~K[#FF0000])
+#Tint.RGB<0,255,255 (#00FFFF)>
+```
+
 ## Docs
 
 The API docs can be found at [HexDocs](https://hexdocs.pm/tint).
