@@ -355,6 +355,18 @@ defmodule Tint.RGBTest do
     end
   end
 
+  describe "complementary_color/1" do
+    test "get complementary color in RGB colorspace" do
+      assert RGB.complementary_color(~K[#FF0000]) == ~K[#00FFFF]
+      assert RGB.complementary_color(~K[#00FF00]) == ~K[#FF00FF]
+      assert RGB.complementary_color(~K[#0000FF]) == ~K[#FFFF00]
+      assert RGB.complementary_color(~K[#FF8800]) == ~K[#0077FF]
+      assert RGB.complementary_color(~K[#3378F9]) == ~K[#CC8706]
+      assert RGB.complementary_color(~K[#8800FF]) == ~K[#77FF00]
+      assert RGB.complementary_color(~K[#99AA77]) == ~K[#665588]
+    end
+  end
+
   describe "to_hex/1" do
     test "convert RGB color struct to hex code" do
       assert RGB.to_hex(RGB.new(0, 0, 0)) == "#000000"
