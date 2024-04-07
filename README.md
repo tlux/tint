@@ -9,16 +9,16 @@ different colorspaces.
 
 Currently supports the following color models:
 
-* [RGB](https://en.wikipedia.org/wiki/RGB_color_space)
-* [CMYK](https://en.wikipedia.org/wiki/CMYK_color_model)
-* [HSV](https://en.wikipedia.org/wiki/HSL_and_HSV)
-* L\*a\*b\* ([CIELAB](https://en.wikipedia.org/wiki/CIELAB_color_space))
-* XYZ ([CIE 1931](https://en.wikipedia.org/wiki/CIE_1931_color_space))
-* [DIN99](https://de.wikipedia.org/wiki/DIN99-Farbraum)
+- [RGB](https://en.wikipedia.org/wiki/RGB_color_space)
+- [CMYK](https://en.wikipedia.org/wiki/CMYK_color_model)
+- [HSV](https://en.wikipedia.org/wiki/HSL_and_HSV)
+- L\*a\*b\* ([CIELAB](https://en.wikipedia.org/wiki/CIELAB_color_space))
+- XYZ ([CIE 1931](https://en.wikipedia.org/wiki/CIE_1931_color_space))
+- [DIN99](https://de.wikipedia.org/wiki/DIN99-Farbraum)
 
 ## Prerequisites
 
-* Elixir 1.8 or greater
+- Elixir 1.14 or greater
 
 ## Installation
 
@@ -28,7 +28,7 @@ The package can be installed by adding `tint` to your list of dependencies in
 ```elixir
 def deps do
   [
-    {:tint, "~> 1.1"}
+    {:tint, "~> 1.2"}
   ]
 end
 ```

@@ -1,6 +1,8 @@
 {
   "skip_files": [
-    "lib/tint/application.ex",
+    "deps",
+    "priv",
+    "rel",
     "test/support"
   ],
   "terminal_options": {

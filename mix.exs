@@ -1,11 +1,13 @@
 defmodule Tint.MixProject do
   use Mix.Project
 
+  @github_url "https://github.com/tlux/tint"
+
   def project do
     [
       app: :tint,
-      version: "1.1.0",
-      elixir: "~> 1.8",
+      version: "1.2.0",
+      elixir: "~> 1.14",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -21,13 +23,17 @@ defmodule Tint.MixProject do
       description: description(),
       package: package(),
       aliases: aliases(),
+      dialyzer: dialyzer(),
 
       # Docs
       name: "Tint",
-      source_url: "https://github.com/tlux/tint",
+      source_url: @github_url,
       docs: [
         main: "readme",
-        extras: ["README.md"],
+        extras: [
+          "LICENSE.md": [title: "License"],
+          "README.md": [title: "Readme"]
+        ],
         groups_for_modules: [
           Colorspaces: [
             Tint.CMYK,
@@ -71,10 +77,20 @@ defmodule Tint.MixProject do
   defp deps do
     [
       {:benchee, "~> 1.0", only: :dev},
-      {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
-      {:excoveralls, "~> 0.13", only: :test},
-      {:ex_doc, "~> 0.22", only: :dev, runtime: false}
+      {:castore, "~> 1.0", only: :test, runtime: false},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:excoveralls, "~> 0.18", only: :test},
+      {:ex_doc, "~> 0.31", only: :dev, runtime: false},
+      {:mix_audit, "~> 2.1", only: [:dev, :test]}
+    ]
+  end
+
+  defp dialyzer do
+    [
+      plt_add_apps: [:ex_unit],
+      plt_add_deps: :app_tree,
+      plt_file: {:no_warn, "priv/plts/tint.plt"}
     ]
   end
 
@@ -85,7 +101,7 @@ defmodule Tint.MixProject do
     [
       licenses: ["MIT"],
       links: %{
-        "GitHub" => "https://github.com/tlux/tint"
+        "GitHub" => @github_url
       }
     ]
   end

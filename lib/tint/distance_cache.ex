@@ -20,7 +20,7 @@ defmodule Tint.DistanceCache do
     )
   end
 
-  @spec get_or_put(term, (() -> number)) :: number
+  @spec get_or_put(term, (-> number)) :: number
   def get_or_put(key, calc_fun) do
     Agent.get_and_update(__MODULE__, fn
       %{size: 0} = state ->
