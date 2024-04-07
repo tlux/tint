@@ -20,7 +20,7 @@ defimpl Tint.Lab.Convertible, for: Tint.XYZ do
     if value < @ratio_1 do
       1 / 116.0 * (@ratio_2 * value + 16)
     else
-      Math.nth_root(value, 3)
+      Math.root(value, 3)
     end
   end
 

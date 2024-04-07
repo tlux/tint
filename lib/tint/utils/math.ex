@@ -1,18 +1,9 @@
 defmodule Tint.Utils.Math do
   @moduledoc false
 
-  @spec nth_root(number, integer, float) :: float
-  def nth_root(value, n, precision \\ 1.0e-5) do
-    f = fn prev -> ((n - 1) * prev + value / :math.pow(prev, n - 1)) / n end
-    fixed_point(f, value, precision, f.(value))
-  end
-
-  defp fixed_point(_, guess, tolerance, next)
-       when abs(guess - next) < tolerance,
-       do: next
-
-  defp fixed_point(f, _, tolerance, next) do
-    fixed_point(f, next, tolerance, f.(next))
+  @spec root(number, integer) :: float
+  def root(value, n) when n > 0 do
+    :math.pow(value, 1.0 / n)
   end
 
   @spec rad_to_deg(float) :: float
