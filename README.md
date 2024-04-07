@@ -1,8 +1,11 @@
 # Tint
 
-[![Build Status](https://travis-ci.org/tlux/tint.svg?branch=master)](https://travis-ci.org/tlux/tint)
-[![Coverage Status](https://coveralls.io/repos/github/tlux/tint/badge.svg?branch=master)](https://coveralls.io/github/tlux/tint?branch=master)
-[![Hex.pm](https://img.shields.io/hexpm/v/tint.svg)](https://hex.pm/packages/tint)
+[![Build](https://github.com/tlux/tint/actions/workflows/elixir.yml/badge.svg)](https://github.com/tlux/tint/actions/workflows/elixir.yml)
+[![Coverage Status](https://coveralls.io/repos/github/tlux/tint/badge.svg?branch=main)](https://coveralls.io/github/tlux/tint?branch=main)
+[![Module Version](https://img.shields.io/hexpm/v/tint.svg)](https://hex.pm/packages/tint)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/tint/)
+[![License](https://img.shields.io/hexpm/l/tint.svg)](https://github.com/tlux/tint/blob/main/LICENSE.md)
+[![Last Updated](https://img.shields.io/github/last-commit/tlux/tint.svg)](https://github.com/tlux/tint/commits/main)
 
 An Elixir library allowing calculations with colors and conversions between
 different colorspaces.
