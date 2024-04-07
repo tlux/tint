@@ -101,6 +101,7 @@ jobs:
 
       - name: Check Formatting
         run: mix format --check-formatted
+        if: ${{ matrix.elixir == '1.16.x' }}
 
       - name: Static Code Analysis with Credo
         run: mix credo
