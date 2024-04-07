@@ -6,7 +6,7 @@ defmodule Tint.Utils.Math do
     :math.pow(value, 1.0 / n)
   end
 
-  @spec rad_to_deg(float) :: float
+  @spec rad_to_deg(number) :: float
   def rad_to_deg(value) do
     pi = :math.pi()
 
@@ -20,7 +20,7 @@ defmodule Tint.Utils.Math do
     value * (180 / pi)
   end
 
-  @spec deg_to_rad(float) :: float
+  @spec deg_to_rad(number) :: float
   def deg_to_rad(value) do
     value * (:math.pi() / 180)
   end
