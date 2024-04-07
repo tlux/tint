@@ -1,6 +1,6 @@
 defimpl Tint.RGB.Convertible, for: Tint.HSV do
   alias Tint.RGB
-  alias Tint.Utils.Interval
+  alias Tint.Interval
   alias Tint.Utils.Math
 
   def convert(color) do

@@ -47,6 +47,9 @@ defmodule Tint.MixProject do
             Tint.Distance,
             Tint.Distance.CIEDE2000,
             Tint.Distance.Euclidean
+          ],
+          Utility: [
+            Tint.Interval
           ]
         ]
       ]

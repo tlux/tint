@@ -5,7 +5,7 @@ defmodule Tint.HSV do
 
   import Tint.Utils.Cast
 
-  alias Tint.Utils.Interval
+  alias Tint.Interval
 
   defstruct [:hue, :saturation, :value]
 

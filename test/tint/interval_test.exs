@@ -1,7 +1,7 @@
-defmodule Tint.Utils.IntervalTest do
+defmodule Tint.IntervalTest do
   use ExUnit.Case, async: true
 
-  alias Tint.Utils.Interval
+  alias Tint.Interval
 
   describe "new/2" do
     test "build interval" do

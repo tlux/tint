@@ -8,7 +8,7 @@ defmodule Tint.OutOfRangeError do
 
   @type t :: %__MODULE__{
           value: any,
-          interval: Tint.Utils.Interval.t()
+          interval: Tint.Interval.t()
         }
 
   @impl true

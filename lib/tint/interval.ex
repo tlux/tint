@@ -1,5 +1,7 @@
-defmodule Tint.Utils.Interval do
-  @moduledoc false
+defmodule Tint.Interval do
+  @moduledoc """
+  An interval of two values with custom boundaries.
+  """
 
   defstruct [:min, :max, exclude_min: false, exclude_max: false]
 
@@ -12,11 +14,13 @@ defmodule Tint.Utils.Interval do
           exclude_max: boolean
         }
 
+  @doc false
   @spec new(min :: bound, max :: bound, opts :: Keyword.t()) :: t
   def new(min, max, opts \\ []) do
     struct!(%__MODULE__{min: min, max: max}, opts)
   end
 
+  @doc false
   @spec member?(t, number) :: boolean
   def member?(%__MODULE__{} = interval, value) do
     min_in_interval?(interval, value) &&

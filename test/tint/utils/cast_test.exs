@@ -3,7 +3,7 @@ defmodule Tint.Utils.CastTest do
 
   alias Tint.OutOfRangeError
   alias Tint.Utils.Cast
-  alias Tint.Utils.Interval
+  alias Tint.Interval
 
   describe "cast_value!/1" do
     test "to float" do
