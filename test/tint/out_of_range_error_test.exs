@@ -1,8 +1,8 @@
 defmodule Tint.OutOfRangeErrorTest do
   use ExUnit.Case, async: true
 
-  alias Tint.OutOfRangeError
   alias Tint.Interval
+  alias Tint.OutOfRangeError
 
   describe "message/1" do
     test "get message" do

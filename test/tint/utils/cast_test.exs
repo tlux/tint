@@ -1,9 +1,9 @@
 defmodule Tint.Utils.CastTest do
   use ExUnit.Case, async: true
 
+  alias Tint.Interval
   alias Tint.OutOfRangeError
   alias Tint.Utils.Cast
-  alias Tint.Interval
 
   describe "cast_value!/1" do
     test "to float" do

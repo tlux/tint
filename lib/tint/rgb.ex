@@ -6,8 +6,8 @@ defmodule Tint.RGB do
   import Tint.Utils.Cast
 
   alias Tint.Distance
-  alias Tint.RGB.HexCode
   alias Tint.Interval
+  alias Tint.RGB.HexCode
 
   defstruct [:red, :green, :blue]
 

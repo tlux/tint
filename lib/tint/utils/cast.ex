@@ -1,8 +1,8 @@
 defmodule Tint.Utils.Cast do
   @moduledoc false
 
-  alias Tint.OutOfRangeError
   alias Tint.Interval
+  alias Tint.OutOfRangeError
 
   @ratio_interval Interval.new(0, 1)
 

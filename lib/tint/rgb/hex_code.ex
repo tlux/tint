@@ -1,8 +1,8 @@
 defmodule Tint.RGB.HexCode do
   @moduledoc false
 
-  alias Tint.RGB
   alias Tint.Interval
+  alias Tint.RGB
 
   @prefix "#"
 
