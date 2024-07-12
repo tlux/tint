@@ -32,7 +32,7 @@ defmodule Tint do
   @type colorspace :: atom | module
 
   @doc """
-  Gets the converted module for the given colorspace atom or module.
+  Gets the converter module for the given colorspace atom or module.
   """
   @doc since: "1.0.0"
   @spec converter_for(colorspace) :: {:ok, module} | :error
