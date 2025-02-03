@@ -31,7 +31,7 @@ The package can be installed by adding `tint` to your list of dependencies in
 ```elixir
 def deps do
   [
-    {:tint, "~> 1.2"}
+    {:tint, "~> 1.3"}
   ]
 end
 ```
