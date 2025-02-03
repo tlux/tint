@@ -7,6 +7,8 @@ defmodule TintTest do
 
   @rgb_color RGB.new(0, 50, 100)
   @hsv_color HSV.new(210, 1, 0.392)
+  @lab_color Lab.new(50, 10, 10)
+  @xyz_color XYZ.new(0.0179, 0.0017, -0.0526)
 
   describe "converter_for/1" do
     test "CMYK" do
@@ -91,6 +93,41 @@ defmodule TintTest do
 
       assert Tint.convert(@hsv_color, :rgb) == {:ok, rgb_color}
       assert Tint.convert(@hsv_color, RGB) == {:ok, rgb_color}
+    end
+
+    test "XYZ to RGB" do
+      rgb_color = RGB.Convertible.convert(@xyz_color)
+
+      assert Tint.convert(@xyz_color, :rgb) == {:ok, rgb_color}
+      assert Tint.convert(@xyz_color, RGB) == {:ok, rgb_color}
+    end
+
+    test "Lab to XYZ" do
+      xyz_color = XYZ.Convertible.convert(@lab_color)
+
+      assert Tint.convert(@lab_color, :xyz) == {:ok, xyz_color}
+      assert Tint.convert(@lab_color, XYZ) == {:ok, xyz_color}
+    end
+
+    test "Lab to RGB" do
+      rgb_color = RGB.Convertible.convert(@lab_color)
+
+      assert Tint.convert(@lab_color, :rgb) == {:ok, rgb_color}
+      assert Tint.convert(@lab_color, RGB) == {:ok, rgb_color}
+    end
+
+    test "RGB to Lab to RGB round trip" do
+      assert @rgb_color ==
+               @rgb_color
+               |> Tint.to_lab()
+               |> Tint.to_rgb()
+    end
+
+    test "XYZ to Lab to XYZ round trip" do
+      assert @rgb_color ==
+               @rgb_color
+               |> Tint.to_xyz()
+               |> Tint.to_rgb()
     end
 
     test "error on unknown colorspace" do
